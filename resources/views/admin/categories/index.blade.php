@@ -1325,15 +1325,17 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            if (file.size > 2048000) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File Too Large',
-                    text: 'Image must be less than 2MB',
-                    confirmButtonColor: '#22c55e'
-                });
-                event.target.value = '';
-                return;
+            const MAX_FILE_SIZE = 100 * 1024; // 100 KB = 102400 bytes
+
+            if (file.size > MAX_FILE_SIZE) {
+            Swal.fire({
+                icon: 'error',
+                title: 'File Too Large',
+                text: 'Image must be less than 100KB',
+                confirmButtonColor: '#22c55e'
+            });
+            event.target.value = '';
+            return;
             }
 
             const reader = new FileReader();

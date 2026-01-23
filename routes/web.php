@@ -1,26 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\ShopController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Frontend\ProductController as FrontendProductController;
+use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Shop page (all products with filters)
+Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+
+// Product details
+Route::get('/product/{slug}', [ShopController::class, 'show'])->name('product.show');
+Route::get('/shop/filter', [ShopController::class, 'filter'])->name('shop.filter');
+
+// Category page (products filtered by category)
+Route::get('/category/{slug}', [ShopController::class, 'category'])->name('category.show');
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -47,6 +49,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // brands
         Route::resource('brands', BrandController::class)->except(['show']);
         Route::post('brands/{brand}/toggle-status', [BrandController::class, 'toggleStatus'])->name('brands.toggle-status');
+
+        // Banners
+        Route::resource('banners', BannerController::class)->except(['show']);
+        Route::post('banners/{banner}/toggle-status', [BannerController::class, 'toggleStatus'])
+            ->name('banners.toggle-status');
     });
 
 });

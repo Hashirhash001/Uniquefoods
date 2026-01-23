@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Providers;
+use Illuminate\Support\Facades\View;
+use App\Models\Category;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +21,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('frontend.partials.header', function ($view) {
+            $categories = Category::where('is_active', 1)
+                ->whereNull('parent_id')
+                ->orderBy('name')
+                ->take(10)
+                ->get();
+
+            $view->with('categories', $categories);
+        });
+
     }
 }

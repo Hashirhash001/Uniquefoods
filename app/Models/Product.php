@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,6 +13,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'sku',
+        'slug',
         'category_id',
         'brand_id',
         'price',
@@ -40,6 +42,41 @@ class Product extends Model
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
     ];
+
+    /* ================= BOOT - Auto generate slug ================= */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = static::generateUniqueSlug($product->name);
+            }
+        });
+
+        static::updating(function ($product) {
+            if ($product->isDirty('name')) {
+                $product->slug = static::generateUniqueSlug($product->name, $product->id);
+            }
+        });
+    }
+
+    /* ================= Generate Unique Slug ================= */
+    public static function generateUniqueSlug($name, $ignoreId = null)
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)
+            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+            ->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
 
     public function category()
     {
@@ -79,5 +116,43 @@ class Product extends Model
     public function primaryImage()
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    /* ================= ACCESSORS ================= */
+    public function getImageUrlAttribute()
+    {
+        if ($this->primaryImage) {
+            return asset('storage/' . $this->primaryImage->image_path);
+        }
+
+        if ($this->images->count() > 0) {
+            return asset('storage/' . $this->images->first()->image_path);
+        }
+
+        return asset('assets/images/grocery/01.jpg'); // fallback
+    }
+
+    public function getDiscountPercentageAttribute()
+    {
+        if ($this->mrp && $this->mrp > $this->price) {
+            return round((($this->mrp - $this->price) / $this->mrp) * 100);
+        }
+        return 0;
+    }
+
+    /* ================= SCOPES ================= */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', 1);
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', 1);
+    }
+
+    public function scopeInStock($query)
+    {
+        return $query->where('stock', '>', 0);
     }
 }

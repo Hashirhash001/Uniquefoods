@@ -915,6 +915,13 @@
                 </a>
             </li>
 
+            <li class="single-menu-item {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.banners.index') }}" data-title="Banners">
+                    <i class="fas fa-images icon"></i>
+                    <span>Banners</span>
+                </a>
+            </li>
+
             <!-- Orders -->
             <li class="single-menu-item">
                 <a href="#" data-title="Orders">

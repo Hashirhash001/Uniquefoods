@@ -16,7 +16,8 @@ class Category extends Model
         'slug',
         'image',
         'parent_id',
-        'is_active'
+        'is_active',
+        'sort_order',
     ];
 
     protected $casts = [
@@ -25,19 +26,44 @@ class Category extends Model
 
     protected $appends = ['image_url'];
 
+    /**
+     * Scope for active categories
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', 1);
+    }
+
+    /**
+     * Get products belonging to this category
+     */
     public function products()
     {
         return $this->hasMany(Product::class);
     }
 
+    /**
+     * Get parent category
+     */
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    /**
+     * Get child categories (subcategories)
+     */
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    /**
+     * Get active children only
+     */
+    public function activeChildren()
+    {
+        return $this->children()->where('is_active', 1);
     }
 
     /**
@@ -48,7 +74,7 @@ class Category extends Model
         if ($this->image) {
             return Storage::url($this->image);
         }
-        return null;
+        return asset('assets/images/category/default.png');
     }
 
     /**
