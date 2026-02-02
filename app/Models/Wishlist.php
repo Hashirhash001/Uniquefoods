@@ -20,4 +20,9 @@ class Wishlist extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getTotalItemsAttribute()
+    {
+        return $this->items()->count();
+    }
 }

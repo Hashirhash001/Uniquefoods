@@ -20,4 +20,16 @@ class Cart extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getTotalItemsAttribute()
+    {
+        return $this->items()->sum('quantity');
+    }
+
+    public function getSubtotalAttribute()
+    {
+        return $this->items()->sum(function($item) {
+            return $item->price * $item->quantity;
+        });
+    }
 }

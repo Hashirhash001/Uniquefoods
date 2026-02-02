@@ -34,12 +34,31 @@ class ShopController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        // Categories filter (using IDs)
+        // ===== SMART CATEGORY FILTER =====
         if ($request->filled('categories') && is_array($request->categories)) {
-            $query->whereIn('category_id', $request->categories);
+            $categoryIds = $request->categories;
+
+            // For each selected category, include its subcategories
+            $allCategoryIds = [];
+            foreach ($categoryIds as $catId) {
+                $allCategoryIds[] = $catId;
+
+                // Get subcategories
+                $subcategories = Category::where('parent_id', $catId)
+                    ->where('is_active', 1)
+                    ->pluck('id')
+                    ->toArray();
+
+                $allCategoryIds = array_merge($allCategoryIds, $subcategories);
+            }
+
+            // Remove duplicates
+            $allCategoryIds = array_unique($allCategoryIds);
+
+            $query->whereIn('category_id', $allCategoryIds);
         }
 
-        // Brands filter (using IDs)
+        // Brands filter
         if ($request->filled('brands') && is_array($request->brands)) {
             $query->whereIn('brand_id', $request->brands);
         }
@@ -62,22 +81,31 @@ class ShopController extends Controller
                 $query->latest();
         }
 
-        // Paginate
-        $products = $query->paginate(12);
+        // Paginate - THIS RETURNS A LengthAwarePaginator (has map() and links())
+        $products = $query->paginate(4);
 
-        // Format response
+        // Format response - map() works on LengthAwarePaginator
         $productsData = $products->map(function ($product) {
             return [
                 'id' => $product->id,
                 'name' => $product->name,
                 'slug' => $product->slug,
-                'price' => $product->price,
-                'mrp' => $product->mrp,
+                'price' => number_format($product->price, 2, '.', ''),
+                'mrp' => $product->mrp ? number_format($product->mrp, 2, '.', '') : null,
                 'unit' => $product->unit,
+                'stock' => $product->stock ?? 0,
                 'image_url' => $product->image_url,
                 'discount_percentage' => $product->discount_percentage,
-                'category' => $product->category ? $product->category->name : null,
-                'brand' => $product->brand ? $product->brand->name : null,
+                'category' => $product->category ? [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name,
+                    'slug' => $product->category->slug,
+                ] : null,
+                'brand' => $product->brand ? [
+                    'id' => $product->brand->id,
+                    'name' => $product->brand->name,
+                    'slug' => $product->brand->slug ?? null,
+                ] : null,
             ];
         });
 

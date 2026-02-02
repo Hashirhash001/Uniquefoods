@@ -1,0 +1,343 @@
+/* ===== ULTRA MODERN BEAUTIFUL LOADER - FIXED ANIMATIONS ===== */
+
+.unique-global-loader {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+}
+
+.unique-global-loader.unique-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Animated Background Pattern */
+.unique-loader-background {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(98, 157, 35, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(98, 157, 35, 0.05) 0%, transparent 50%);
+    animation: uniqueLoaderBgPulse 8s ease-in-out infinite !important;
+}
+
+@keyframes uniqueLoaderBgPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Main Container */
+.unique-loader-container {
+    position: relative !important;
+    z-index: 2 !important;
+    text-align: center !important;
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+    padding: 40px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 24px !important;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Logo/Brand Icon */
+.unique-loader-brand {
+    width: 60px !important;
+    height: 60px !important;
+    margin: 0 auto 24px !important;
+    background: linear-gradient(135deg, #629D23 0%, #518219 100%) !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 24px rgba(98, 157, 35, 0.3) !important;
+    animation: uniqueLoaderBrandPulse 2s ease-in-out infinite !important;
+}
+
+.unique-loader-brand i {
+    font-size: 28px !important;
+    color: white !important;
+}
+
+@keyframes uniqueLoaderBrandPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(98, 157, 35, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 12px 32px rgba(98, 157, 35, 0.4); }
+}
+
+/* Spinner Container - FIXED */
+.unique-loader-spinner-wrapper {
+    width: 80px !important;
+    height: 80px !important;
+    margin: 0 auto 20px !important;
+    position: relative !important;
+}
+
+/* Outer Ring - FIXED ROTATION */
+.unique-spinner-outer {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: 4px solid rgba(98, 157, 35, 0.1) !important;
+    border-top-color: #629D23 !important;
+    border-right-color: #629D23 !important;
+    border-radius: 50% !important;
+    animation: uniqueSpinClockwise 1.5s linear infinite !important;
+    box-sizing: border-box !important;
+}
+
+/* Middle Ring - FIXED ROTATION */
+.unique-spinner-middle {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    width: calc(100% - 20px) !important;
+    height: calc(100% - 20px) !important;
+    border: 4px solid rgba(124, 179, 66, 0.1) !important;
+    border-bottom-color: #7CB342 !important;
+    border-left-color: #7CB342 !important;
+    border-radius: 50% !important;
+    animation: uniqueSpinCounterClockwise 1.2s linear infinite !important;
+    box-sizing: border-box !important;
+}
+
+/* Inner Circle - FIXED PULSE */
+.unique-spinner-inner {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin-top: -12px !important;
+    margin-left: -12px !important;
+    background: linear-gradient(135deg, #629D23 0%, #7CB342 100%) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 20px rgba(98, 157, 35, 0.5) !important;
+    animation: uniqueInnerPulse 1s ease-in-out infinite !important;
+}
+
+/* FIXED KEYFRAMES - Guaranteed to work */
+@keyframes uniqueSpinClockwise {
+    0% {
+        transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes uniqueSpinCounterClockwise {
+    0% {
+        transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(-360deg);
+        -webkit-transform: rotate(-360deg);
+    }
+}
+
+@keyframes uniqueInnerPulse {
+    0%, 100% {
+        transform: scale(1);
+        -webkit-transform: scale(1);
+        box-shadow: 0 0 20px rgba(98, 157, 35, 0.4);
+    }
+    50% {
+        transform: scale(1.3);
+        -webkit-transform: scale(1.3);
+        box-shadow: 0 0 30px rgba(98, 157, 35, 0.7);
+    }
+}
+
+/* Progress Dots - FIXED */
+.unique-loader-dots {
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 20px 0 !important;
+}
+
+.unique-dot {
+    width: 10px !important;
+    height: 10px !important;
+    background: linear-gradient(135deg, #629D23 0%, #7CB342 100%) !important;
+    border-radius: 50% !important;
+    animation: uniqueDotBounce 1.4s infinite ease-in-out both !important;
+    box-shadow: 0 2px 8px rgba(98, 157, 35, 0.3) !important;
+}
+
+.unique-dot:nth-child(1) {
+    animation-delay: -0.32s !important;
+}
+
+.unique-dot:nth-child(2) {
+    animation-delay: -0.16s !important;
+}
+
+.unique-dot:nth-child(3) {
+    animation-delay: 0s !important;
+}
+
+@keyframes uniqueDotBounce {
+    0%, 80%, 100% {
+        transform: scale(0.6) translateY(0);
+        -webkit-transform: scale(0.6) translateY(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1.2) translateY(-10px);
+        -webkit-transform: scale(1.2) translateY(-10px);
+        opacity: 1;
+    }
+}
+
+/* Loading Text */
+.unique-loader-text {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-top: 16px !important;
+    letter-spacing: 0.5px !important;
+    line-height: 1.5 !important;
+}
+
+/* Subtitle */
+.unique-loader-subtitle {
+    font-size: 13px !important;
+    color: #6b7280 !important;
+    margin-top: 8px !important;
+    font-weight: 400 !important;
+}
+
+/* Progress Bar */
+.unique-loader-progress {
+    width: 200px !important;
+    height: 4px !important;
+    background: #e5e7eb !important;
+    border-radius: 8px !important;
+    margin: 20px auto 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+.unique-progress-bar {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    background: linear-gradient(90deg,
+        #629D23 0%,
+        #7CB342 25%,
+        #629D23 50%,
+        #7CB342 75%,
+        #629D23 100%) !important;
+    background-size: 200% 100% !important;
+    border-radius: 8px !important;
+    animation: uniqueProgressSlide 2s linear infinite !important;
+    box-shadow: 0 0 10px rgba(98, 157, 35, 0.4) !important;
+}
+
+@keyframes uniqueProgressSlide {
+    0% {
+        background-position: 0% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Mini Loader (for buttons) */
+.unique-btn-loader {
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-top-color: white !important;
+    border-radius: 50% !important;
+    animation: uniqueSpinClockwise 0.8s linear infinite !important;
+    vertical-align: middle !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .unique-global-loader {
+        background: rgba(17, 24, 39, 0.98) !important;
+    }
+
+    .unique-loader-container {
+        background: rgba(31, 41, 55, 0.9) !important;
+    }
+
+    .unique-loader-text {
+        color: #f3f4f6 !important;
+    }
+
+    .unique-loader-subtitle {
+        color: #9ca3af !important;
+    }
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .unique-loader-container {
+        padding: 30px !important;
+        border-radius: 20px !important;
+    }
+
+    .unique-loader-brand {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .unique-loader-brand i {
+        font-size: 24px !important;
+    }
+
+    .unique-loader-spinner-wrapper {
+        width: 70px !important;
+        height: 70px !important;
+    }
+
+    .unique-loader-text {
+        font-size: 14px !important;
+    }
+
+    .unique-loader-progress {
+        width: 160px !important;
+    }
+}
+
+/* Ensure animations work on all browsers */
+* {
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}

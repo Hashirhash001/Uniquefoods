@@ -155,4 +155,18 @@ class Product extends Model
     {
         return $query->where('stock', '>', 0);
     }
+
+    /**
+     * Get stock attribute (if not in database)
+     */
+    public function getStockAttribute($value)
+    {
+        // If you have quantity field instead
+        if (isset($this->attributes['quantity'])) {
+            return $this->attributes['quantity'];
+        }
+
+        // Return the actual stock value
+        return $value ?? 0;
+    }
 }

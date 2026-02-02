@@ -66,6 +66,12 @@ class Category extends Model
         return $this->children()->where('is_active', 1);
     }
 
+    // Scope: Only parent categories
+    public function scopeParents($query)
+    {
+        return $query->whereNull('parent_id');
+    }
+
     /**
      * Get the full image URL
      */
