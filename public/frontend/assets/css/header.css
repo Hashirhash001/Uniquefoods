@@ -9,10 +9,19 @@
     --unique-border: #e5e7eb;
     --unique-shadow: 0 2px 12px rgba(0,0,0,0.08);
     --unique-red: #e74c3c;
+    --header-height: 140px; /* Desktop header height */
+    --mobile-header-height: 70px; /* Mobile header height */
 }
 
+/* ===== CRITICAL FIX: Remove body padding when header is hidden ===== */
 body {
-    padding-top: 140px !important;
+    padding-top: var(--header-height) !important;
+    transition: padding-top 0.3s ease-in-out !important;
+}
+
+/* When header is hidden, remove padding to prevent whitespace */
+body.header-is-hidden {
+    padding-top: 0 !important;
 }
 
 .unique-modern-header * {
@@ -30,12 +39,15 @@ body {
     background: var(--unique-white) !important;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
     transform: translateY(0) !important;
-    transition: transform 0.3s ease-in-out !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    will-change: transform !important;
+    backface-visibility: hidden !important;
 }
 
-/* Hide header when scrolling down */
+/* Hide header when scrolling down - slides up completely */
 .unique-modern-header.header-hidden {
     transform: translateY(-100%) !important;
+    box-shadow: none !important;
 }
 
 /* Show header when scrolling up */
@@ -44,13 +56,13 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
 }
 
-/* Compact mode when scrolled (optional - smaller header) */
+/* Compact mode when scrolled */
 .unique-modern-header.header-compact .unique-topbar {
-    display: none !important; /* Hide top bar when scrolled */
+    display: none !important;
 }
 
 .unique-modern-header.header-compact .unique-main-header {
-    padding: 12px 0 !important; /* Smaller padding */
+    padding: 12px 0 !important;
 }
 
 .unique-modern-header.header-compact .unique-logo-badge {
@@ -176,7 +188,6 @@ body {
     background: #f8f9fa !important;
     border-radius: 50px !important;
     overflow: hidden !important;
-    border: 2px solid var(--unique-border) !important;
     transition: all 0.3s !important;
 }
 
@@ -198,6 +209,7 @@ body {
     padding: 14px 20px !important;
     font-size: 15px !important;
     outline: none !important;
+    line-height: normal !important;
 }
 
 .unique-search-button {
@@ -903,7 +915,11 @@ body {
     }
 
     body {
-        padding-top: 70px !important;
+        padding-top: var(--mobile-header-height) !important;
+    }
+
+    body.header-is-hidden {
+        padding-top: 0 !important;
     }
 
     .unique-mobile-header {
@@ -915,7 +931,7 @@ body {
         width: 100% !important;
         z-index: 9999 !important;
         transform: translateY(0) !important;
-        transition: transform 0.3s ease-in-out !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .unique-mobile-header.header-hidden {
@@ -990,6 +1006,20 @@ body {
     white-space: nowrap !important;
 }
 
-.toast-container button{
+.toast-container button {
     width: unset !important;
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .unique-modern-header,
+    .unique-mobile-header,
+    body {
+        transition: none !important;
+    }
 }

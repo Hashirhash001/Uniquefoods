@@ -538,9 +538,9 @@ $(document).ready(function() {
                                         data-product-id="${product.id}">
                                     <i class="fa-regular fa-heart"></i>
                                 </button>
-                                <button class="quick-action-btn shop-quick-view-btn" title="Quick View" data-id="${product.id}">
+                                <a href="/product/${product.slug}" class="quick-action-btn shop-quick-view-btn" title="View Details" data-id="${product.id}">
                                     <i class="fa-regular fa-eye"></i>
-                                </button>
+                                </a>
                             </div>
                         </div>
                         <div class="product-info">

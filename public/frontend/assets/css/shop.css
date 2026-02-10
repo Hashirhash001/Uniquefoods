@@ -793,7 +793,7 @@ input[type=checkbox]~label, input[type=radio]~label{
 
 .shop-mobile-filter-btn:hover {
     background: var(--color-primary-hover) !important;
-    transform: translateY(-3px) !important;
+    /* transform: translateY(-3px) !important; */
     box-shadow: 0 8px 24px rgba(98,157,35,0.5) !important;
 }
 

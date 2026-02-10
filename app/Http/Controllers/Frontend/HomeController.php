@@ -33,7 +33,7 @@ class HomeController extends Controller
         // Popular Products
         $popularProducts = Product::with(['category', 'brand'])
             ->where('is_active', 1)
-            ->where('is_popular', 1) // Add this field to products table
+            ->where('is_popular', 1)
             ->latest()
             ->take(20)
             ->get();

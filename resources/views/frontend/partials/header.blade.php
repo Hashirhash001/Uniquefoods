@@ -158,8 +158,8 @@
                             <span class="unique-badge" id="wishlistCount">0</span>
                         </div>
                         <div class="unique-action-info">
-                            <span class="unique-action-label">Wishlist</span>
-                            <span class="unique-action-value">My Items</span>
+                            {{-- <span class="unique-action-label">Wishlist</span> --}}
+                            <span class="unique-action-value">Wishlist</span>
                         </div>
                     </a>
 

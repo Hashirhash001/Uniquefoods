@@ -1,7 +1,7 @@
 /**
  * ================================================
- * AUTO-HIDE HEADER (PROFESSIONAL UX)
- * Hides on scroll down, shows on scroll up
+ * AUTO-HIDE HEADER - FINAL FIX
+ * NO WHITESPACE when header is hidden
  * ================================================
  */
 
@@ -10,9 +10,10 @@
 
     const AutoHideHeader = {
         lastScrollTop: 0,
-        scrollThreshold: 50, // Minimum scroll before hiding
-        delta: 5, // Sensitivity
+        scrollThreshold: 100,
+        delta: 5,
         header: null,
+        headerHeight: 0,
         isScrolling: false,
 
         init() {
@@ -21,7 +22,16 @@
 
             if (!this.header) return;
 
+            this.calculateHeaderHeight();
             this.bindEvents();
+
+            window.addEventListener('resize', () => {
+                this.calculateHeaderHeight();
+            });
+        },
+
+        calculateHeaderHeight() {
+            this.headerHeight = this.header.offsetHeight;
         },
 
         bindEvents() {
@@ -32,7 +42,6 @@
 
                 clearTimeout(scrollTimeout);
 
-                // Debounce scroll for performance
                 scrollTimeout = setTimeout(() => {
                     this.handleScroll();
                 }, 10);
@@ -42,21 +51,31 @@
         handleScroll() {
             const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-            // Make sure they scroll more than delta
             if (Math.abs(this.lastScrollTop - currentScrollTop) <= this.delta) {
                 return;
             }
 
-            // Scrolling down
-            if (currentScrollTop > this.lastScrollTop && currentScrollTop > this.scrollThreshold) {
-                this.hideHeader();
-            }
-            // Scrolling up
-            else if (currentScrollTop < this.lastScrollTop) {
+            // At top - show header and add padding
+            if (currentScrollTop <= 0) {
                 this.showHeader();
+                this.header.classList.remove('header-compact');
+                document.body.classList.remove('header-is-hidden');
+                this.lastScrollTop = currentScrollTop;
+                return;
             }
 
-            // Add compact mode when scrolled past threshold
+            // Scrolling down - hide header and remove padding
+            if (currentScrollTop > this.lastScrollTop && currentScrollTop > this.scrollThreshold) {
+                this.hideHeader();
+                document.body.classList.add('header-is-hidden');
+            }
+            // Scrolling up - show header and add padding
+            else if (currentScrollTop < this.lastScrollTop) {
+                this.showHeader();
+                document.body.classList.remove('header-is-hidden');
+            }
+
+            // Compact mode
             if (currentScrollTop > this.scrollThreshold) {
                 this.header.classList.add('header-compact');
             } else {
@@ -77,14 +96,13 @@
         }
     };
 
-    // Initialize on DOM ready
+    // Initialize
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => AutoHideHeader.init());
     } else {
         AutoHideHeader.init();
     }
 
-    // Make available globally
     window.AutoHideHeader = AutoHideHeader;
 
 })();

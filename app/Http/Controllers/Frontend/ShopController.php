@@ -166,6 +166,6 @@ class ShopController extends Controller
             ->limit(8)
             ->get();
 
-        return view('frontend.product', compact('product', 'relatedProducts'));
+        return view('frontend.show', compact('product', 'relatedProducts'));
     }
 }

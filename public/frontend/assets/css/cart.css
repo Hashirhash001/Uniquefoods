@@ -115,6 +115,7 @@
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(98, 157, 35, 0.3);
+    border: 2px solid var(--cart-primary);
 }
 
 /* Empty State */

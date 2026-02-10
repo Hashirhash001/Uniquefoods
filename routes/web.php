@@ -21,8 +21,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Shop page (all products with filters)
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 
-// Product details
-Route::get('/product/{slug}', [ShopController::class, 'show'])->name('product.show');
+Route::get('/product/{slug}', [ShopController::class, 'show'])
+    ->name('product.show');
+
 Route::get('/shop/filter', [ShopController::class, 'filter'])->name('shop.filter');
 
 // Category page (products filtered by category)

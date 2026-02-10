@@ -206,15 +206,20 @@
 
                             {{-- Quick Actions --}}
                             <div class="product-quick-actions">
-                                <button class="quick-action-btn" title="Add to Wishlist">
+                                {{-- Wishlist (same as shop) --}}
+                                <button class="quick-action-btn wishlist-toggle-btn"
+                                        title="Add to Wishlist"
+                                        data-product-id="{{ $product->id }}">
                                     <i class="fa-regular fa-heart"></i>
                                 </button>
-                                <button class="quick-action-btn" title="Quick View">
+
+                                {{-- View Details (behaves like quick view link in shop) --}}
+                                <a href="{{ route('product.show', $product->slug) }}"
+                                class="quick-action-btn shop-quick-view-btn"
+                                title="View Details"
+                                data-id="{{ $product->id }}">
                                     <i class="fa-regular fa-eye"></i>
-                                </button>
-                                <button class="quick-action-btn" title="Compare">
-                                    <i class="fa-regular fa-arrows-rotate"></i>
-                                </button>
+                                </a>
                             </div>
                         </div>
 
@@ -271,7 +276,9 @@
                             @endif
 
                             {{-- Add to Cart Button --}}
-                            <button class="product-add-to-cart" {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                            <button class="product-add-to-cart add-to-cart-btn {{ $product->stock === 0 ? 'disabled' : '' }}"
+                                    {{ $product->stock === 0 ? 'disabled' : '' }}
+                                    data-product-id="{{ $product->id }}">
                                 <i class="fa-regular fa-cart-shopping"></i>
                                 <span>{{ $product->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}</span>
                             </button>
@@ -353,15 +360,20 @@
                                     </a>
 
                                     <div class="product-quick-actions">
-                                        <button class="quick-action-btn" title="Add to Wishlist">
+                                        {{-- Wishlist (same as shop) --}}
+                                        <button class="quick-action-btn wishlist-toggle-btn"
+                                                title="Add to Wishlist"
+                                                data-product-id="{{ $product->id }}">
                                             <i class="fa-regular fa-heart"></i>
                                         </button>
-                                        <button class="quick-action-btn" title="Quick View">
+
+                                        {{-- View Details (behaves like quick view link in shop) --}}
+                                        <a href="{{ route('product.show', $product->slug) }}"
+                                        class="quick-action-btn shop-quick-view-btn"
+                                        title="View Details"
+                                        data-id="{{ $product->id }}">
                                             <i class="fa-regular fa-eye"></i>
-                                        </button>
-                                        <button class="quick-action-btn" title="Compare">
-                                            <i class="fa-regular fa-arrows-rotate"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
 
@@ -411,7 +423,9 @@
                                         </div>
                                     @endif
 
-                                    <button class="product-add-to-cart" {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                                    <button class="product-add-to-cart add-to-cart-btn {{ $product->stock === 0 ? 'disabled' : '' }}"
+                                            {{ $product->stock === 0 ? 'disabled' : '' }}
+                                            data-product-id="{{ $product->id }}">
                                         <i class="fa-regular fa-cart-shopping"></i>
                                         <span>{{ $product->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}</span>
                                     </button>
