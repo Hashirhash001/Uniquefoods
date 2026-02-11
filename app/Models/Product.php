@@ -25,6 +25,7 @@ class Product extends Model
         'min_weight',
         'max_weight',
         'is_active',
+        'is_popular',
         'is_featured',
         'barcode',
         'tax_rate',
@@ -41,6 +42,7 @@ class Product extends Model
         'is_weight_based' => 'boolean',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'is_popular' => 'boolean'
     ];
 
     /* ================= BOOT - Auto generate slug ================= */

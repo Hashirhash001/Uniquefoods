@@ -279,6 +279,7 @@ class ProductController extends Controller
             'is_active' => 'boolean',
             'is_weight_based' => 'boolean',
             'is_featured' => 'boolean',
+            'is_popular' => 'boolean',
             'price_per_kg' => 'nullable|required_if:is_weight_based,1|numeric|min:0',
             'min_weight' => 'nullable|numeric|min:0',
             'max_weight' => 'nullable|numeric|min:0|gte:min_weight',

@@ -515,34 +515,53 @@ $(document).ready(function() {
 
         let html = '';
         products.forEach(product => {
+
+            const finalPrice = parseFloat(product.price || 0);
+            const basePrice  = parseFloat(product.base_price || product.price || 0);
+
+            const showDiscountBadge = parseInt(product.discount_percentage || 0) > 0;
+            const showStrike = basePrice > finalPrice;
+
             html += `
                 <div class="col-lg-3 col-md-4 col-sm-6 col-6">
                     <div class="shop-product-card">
                         <div class="product-image-wrapper">
                             <a href="/product/${product.slug}" class="product-image-link">
-                                ${product.discount_percentage > 0 ? `
+
+                                ${showDiscountBadge ? `
                                     <div class="product-badge-discount">
                                         <span>${product.discount_percentage}% OFF</span>
                                     </div>
                                 ` : ''}
+
                                 ${product.stock <= 5 && product.stock > 0 ? `
                                     <div class="product-badge-stock">
                                         <span>Only ${product.stock} left</span>
                                     </div>
                                 ` : ''}
-                                <img src="${product.image_url}" alt="${product.name}" class="product-main-image" onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
+
+                                <img src="${product.image_url}"
+                                    alt="${product.name}"
+                                    class="product-main-image"
+                                    onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
                             </a>
+
                             <div class="product-quick-actions">
                                 <button class="quick-action-btn wishlist-toggle-btn"
                                         title="Add to Wishlist"
                                         data-product-id="${product.id}">
                                     <i class="fa-regular fa-heart"></i>
                                 </button>
-                                <a href="/product/${product.slug}" class="quick-action-btn shop-quick-view-btn" title="View Details" data-id="${product.id}">
+
+                                <a href="/product/${product.slug}"
+                                class="quick-action-btn shop-quick-view-btn"
+                                title="View Details"
+                                data-id="${product.id}">
                                     <i class="fa-regular fa-eye"></i>
                                 </a>
                             </div>
                         </div>
+
                         <div class="product-info">
                             <div class="product-meta">
                                 <span class="product-category">${product.category?.name || 'Uncategorized'}</span>
@@ -551,9 +570,11 @@ $(document).ready(function() {
                                     <span class="product-brand">${product.brand.name}</span>
                                 ` : ''}
                             </div>
+
                             <a href="/product/${product.slug}" class="product-name-link">
                                 <h4 class="product-name">${product.name}</h4>
                             </a>
+
                             <div class="product-rating">
                                 <div class="stars">
                                     <i class="fa-solid fa-star"></i>
@@ -564,13 +585,16 @@ $(document).ready(function() {
                                 </div>
                                 <span class="rating-count">(4.0)</span>
                             </div>
+
                             <div class="product-price">
-                                <span class="price-current">₹${parseFloat(product.price).toFixed(2)}</span>
-                                ${product.mrp && product.mrp > product.price ? `
-                                    <span class="price-original">₹${parseFloat(product.mrp).toFixed(2)}</span>
-                                    <span class="price-save">Save ₹${(product.mrp - product.price).toFixed(2)}</span>
+                                <span class="price-current">₹${finalPrice.toFixed(2)}</span>
+
+                                ${showStrike ? `
+                                    <span class="price-original">₹${basePrice.toFixed(2)}</span>
+                                    <span class="price-save">Save ₹${(basePrice - finalPrice).toFixed(2)}</span>
                                 ` : ''}
                             </div>
+
                             ${product.stock > 0 ? `
                                 <div class="product-stock in-stock">
                                     <i class="fa-solid fa-circle-check"></i>
@@ -582,6 +606,7 @@ $(document).ready(function() {
                                     <span>Out of Stock</span>
                                 </div>
                             `}
+
                             <button class="product-add-to-cart add-to-cart-btn ${product.stock === 0 ? 'disabled' : ''}"
                                     ${product.stock === 0 ? 'disabled' : ''}
                                     data-product-id="${product.id}">

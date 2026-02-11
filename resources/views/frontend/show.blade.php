@@ -643,12 +643,22 @@
                                     </p>
 
                                     <div class="product-price-wrapper">
-                                        <span class="product-price mb--15 d-block" style="color: #DC2626; font-weight: 600;">
-                                            ₹{{ number_format($product->price, 2) }}
+                                        <span class="product-price mb--15 d-block" style="color:#DC2626;font-weight:600;">
+                                            ₹{{ number_format($product->final_price, 2) }}
                                         </span>
-                                        @if($product->mrp && $product->mrp > $product->price)
+
+                                        @if($product->base_price > $product->final_price)
+                                            <span class="old-price ml--15">₹{{ number_format($product->base_price, 2) }}</span>
+                                            <span class="save-badge">
+                                                Save ₹{{ number_format($product->base_price - $product->final_price, 2) }}
+                                                ({{ $product->discount_percentage_calc }}%)
+                                            </span>
+                                        @elseif($product->mrp && $product->mrp > $product->final_price)
                                             <span class="old-price ml--15">₹{{ number_format($product->mrp, 2) }}</span>
-                                            <span class="save-badge">Save ₹{{ number_format($product->mrp - $product->price, 2) }} ({{ round((($product->mrp - $product->price) / $product->mrp) * 100) }}%)</span>
+                                            <span class="save-badge">
+                                                Save ₹{{ number_format($product->mrp - $product->final_price, 2) }}
+                                                ({{ round((($product->mrp - $product->final_price) / $product->mrp) * 100) }}%)
+                                            </span>
                                         @endif
                                     </div>
 
@@ -910,12 +920,14 @@
                                 <span class="rating-count">(4.0)</span>
                             </div>
                             <div class="product-price">
-                                <span class="price-current">₹{{ number_format($related->price, 2) }}</span>
-                                @if($related->mrp && $related->mrp > $related->price)
-                                    <span class="price-original">₹{{ number_format($related->mrp, 2) }}</span>
-                                    <span class="price-save">Save ₹{{ number_format($related->mrp - $related->price, 2) }}</span>
+                                <span class="price-current">₹{{ number_format($related->final_price, 2) }}</span>
+
+                                @if($related->base_price > $related->final_price)
+                                    <span class="price-original">₹{{ number_format($related->base_price, 2) }}</span>
+                                    <span class="price-save">Save ₹{{ number_format($related->base_price - $related->final_price, 2) }}</span>
                                 @endif
                             </div>
+
                             @if($related->stock > 0)
                                 <div class="product-stock in-stock">
                                     <i class="fa-solid fa-circle-check"></i>
@@ -958,7 +970,7 @@
                 </div>
                 <div class="share-product-info">
                     <h4>{{ $product->name }}</h4>
-                    <div class="share-product-price">₹{{ number_format($product->price, 2) }}</div>
+                    <div class="share-product-price">₹{{ number_format($product->final_price, 2) }}</div>
                 </div>
             </div>
 

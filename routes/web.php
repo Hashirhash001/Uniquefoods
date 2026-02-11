@@ -11,7 +11,9 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Frontend\WishlistController;
+use App\Http\Controllers\Admin\GroupPricingController;
 use App\Http\Controllers\Frontend\Auth\AuthController;
+use App\Http\Controllers\Admin\CustomerGroupController;
 use App\Http\Controllers\Frontend\Auth\GoogleController;
 use App\Http\Controllers\Frontend\ProductController as FrontendProductController;
 use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
@@ -106,6 +108,46 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('banners', BannerController::class)->except(['show']);
         Route::post('banners/{banner}/toggle-status', [BannerController::class, 'toggleStatus'])
             ->name('banners.toggle-status');
+
+        // ===== CUSTOMER GROUPS =====
+        Route::resource('customer-groups', CustomerGroupController::class)->except(['show']);
+        Route::post('customer-groups/{customerGroup}/toggle-status', [CustomerGroupController::class, 'toggleStatus'])
+            ->name('customer-groups.toggle-status');
+
+        // ===== GROUP PRICING & DISCOUNTS =====
+
+        // Group-wide Discounts
+        Route::prefix('customer-groups/{group}')->name('customer-groups.')->group(function () {
+            Route::get('discounts', [GroupPricingController::class, 'groupDiscounts'])
+                ->name('discounts');
+            Route::post('discounts', [GroupPricingController::class, 'storeGroupDiscount'])
+                ->name('discounts.store');
+
+            // Product-specific Prices
+            Route::get('product-prices', [GroupPricingController::class, 'productPrices'])
+                ->name('product-prices');
+            Route::post('product-prices', [GroupPricingController::class, 'storeProductPrice'])
+                ->name('product-prices.store');
+
+            // Product Offers (Time-limited)
+            Route::get('product-offers', [GroupPricingController::class, 'productOffers'])
+                ->name('product-offers');
+            Route::post('product-offers', [GroupPricingController::class, 'storeProductOffer'])
+                ->name('product-offers.store');
+        });
+
+        // Delete routes (outside the prefix for easier routing)
+        Route::delete('group-discounts/{discount}', [GroupPricingController::class, 'destroyGroupDiscount'])
+            ->name('group-discounts.destroy');
+        Route::post('group-discounts/{discount}/toggle', [GroupPricingController::class, 'toggleGroupDiscount'])
+            ->name('group-discounts.toggle');
+
+        Route::delete('product-group-prices/{price}', [GroupPricingController::class, 'destroyProductPrice'])
+            ->name('product-group-prices.destroy');
+
+        Route::delete('product-offers/{offer}', [GroupPricingController::class, 'destroyProductOffer'])
+            ->name('product-offers.destroy');
+
     });
 
 });

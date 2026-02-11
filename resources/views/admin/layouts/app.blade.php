@@ -839,7 +839,6 @@
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar_left" id="sidebar">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-            {{-- <span class="sidebar-logo-icon">🍽️</span> --}}
             <span class="sidebar-logo-text">Unique Foods</span>
         </a>
 
@@ -850,6 +849,22 @@
                 <a href="{{ route('admin.dashboard') }}" data-title="Dashboard">
                     <i class="fas fa-th-large icon"></i>
                     <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Categories -->
+            <li class="single-menu-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.categories.index') }}" data-title="Categories">
+                    <i class="fas fa-layer-group icon"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+
+            <!-- Brands -->
+            <li class="single-menu-item {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.brands.index') }}" data-title="Brands">
+                    <i class="fas fa-tags icon"></i>
+                    <span>Brands</span>
                 </a>
             </li>
 
@@ -869,52 +884,77 @@
                     </span>
                 </a>
 
-                <!-- Regular submenu (shown when expanded) -->
+                <!-- Regular submenu -->
                 <ul class="submenu">
-                    <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
-                        <a href="{{ route('admin.products.create') }}">
-                            <i class="fas fa-plus"></i> Create Product
-                        </a>
-                    </li>
                     <li class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
                         <a href="{{ route('admin.products.index') }}">
-                            <i class="fas fa-list"></i> Product List
+                            <i class="fas fa-list"></i> All Products
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
+                        <a href="{{ route('admin.products.create') }}">
+                            <i class="fas fa-plus"></i> Add Product
                         </a>
                     </li>
                 </ul>
 
-                <!-- Popup submenu (shown when minimized on hover) -->
+                <!-- Popup submenu for minimized -->
                 <ul class="submenu-popup">
-                    <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
-                        <a href="{{ route('admin.products.create') }}">
-                            <i class="fas fa-plus"></i> Create Product
-                        </a>
-                    </li>
                     <li class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
                         <a href="{{ route('admin.products.index') }}">
-                            <i class="fas fa-list"></i> Product List
+                            <i class="fas fa-list"></i> All Products
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
+                        <a href="{{ route('admin.products.create') }}">
+                            <i class="fas fa-plus"></i> Add Product
                         </a>
                     </li>
                 </ul>
             </li>
 
-
-            <!-- Categories -->
-            <li class="single-menu-item {{ request()->routeIs('admin.categories.index') ? 'active' : '' }}">
-                <a href="{{ route('admin.categories.index') }}" data-title="Categories">
-                    <i class="fas fa-layer-group icon"></i>
-                    <span>Categories</span>
+            <!-- Customer Groups -->
+            <li class="single-menu-item uf-submenu {{ request()->routeIs('admin.customer-groups.*') ? 'uf-open' : '' }}">
+                <a href="#" class="uf-submenu-trigger" data-title="Customer Groups">
+                    <i class="fas fa-users icon"></i>
+                    <span>Customer Groups</span>
+                    <span class="uf-arrow">
+                        <svg width="12" height="12" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </span>
                 </a>
+
+                <!-- Regular submenu -->
+                <ul class="submenu">
+                    <li class="{{ request()->routeIs('admin.customer-groups.index') ? 'active' : '' }}">
+                        <a href="{{ route('admin.customer-groups.index') }}">
+                            <i class="fas fa-list"></i> All Groups
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.customer-groups.create') ? 'active' : '' }}">
+                        <a href="{{ route('admin.customer-groups.create') }}">
+                            <i class="fas fa-plus"></i> Create Group
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Popup submenu for minimized -->
+                <ul class="submenu-popup">
+                    <li class="{{ request()->routeIs('admin.customer-groups.index') ? 'active' : '' }}">
+                        <a href="{{ route('admin.customer-groups.index') }}">
+                            <i class="fas fa-list"></i> All Groups
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.customer-groups.create') ? 'active' : '' }}">
+                        <a href="{{ route('admin.customer-groups.create') }}">
+                            <i class="fas fa-plus"></i> Create Group
+                        </a>
+                    </li>
+                </ul>
             </li>
 
-            <!-- Brands -->
-            <li class="single-menu-item {{ request()->routeIs('admin.brands.index') ? 'active' : '' }}">
-                <a href="{{ route('admin.brands.index') }}" data-title="Brands">
-                    <i class="fas fa-tags icon"></i>
-                    <span>Brands</span>
-                </a>
-            </li>
-
+            <!-- Banners -->
             <li class="single-menu-item {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.banners.index') }}" data-title="Banners">
                     <i class="fas fa-images icon"></i>
@@ -930,11 +970,27 @@
                 </a>
             </li>
 
+            <!-- Customers -->
+            <li class="single-menu-item">
+                <a href="#" data-title="Customers">
+                    <i class="fas fa-user-friends icon"></i>
+                    <span>Customers</span>
+                </a>
+            </li>
+
             <!-- Transactions -->
             <li class="single-menu-item">
                 <a href="#" data-title="Transactions">
                     <i class="fas fa-credit-card icon"></i>
                     <span>Transactions</span>
+                </a>
+            </li>
+
+            <!-- Settings -->
+            <li class="single-menu-item">
+                <a href="#" data-title="Settings">
+                    <i class="fas fa-cog icon"></i>
+                    <span>Settings</span>
                 </a>
             </li>
 

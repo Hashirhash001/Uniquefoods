@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\GroupProductOffer;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Storage;
 
 class Category extends Model
 {
@@ -72,6 +73,11 @@ class Category extends Model
         return $query->whereNull('parent_id');
     }
 
+    public function groupOffers()
+    {
+        return $this->hasMany(GroupProductOffer::class);
+    }
+
     /**
      * Get the full image URL
      */
@@ -96,4 +102,6 @@ class Category extends Model
             }
         });
     }
+
+
 }

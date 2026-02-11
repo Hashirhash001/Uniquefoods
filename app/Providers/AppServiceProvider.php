@@ -3,6 +3,7 @@
 namespace App\Providers;
 use Illuminate\Support\Facades\View;
 use App\Models\Category;
+use App\Services\PricingService;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -13,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(PricingService::class, function ($app) {
+            return new PricingService();
+        });
     }
 
     /**

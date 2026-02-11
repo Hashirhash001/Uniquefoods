@@ -613,6 +613,16 @@
                             </select>
                             <small class="form-text">Show on homepage</small>
                         </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Popular Product?</label>
+                            <select name="is_popular" class="form-select">
+                                <option value="0" {{ old('is_popular', $product->is_popular) == 0 ? 'selected' : '' }}>No</option>
+                                <option value="1" {{ old('is_popular', $product->is_popular) == 1 ? 'selected' : '' }}>Yes</option>
+                            </select>
+                            <small class="form-text">Show in popular products section</small>
+                        </div>
+
                     </div>
                 </div>
 

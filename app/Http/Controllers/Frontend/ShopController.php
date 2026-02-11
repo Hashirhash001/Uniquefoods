@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Brand;
 use Illuminate\Http\Request;
+use App\Services\PricingService;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller
 {
@@ -21,7 +23,7 @@ class ShopController extends Controller
     /**
      * AJAX endpoint for filtering products
      */
-    public function filter(Request $request)
+    public function filter(Request $request, PricingService $pricingService)
     {
         $query = Product::with(['category', 'brand', 'primaryImage', 'images'])
             ->where('is_active', 1);
@@ -82,29 +84,49 @@ class ShopController extends Controller
         }
 
         // Paginate - THIS RETURNS A LengthAwarePaginator (has map() and links())
-        $products = $query->paginate(4);
+        $products = $query->paginate(24);
 
-        // Format response - map() works on LengthAwarePaginator
-        $productsData = $products->map(function ($product) {
+        $user = Auth::user();
+
+        $productsData = $products->map(function ($product) use ($pricingService, $user) {
+            $basePrice  = (float) $product->price;
+            $finalPrice = (float) $pricingService->getCustomerPrice($product, $user); // your service logic [file:8]
+
+            // If you also want to show "You save" and % off:
+            $discountPercentage = 0;
+            if ($basePrice > 0 && $finalPrice < $basePrice) {
+                $discountPercentage = round((($basePrice - $finalPrice) / $basePrice) * 100);
+            }
+
             return [
                 'id' => $product->id,
                 'name' => $product->name,
                 'slug' => $product->slug,
-                'price' => number_format($product->price, 2, '.', ''),
-                'mrp' => $product->mrp ? number_format($product->mrp, 2, '.', '') : null,
+
+                // Keep both:
+                'base_price' => number_format($basePrice, 2, '.', ''),
+                'price'      => number_format($finalPrice, 2, '.', ''),
+
+                // Optional: if you already return mrp:
+                'mrp' => $product->mrp ? number_format((float)$product->mrp, 2, '.', '') : null,
+
+                // Make badge based on final vs base:
+                'discount_percentage' => $discountPercentage,
+
                 'unit' => $product->unit,
                 'stock' => $product->stock ?? 0,
                 'image_url' => $product->image_url,
-                'discount_percentage' => $product->discount_percentage,
+
                 'category' => $product->category ? [
                     'id' => $product->category->id,
                     'name' => $product->category->name,
                     'slug' => $product->category->slug,
                 ] : null,
+
                 'brand' => $product->brand ? [
                     'id' => $product->brand->id,
                     'name' => $product->brand->name,
-                    'slug' => $product->brand->slug ?? null,
+                    'slug' => $product->brand->slug,
                 ] : null,
             ];
         });
@@ -151,20 +173,38 @@ class ShopController extends Controller
     /**
      * Display single product details
      */
-    public function show($slug)
+    public function show($slug, PricingService $pricingService)
     {
         $product = Product::with(['category', 'brand', 'images'])
             ->where('slug', $slug)
             ->where('is_active', 1)
             ->firstOrFail();
 
-        // Related products from same category
+        $user = Auth::user();
+
+        // Main product computed pricing
+        $product->base_price = (float) $product->price;
+        $product->final_price = (float) $pricingService->getCustomerPrice($product, $user);
+        $product->discount_percentage_calc = ($product->base_price > 0 && $product->final_price < $product->base_price)
+            ? round((($product->base_price - $product->final_price) / $product->base_price) * 100)
+            : 0;
+
+        // Related products
         $relatedProducts = Product::with(['category', 'brand', 'primaryImage'])
             ->where('is_active', 1)
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->limit(8)
             ->get();
+
+        $relatedProducts->transform(function ($p) use ($pricingService, $user) {
+            $p->base_price = (float) $p->price;
+            $p->final_price = (float) $pricingService->getCustomerPrice($p, $user);
+            $p->discount_percentage_calc = ($p->base_price > 0 && $p->final_price < $p->base_price)
+                ? round((($p->base_price - $p->final_price) / $p->base_price) * 100)
+                : 0;
+            return $p;
+        });
 
         return view('frontend.show', compact('product', 'relatedProducts'));
     }
