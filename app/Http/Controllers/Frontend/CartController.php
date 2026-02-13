@@ -8,16 +8,26 @@ use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Services\PricingService;
 
 class CartController extends Controller
 {
+    protected $pricingService;
+
+    public function __construct(PricingService $pricingService)
+    {
+        $this->pricingService = $pricingService;
+    }
+
     /**
      * Get cart (session or database based on auth)
      */
     private function getCart()
     {
+        $user = Auth::user();
+
         if (Auth::check()) {
             // Get or create cart for authenticated user
             $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
@@ -26,26 +36,30 @@ class CartController extends Controller
             $items = $cart->items()
                 ->with(['product.primaryImage', 'product.category', 'product.brand'])
                 ->get()
-                ->map(function($item) {
+                ->map(function ($item) use ($user) {
+                    // ✅ Apply group pricing
+                    $finalPrice = (float) $this->pricingService->getCustomerPrice($item->product, $user);
+
                     return [
                         'id' => $item->product_id,
                         'cart_item_id' => $item->id,
                         'name' => $item->product->name,
                         'slug' => $item->product->slug,
-                        'price' => (float) $item->price,
+                        'price' => $finalPrice, // ✅ Use group price
+                        'base_price' => (float) $item->product->price, // ✅ Original price
                         'image' => $item->product->image_url,
                         'quantity' => $item->quantity,
                         'weight' => $item->weight,
                         'is_weight_based' => $item->product->is_weight_based,
                         'stock' => $item->product->stock,
-                        'subtotal' => (float) ($item->price * $item->quantity)
+                        'subtotal' => $finalPrice * $item->quantity, // ✅ Calculated with group price
                     ];
                 })
                 ->toArray();
 
             return $items;
         } else {
-            // Get from session for guests
+            // Get from session for guests (no group pricing)
             return session()->get('cart', []);
         }
     }
@@ -74,18 +88,17 @@ class CartController extends Controller
             ], 404);
         }
 
-        // Stock validation (for non-weight based)
+        // Stock validation for non-weight based
         if (!$product->is_weight_based && $product->stock < $quantity) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient stock. Only ' . $product->stock . ' items available.'
+                'message' => "Insufficient stock. Only {$product->stock} items available."
             ], 400);
         }
 
-        // Calculate price
-        $price = $product->is_weight_based && $weight
-            ? ($product->price_per_kg * $weight)
-            : $product->price;
+        // ✅ Calculate price with group discount
+        $user = Auth::user();
+        $price = (float) $this->pricingService->getCustomerPrice($product, $user);
 
         if (Auth::check()) {
             // Database cart for authenticated users
@@ -112,8 +125,10 @@ class CartController extends Controller
             if ($existingItem) {
                 $existingItem->quantity += $quantity;
                 if ($weight) {
-                    $existingItem->weight = $weight;
+                    $existingItem->weight += $weight;
                 }
+                // ✅ Update price with latest group discount
+                $existingItem->price = $price;
                 $existingItem->save();
             } else {
                 CartItem::create([
@@ -121,8 +136,8 @@ class CartController extends Controller
                     'product_id' => $product->id,
                     'quantity' => $quantity,
                     'weight' => $weight,
-                    'price' => $product->price,
-                    'price_per_kg' => $product->price_per_kg
+                    'price' => $price, // ✅ Store group-discounted price
+                    'price_per_kg' => $product->price_per_kg,
                 ]);
             }
 
@@ -130,7 +145,7 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => $product->name . ' added to cart',
+                'message' => "{$product->name} added to cart",
                 'cart' => $this->getCartData()
             ]);
         } catch (\Exception $e) {
@@ -153,20 +168,22 @@ class CartController extends Controller
             // Update existing item
             $cart[$product->id]['quantity'] += $quantity;
             if ($weight) {
-                $cart[$product->id]['weight'] = $weight;
+                $cart[$product->id]['weight'] += $weight;
             }
+            // ✅ Update price
+            $cart[$product->id]['price'] = $price;
         } else {
             // Add new item
             $cart[$product->id] = [
                 'id' => $product->id,
                 'name' => $product->name,
                 'slug' => $product->slug,
-                'price' => (float) $product->price,
+                'price' => $price, // ✅ Store price (no group discount for guests)
                 'image' => $product->image_url,
                 'quantity' => $quantity,
                 'weight' => $weight,
                 'is_weight_based' => $product->is_weight_based,
-                'stock' => $product->stock
+                'stock' => $product->stock,
             ];
         }
 
@@ -174,7 +191,7 @@ class CartController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $product->name . ' added to cart',
+            'message' => "{$product->name} added to cart",
             'cart' => $this->getCartData()
         ]);
     }
@@ -199,14 +216,13 @@ class CartController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'message' => $productName . ' removed from cart',
+                        'message' => "{$productName} removed from cart",
                         'cart' => $this->getCartData()
                     ]);
                 }
             }
         } else {
             $cart = session()->get('cart', []);
-
             if (isset($cart[$productId])) {
                 $productName = $cart[$productId]['name'];
                 unset($cart[$productId]);
@@ -214,7 +230,7 @@ class CartController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => $productName . ' removed from cart',
+                    'message' => "{$productName} removed from cart",
                     'cart' => $this->getCartData()
                 ]);
             }
@@ -235,6 +251,8 @@ class CartController extends Controller
         $action = $request->action; // 'plus' or 'minus'
         $quantity = $request->quantity; // direct quantity update
 
+        $user = Auth::user();
+
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
             if ($cart) {
@@ -254,6 +272,9 @@ class CartController extends Controller
                     if ($cartItem->quantity <= 0) {
                         $cartItem->delete();
                     } else {
+                        // ✅ Refresh price on quantity update
+                        $product = $cartItem->product;
+                        $cartItem->price = (float) $this->pricingService->getCustomerPrice($product, $user);
                         $cartItem->save();
                     }
 
@@ -265,7 +286,6 @@ class CartController extends Controller
             }
         } else {
             $cart = session()->get('cart', []);
-
             if (isset($cart[$productId])) {
                 if ($quantity) {
                     $cart[$productId]['quantity'] = $quantity;
@@ -388,7 +408,7 @@ class CartController extends Controller
     /**
      * Merge session cart to database (called after login)
      */
-    public static function mergeSessionCartToDatabase($userId)
+    public static function mergeSessionCartToDatabase($userId, PricingService $pricingService)
     {
         $sessionCart = session()->get('cart', []);
 
@@ -399,16 +419,21 @@ class CartController extends Controller
         DB::beginTransaction();
         try {
             $cart = Cart::firstOrCreate(['user_id' => $userId]);
+            $user = Auth::user();
 
             foreach ($sessionCart as $productId => $item) {
                 $product = Product::find($productId);
                 if ($product) {
+                    // ✅ Apply group pricing on merge
+                    $finalPrice = (float) $pricingService->getCustomerPrice($product, $user);
+
                     $existingItem = CartItem::where('cart_id', $cart->id)
                         ->where('product_id', $productId)
                         ->first();
 
                     if ($existingItem) {
                         $existingItem->quantity += ($item['quantity'] ?? 1);
+                        $existingItem->price = $finalPrice; // ✅ Update to group price
                         $existingItem->save();
                     } else {
                         CartItem::create([
@@ -416,8 +441,8 @@ class CartController extends Controller
                             'product_id' => $productId,
                             'quantity' => $item['quantity'] ?? 1,
                             'weight' => $item['weight'] ?? null,
-                            'price' => $product->price,
-                            'price_per_kg' => $product->price_per_kg
+                            'price' => $finalPrice, // ✅ Store group price
+                            'price_per_kg' => $product->price_per_kg,
                         ]);
                     }
                 }

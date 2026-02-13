@@ -92,12 +92,12 @@
 }
 
 .thumb-filter:hover {
-    border-color: #629d23;
+    border-color: #08437b;
     transform: translateY(-2px);
 }
 
 .thumb-filter.active {
-    border-color: #629d23;
+    border-color: #08437b;
     box-shadow: 0 4px 8px rgba(98, 157, 35, 0.2);
 }
 
@@ -116,7 +116,7 @@
 .product-category {
     display: inline-block;
     background: #f3f4f6;
-    color: #629d23;
+    color: #08437b;
     padding: 5px 12px;
     border-radius: 4px;
     font-size: 12px;
@@ -271,7 +271,7 @@
 }
 
 .quantity-edit button:hover {
-    background: #629d23;
+    background: #08437b;
     color: #ffffff;
 }
 
@@ -360,7 +360,7 @@
 
 .single-share-option:hover {
     background: #f3f4f6;
-    color: #629d23;
+    color: #08437b;
 }
 
 .single-share-option .icon {
@@ -375,7 +375,7 @@
 }
 
 .single-share-option:hover .icon {
-    background: #629d23;
+    background: #08437b;
     color: #ffffff;
 }
 
@@ -404,12 +404,12 @@
 }
 
 .product-description-tab-shop .nav-link:hover {
-    color: #629d23;
+    color: #08437b;
 }
 
 .product-description-tab-shop .nav-link.active {
-    color: #629d23;
-    border-bottom-color: #629d23;
+    color: #08437b;
+    border-bottom-color: #08437b;
     background: transparent;
 }
 
@@ -480,7 +480,7 @@
     background: #f9fafb;
     border-radius: 6px;
     margin-bottom: 12px;
-    border-left: 3px solid #629d23;
+    border-left: 3px solid #08437b;
     transition: all 0.3s ease;
 }
 
@@ -531,7 +531,7 @@
 
 .info-item i {
     font-size: 24px;
-    color: #629d23;
+    color: #08437b;
     flex-shrink: 0;
     margin-top: 3px;
 }
@@ -710,9 +710,9 @@
 }
 
 .quick-action-btn:hover {
-    background: #629d23;
+    background: #08437b;
     color: #ffffff;
-    border-color: #629d23;
+    border-color: #08437b;
     transform: scale(1.1);
 } */
 
@@ -754,7 +754,7 @@
 .product-add-to-cart {
     width: unset !important;
     padding: 10px;
-    background: #629d23;
+    background: #08437b;
     color: #ffffff;
     border: none;
     border-radius: 6px;

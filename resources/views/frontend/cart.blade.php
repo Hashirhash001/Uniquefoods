@@ -123,10 +123,12 @@
                     </div>
 
                     <div class="summary-actions">
-                        <button class="btn-checkout-primary">
+                        <a href="{{ route('checkout.index') }}">
+                            <button class="btn-checkout-primary">
                             <i class="fa-regular fa-credit-card"></i>
                             Proceed to Checkout
                         </button>
+                        </a>
                         <button class="btn-outline-secondary">
                             <i class="fa-regular fa-tag"></i>
                             Apply Coupon Code

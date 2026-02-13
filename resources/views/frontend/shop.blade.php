@@ -200,8 +200,6 @@
 <script src="{{ asset('frontend/assets/js/infinite-scroll.js') }}"></script>
 <script>
 $(document).ready(function() {
-    showLoader('Loading Products...');
-
     let currentPage = 1;
     let lastPage = 1;
     let activeFilters = {
@@ -213,6 +211,37 @@ $(document).ready(function() {
 
     // Make activeFilters global for infinite scroll
     window.activeFilters = activeFilters;
+
+    // ✅ CRITICAL FIX: Check URL params FIRST before any initialization
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParams = [];
+
+    // Parse category IDs from URL
+    for (const [key, value] of urlParams.entries()) {
+        if (key === 'categories[]' || key === 'categories') {
+            categoryParams.push(value);
+        }
+    }
+
+    console.log('Category IDs from URL:', categoryParams);
+
+    // ✅ Pre-check categories BEFORE initializing anything
+    if (categoryParams.length > 0) {
+        categoryParams.forEach(catId => {
+            const checkbox = $(`.shop-category-filter[value="${catId}"]`);
+            if (checkbox.length) {
+                checkbox.prop('checked', true);
+                console.log('Pre-checked category:', catId, checkbox.data('name'));
+            } else {
+                console.warn('Category checkbox not found:', catId);
+            }
+        });
+
+        // ✅ Manually update activeFilters with checked categories
+        activeFilters.categories = categoryParams;
+        window.activeFilters = activeFilters;
+        console.log('Active filters after URL parse:', activeFilters);
+    }
 
     // Initialize Price Slider
     const priceSlider = document.getElementById('shopPriceSlider');
@@ -246,11 +275,8 @@ $(document).ready(function() {
         activeFilters.maxPrice = values[1];
         currentPage = 1;
         updateActiveFilters();
-        loadProducts(true); // true = reset infinite scroll
+        loadProducts(true);
     });
-
-    // Initialize
-    loadProducts(true);
 
     // Collapsible filter sections
     $('.shop-filter-title').on('click', function() {
@@ -271,9 +297,7 @@ $(document).ready(function() {
         $('#shopFilterOverlay').removeClass('show');
     });
 
-    // ========================================
-    // FIX: Category filter with proper event handling
-    // ========================================
+    // Category filter change handler
     $(document).on('change', '.shop-category-filter', function() {
         const checkbox = $(this);
         const categoryId = checkbox.val();
@@ -306,7 +330,7 @@ $(document).ready(function() {
         updateCategoryFilters();
         currentPage = 1;
         updateActiveFilters();
-        loadProducts(true); // Reset infinite scroll
+        loadProducts(true);
     });
 
     function updateCategoryFilters() {
@@ -314,6 +338,8 @@ $(document).ready(function() {
         $('.shop-category-filter:checked').each(function() {
             activeFilters.categories.push($(this).val());
         });
+        window.activeFilters = activeFilters;
+        console.log('Updated category filters:', activeFilters.categories);
     }
 
     // Brand filter
@@ -324,13 +350,13 @@ $(document).ready(function() {
         });
         currentPage = 1;
         updateActiveFilters();
-        loadProducts(true); // Reset infinite scroll
+        loadProducts(true);
     });
 
     // Sort
     $('#shopSortBy').on('change', function() {
         currentPage = 1;
-        loadProducts(true); // Reset infinite scroll
+        loadProducts(true);
     });
 
     // Clear all filters
@@ -361,7 +387,7 @@ $(document).ready(function() {
 
         currentPage = 1;
         updateActiveFilters();
-        loadProducts(true); // Reset infinite scroll
+        loadProducts(true);
     });
 
     function clearAllFilters() {
@@ -377,7 +403,7 @@ $(document).ready(function() {
         window.activeFilters = activeFilters;
         currentPage = 1;
         updateActiveFilters();
-        loadProducts(true); // Reset infinite scroll
+        loadProducts(true);
     }
 
     function updateActiveFilters() {
@@ -414,20 +440,16 @@ $(document).ready(function() {
         $('#shopActiveFilterTags').html(html);
     }
 
-    // MODIFIED loadProducts for infinite scroll
     function loadProducts(reset = false) {
-        // If reset, clear container and reset infinite scroll
         if (reset) {
             currentPage = 1;
             $('#shopProductsContainer').empty();
 
-            // Reset infinite scroll
             if (window.InfiniteScroll) {
                 window.InfiniteScroll.reset();
                 window.InfiniteScroll.currentPage = 1;
             }
 
-            // Trigger event for infinite scroll
             $(document).trigger('shopFiltersChanged');
         }
 
@@ -440,7 +462,8 @@ $(document).ready(function() {
             sort: $('#shopSortBy').val() || 'latest'
         };
 
-        // Only show spinner if resetting (not on infinite scroll)
+        console.log('Loading products with filters:', data);
+
         if (reset) {
             $('#shopProductsContainer').html(`
                 <div class="col-12 text-center py-5">
@@ -456,11 +479,12 @@ $(document).ready(function() {
             data: data,
             dataType: 'json',
             success: function(response) {
+                console.log('Products loaded:', response);
+
                 if (response.success) {
                     displayProducts(response.products, reset);
                     updateProductCount(response.total, response.from, response.to);
 
-                    // Update infinite scroll state
                     if (window.InfiniteScroll) {
                         window.InfiniteScroll.lastPage = response.last_page;
                         window.InfiniteScroll.currentPage = response.current_page;
@@ -469,12 +493,10 @@ $(document).ready(function() {
                     $('#shopFilterSidebarWrapper').removeClass('show');
                     $('#shopFilterOverlay').removeClass('show');
 
-                    // Initialize wishlist states
                     if (typeof window.initializeWishlistStates === 'function') {
                         window.initializeWishlistStates();
                     }
 
-                    // Sync cart
                     if (typeof window.Cart !== 'undefined') {
                         window.Cart.syncAllProductCards();
                     }
@@ -489,7 +511,6 @@ $(document).ready(function() {
         });
     }
 
-    // Make loadProducts available to infinite scroll
     window.loadProducts = loadProducts;
 
     function displayProducts(products, reset = false) {
@@ -515,10 +536,8 @@ $(document).ready(function() {
 
         let html = '';
         products.forEach(product => {
-
             const finalPrice = parseFloat(product.price || 0);
             const basePrice  = parseFloat(product.base_price || product.price || 0);
-
             const showDiscountBadge = parseInt(product.discount_percentage || 0) > 0;
             const showStrike = basePrice > finalPrice;
 
@@ -527,32 +546,27 @@ $(document).ready(function() {
                     <div class="shop-product-card">
                         <div class="product-image-wrapper">
                             <a href="/product/${product.slug}" class="product-image-link">
-
                                 ${showDiscountBadge ? `
                                     <div class="product-badge-discount">
                                         <span>${product.discount_percentage}% OFF</span>
                                     </div>
                                 ` : ''}
-
                                 ${product.stock <= 5 && product.stock > 0 ? `
                                     <div class="product-badge-stock">
                                         <span>Only ${product.stock} left</span>
                                     </div>
                                 ` : ''}
-
                                 <img src="${product.image_url}"
                                     alt="${product.name}"
                                     class="product-main-image"
                                     onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
                             </a>
-
                             <div class="product-quick-actions">
                                 <button class="quick-action-btn wishlist-toggle-btn"
                                         title="Add to Wishlist"
                                         data-product-id="${product.id}">
                                     <i class="fa-regular fa-heart"></i>
                                 </button>
-
                                 <a href="/product/${product.slug}"
                                 class="quick-action-btn shop-quick-view-btn"
                                 title="View Details"
@@ -561,7 +575,6 @@ $(document).ready(function() {
                                 </a>
                             </div>
                         </div>
-
                         <div class="product-info">
                             <div class="product-meta">
                                 <span class="product-category">${product.category?.name || 'Uncategorized'}</span>
@@ -570,11 +583,9 @@ $(document).ready(function() {
                                     <span class="product-brand">${product.brand.name}</span>
                                 ` : ''}
                             </div>
-
                             <a href="/product/${product.slug}" class="product-name-link">
                                 <h4 class="product-name">${product.name}</h4>
                             </a>
-
                             <div class="product-rating">
                                 <div class="stars">
                                     <i class="fa-solid fa-star"></i>
@@ -585,16 +596,13 @@ $(document).ready(function() {
                                 </div>
                                 <span class="rating-count">(4.0)</span>
                             </div>
-
                             <div class="product-price">
                                 <span class="price-current">₹${finalPrice.toFixed(2)}</span>
-
                                 ${showStrike ? `
                                     <span class="price-original">₹${basePrice.toFixed(2)}</span>
                                     <span class="price-save">Save ₹${(basePrice - finalPrice).toFixed(2)}</span>
                                 ` : ''}
                             </div>
-
                             ${product.stock > 0 ? `
                                 <div class="product-stock in-stock">
                                     <i class="fa-solid fa-circle-check"></i>
@@ -606,7 +614,6 @@ $(document).ready(function() {
                                     <span>Out of Stock</span>
                                 </div>
                             `}
-
                             <button class="product-add-to-cart add-to-cart-btn ${product.stock === 0 ? 'disabled' : ''}"
                                     ${product.stock === 0 ? 'disabled' : ''}
                                     data-product-id="${product.id}">
@@ -637,11 +644,14 @@ $(document).ready(function() {
             </div>
         `);
     }
+
+    // ✅ FINAL STEP: Update active filter tags and load products
+    updateActiveFilters();
+    loadProducts(true);
 });
 
-// JAVASCRIPT ALTERNATIVE: Make entire row clickable
+// Make entire filter row clickable
 $(document).on('click', '.shop-filter-option', function(e) {
-    // Don't trigger if clicking directly on checkbox or label (let native behavior work)
     if (!$(e.target).is('input, label')) {
         const checkbox = $(this).find('input[type="checkbox"]');
         checkbox.prop('checked', !checkbox.is(':checked')).trigger('change');
@@ -649,3 +659,4 @@ $(document).on('click', '.shop-filter-option', function(e) {
 });
 </script>
 @endpush
+

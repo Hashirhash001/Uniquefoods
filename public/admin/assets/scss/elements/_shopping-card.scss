@@ -36,7 +36,7 @@
         }
         img{
             height: 130px;
-            width: 130px;   
+            width: 130px;
              @media #{$laptop-device} {
                 height: auto;
                 width: 100%;
@@ -305,8 +305,8 @@
             font-size: 14px;
             padding: 8px 16px !important;
             background: transparent;
-            color: #629D23;
-            border: 1px solid #629D23;
+            color: #08437b;
+            border: 1px solid #08437b;
             @media #{$extra-device} {
                 padding: 9px 10px !important;
                 font-size: 11px;
@@ -329,7 +329,7 @@
             img{
                 transform: scale(1.1);
             }
-    
+
         }
         .action-share-option{
             bottom: 0;
@@ -379,9 +379,9 @@
             }
         }
         .cart-counter-action .rts-btn {
-            background: #629d23;
-            color: #629D23;
-            border: 1px solid #629D23;
+            background: #08437b;
+            color: #08437b;
+            border: 1px solid #08437b;
             width: 100%;
             max-width: 100%;
             display: flex;

@@ -20,7 +20,7 @@
 	opacity: 1;
 	visibility: visible;
 	transform: translateY(0);
-	box-shadow: #629d2310 0px 0px 6px 7px;
+	box-shadow: #08437b10 0px 0px 6px 7px;
 }
 .progress-wrap::after {
 	position: absolute;
@@ -76,10 +76,10 @@
 .progress-wrap:hover::before {
 	opacity: 0;
 }
-.progress-wrap svg path { 
-	fill: none; 
+.progress-wrap svg path {
+	fill: none;
 }
-.progress-wrap svg { 
+.progress-wrap svg {
     color: var(--color-primary);
 	border-radius: 50%;
 	background: #fff;

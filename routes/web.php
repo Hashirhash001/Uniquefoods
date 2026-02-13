@@ -1,25 +1,26 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\BrandController;
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Frontend\CartController;
-use App\Http\Controllers\Frontend\HomeController;
-use App\Http\Controllers\Frontend\ShopController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Auth\LoginController;
-use App\Http\Controllers\Frontend\WishlistController;
-use App\Http\Controllers\Admin\GroupPricingController;
-use App\Http\Controllers\Frontend\Auth\AuthController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerGroupController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GroupPricingController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Frontend\Auth\AuthController;
 use App\Http\Controllers\Frontend\Auth\GoogleController;
-use App\Http\Controllers\Frontend\ProductController as FrontendProductController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
+use App\Http\Controllers\Frontend\CheckoutController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\ProductController as FrontendProductController;
+use App\Http\Controllers\Frontend\ShopController;
+use App\Http\Controllers\Frontend\WishlistController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
+Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
 // Shop page (all products with filters)
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 
@@ -59,6 +60,11 @@ Route::prefix('wishlist')->name('wishlist.')->group(function () {
     // Wishlist page
     Route::get('/', [WishlistController::class, 'index'])->name('index');
 });
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.create-payment-intent');
+Route::post('/checkout/process', [CheckoutController::class, 'processOrder'])->name('checkout.process');
+Route::get('/checkout/success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Guest routes
 Route::middleware('guest')->group(function () {

@@ -39,27 +39,33 @@
                 <!-- Logo -->
                 <div class="unique-logo-section">
                     <a href="{{ route('home') }}">
-                        <div class="unique-logo-badge">
-                            <i class="fa-solid fa-leaf"></i>
-                        </div>
                         <div class="unique-logo-info">
-                            <span class="unique-brand-title">Unique Foods</span>
-                            <span class="unique-brand-subtitle">Fresh & Organic</span>
+                            <img src="{{ asset('admin/assets/images/logo/unique food logo3.png') }}" alt="" style="max-width: 100px;">
                         </div>
                     </a>
                 </div>
 
                 <!-- Search Bar -->
                 <div class="unique-search-section">
-                    <form action="{{ route('shop') }}" method="GET" class="unique-search-form">
+                    <div class="unique-search-form-wrapper">
                         <div class="unique-search-field-wrapper">
-                            <input type="text" name="q" placeholder="Search for products, brands, and more..."
-                                   value="{{ request('q') }}" class="unique-search-input">
-                            <button type="submit" class="unique-search-button">
+                            <input type="text"
+                                id="headerSearchInput"
+                                placeholder="Search for products, brands, and more..."
+                                class="unique-search-input"
+                                autocomplete="off">
+                            <button type="button" class="unique-search-button" id="headerSearchBtn">
                                 <i class="fa-regular fa-magnifying-glass"></i>
                             </button>
+
+                            <!-- Search Results Dropdown -->
+                            <div class="unique-search-dropdown" id="headerSearchDropdown">
+                                <div class="search-dropdown-content" id="headerSearchResults">
+                                    <!-- Results loaded via AJAX -->
+                                </div>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <!-- Header Actions -->
@@ -226,7 +232,7 @@
                         @if(isset($categories) && $categories->count())
                             @foreach($categories as $cat)
                                 <div class="unique-category-item">
-                                    <a href="{{ route('category.show', $cat->slug) }}" class="unique-category-link">
+                                    <a href="{{ route('shop') }}?categories[]={{ $cat->id }}" class="unique-category-link" onclick="event.preventDefault(); window.location.href='{{ route('shop') }}?categories[]={{ $cat->id }}';">
                                         @if($cat->image)
                                             <img src="{{ $cat->image_url }}" alt="{{ $cat->name }}" class="unique-cat-img">
                                         @else
@@ -243,7 +249,7 @@
                                             <div class="unique-submenu-title">{{ $cat->name }}</div>
                                             <div class="unique-submenu-items">
                                                 @foreach($cat->activeChildren as $subCat)
-                                                    <a href="{{ route('category.show', $subCat->slug) }}" class="unique-subcat-link">
+                                                    <a href="{{ route('shop') }}?categories[]={{ $subCat->id }}" class="unique-subcat-link" onclick="event.preventDefault(); window.location.href='{{ route('shop') }}?categories[]={{ $subCat->id }}';">
                                                         {{ $subCat->name }}
                                                     </a>
                                                 @endforeach
@@ -325,11 +331,27 @@
 
         <!-- Mobile Search -->
         <div class="unique-mobile-searchbar" id="uniqueMobileSearchBar">
-            <form action="{{ route('shop') }}" method="GET">
-                <input type="text" name="q" placeholder="Search products..." value="{{ request('q') }}">
-                <button type="submit"><i class="fa-regular fa-magnifying-glass"></i></button>
-            </form>
+            <div style="position: relative;">
+                <form action="{{ route('shop') }}" method="GET" onsubmit="return false;">
+                    <input type="text"
+                        name="q"
+                        id="mobileSearchInput"
+                        placeholder="Search products..."
+                        autocomplete="off">
+                    <button type="button" id="mobileSearchBtn">
+                        <i class="fa-regular fa-magnifying-glass"></i>
+                    </button>
+                </form>
+
+                <!-- Mobile Search Dropdown -->
+                <div class="unique-mobile-search-dropdown" id="mobileSearchDropdown">
+                    <div class="search-dropdown-content" id="mobileSearchResults">
+                        <!-- Results loaded via AJAX -->
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
 </header>
 
@@ -495,5 +517,273 @@ document.addEventListener('DOMContentLoaded', function() {
         window.updateWishlistUI();
     }
 });
+</script>
+
+<script>
+    // ===== MODERN AJAX SEARCH =====
+    $(document).ready(function() {
+        let searchTimeout;
+        const searchInput = $('#headerSearchInput');
+        const searchDropdown = $('#headerSearchDropdown');
+        const searchResults = $('#headerSearchResults');
+        const searchBtn = $('#headerSearchBtn');
+
+        // Search on input
+        searchInput.on('input', function() {
+            const query = $(this).val().trim();
+
+            clearTimeout(searchTimeout);
+
+            if (query.length < 2) {
+                searchDropdown.removeClass('show');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                performSearch(query);
+            }, 300); // Debounce 300ms
+        });
+
+        // Search on button click
+        searchBtn.on('click', function() {
+            const query = searchInput.val().trim();
+            if (query.length >= 2) {
+                window.location.href = '{{ route("shop") }}?q=' + encodeURIComponent(query);
+            }
+        });
+
+        // Search on Enter key
+        searchInput.on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                const query = $(this).val().trim();
+                if (query.length >= 2) {
+                    window.location.href = '{{ route("shop") }}?q=' + encodeURIComponent(query);
+                }
+            }
+        });
+
+        // Close dropdown when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.unique-search-section').length) {
+                searchDropdown.removeClass('show');
+            }
+        });
+
+        function performSearch(query) {
+            $.ajax({
+                url: '{{ route("shop.search") }}',
+                type: 'GET',
+                data: { q: query },
+                success: function(response) {
+                    if (response.success) {
+                        displaySearchResults(response, query);
+                    }
+                },
+                error: function() {
+                    searchResults.html(`
+                        <div class="search-empty">
+                            <i class="fa-regular fa-triangle-exclamation"></i>
+                            <p>Failed to search</p>
+                        </div>
+                    `);
+                    searchDropdown.addClass('show');
+                }
+            });
+        }
+
+        function displaySearchResults(data, query) {
+            let html = '';
+
+            if (data.products.length === 0 && data.categories.length === 0) {
+                html = `
+                    <div class="search-empty">
+                        <i class="fa-regular fa-magnifying-glass"></i>
+                        <p>No results found for "${query}"</p>
+                    </div>
+                `;
+            } else {
+                // Categories Section
+                if (data.categories.length > 0) {
+                    html += '<div class="search-section-title">Categories</div>';
+                    data.categories.forEach(cat => {
+                        html += `
+                            <a href="{{ route('shop') }}?categories[]=${cat.id}" class="search-item">
+                                <div class="search-item-category">
+                                    <i class="fa-regular fa-folder"></i>
+                                </div>
+                                <div class="search-item-info">
+                                    <div class="search-item-name">${cat.name}</div>
+                                </div>
+                                <i class="fa-regular fa-arrow-right"></i>
+                            </a>
+                        `;
+                    });
+                }
+
+                // Products Section
+                if (data.products.length > 0) {
+                    html += '<div class="search-section-title" style="margin-top: 16px;">Products</div>';
+                    data.products.forEach(product => {
+                        const stockText = product.stock > 0
+                            ? `<div class="search-item-stock">In Stock</div>`
+                            : `<div class="search-item-stock out">Out of Stock</div>`;
+
+                        html += `
+                            <a href="/product/${product.slug}" class="search-item">
+                                <img src="${product.image_url}" alt="${product.name}" class="search-item-image">
+                                <div class="search-item-info">
+                                    <div class="search-item-name">${product.name}</div>
+                                    <div class="search-item-meta">${product.category || 'General'}</div>
+                                    ${stockText}
+                                </div>
+                                <div class="search-item-price">₹${product.price}</div>
+                            </a>
+                        `;
+                    });
+                }
+
+                // View All Results Link
+                html += `
+                    <a href="{{ route('shop') }}?q=${encodeURIComponent(query)}" class="search-view-all">
+                        View All Results
+                        <i class="fa-regular fa-arrow-right"></i>
+                    </a>
+                `;
+            }
+
+            searchResults.html(html);
+            searchDropdown.addClass('show');
+        }
+    });
+
+    // ===== MOBILE SEARCH =====
+    $(document).ready(function() {
+        let mobileSearchTimeout;
+        const mobileSearchInput = $('#mobileSearchInput');
+        const mobileSearchDropdown = $('#mobileSearchDropdown');
+        const mobileSearchResults = $('#mobileSearchResults');
+        const mobileSearchBtn = $('#mobileSearchBtn');
+
+        // Search on input (mobile)
+        mobileSearchInput.on('input', function() {
+            const query = $(this).val().trim();
+
+            clearTimeout(mobileSearchTimeout);
+
+            if (query.length < 2) {
+                mobileSearchDropdown.removeClass('show');
+                return;
+            }
+
+            mobileSearchTimeout = setTimeout(() => {
+                performMobileSearch(query);
+            }, 300);
+        });
+
+        // Search on button click (mobile)
+        mobileSearchBtn.on('click', function() {
+            const query = mobileSearchInput.val().trim();
+            if (query.length >= 2) {
+                window.location.href = '{{ route("shop") }}?q=' + encodeURIComponent(query);
+            }
+        });
+
+        // Search on Enter key (mobile)
+        mobileSearchInput.on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                const query = $(this).val().trim();
+                if (query.length >= 2) {
+                    window.location.href = '{{ route("shop") }}?q=' + encodeURIComponent(query);
+                }
+            }
+        });
+
+        function performMobileSearch(query) {
+            $.ajax({
+                url: '{{ route("shop.search") }}',
+                type: 'GET',
+                data: { q: query },
+                success: function(response) {
+                    if (response.success) {
+                        displayMobileSearchResults(response, query);
+                    }
+                },
+                error: function() {
+                    mobileSearchResults.html(`
+                        <div class="search-empty">
+                            <i class="fa-regular fa-triangle-exclamation"></i>
+                            <p>Failed to search</p>
+                        </div>
+                    `);
+                    mobileSearchDropdown.addClass('show');
+                }
+            });
+        }
+
+        function displayMobileSearchResults(data, query) {
+            let html = '';
+
+            if (data.products.length === 0 && data.categories.length === 0) {
+                html = `
+                    <div class="search-empty">
+                        <i class="fa-regular fa-magnifying-glass"></i>
+                        <p>No results found</p>
+                    </div>
+                `;
+            } else {
+                // Categories
+                if (data.categories.length > 0) {
+                    html += '<div class="search-section-title">Categories</div>';
+                    data.categories.forEach(cat => {
+                        html += `
+                            <a href="{{ route('shop') }}?categories[]=${cat.id}" class="search-item">
+                                <div class="search-item-category">
+                                    <i class="fa-regular fa-folder"></i>
+                                </div>
+                                <div class="search-item-info">
+                                    <div class="search-item-name">${cat.name}</div>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                // Products
+                if (data.products.length > 0) {
+                    html += '<div class="search-section-title" style="margin-top: 16px;">Products</div>';
+                    data.products.forEach(product => {
+                        html += `
+                            <a href="/product/${product.slug}" class="search-item">
+                                <img src="${product.image_url}" alt="${product.name}" class="search-item-image">
+                                <div class="search-item-info">
+                                    <div class="search-item-name">${product.name}</div>
+                                </div>
+                                <div class="search-item-price">₹${product.price}</div>
+                            </a>
+                        `;
+                    });
+                }
+
+                html += `
+                    <a href="{{ route('shop') }}?q=${encodeURIComponent(query)}" class="search-view-all">
+                        View All
+                    </a>
+                `;
+            }
+
+            mobileSearchResults.html(html);
+            mobileSearchDropdown.addClass('show');
+        }
+
+        // Close mobile search dropdown when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.unique-mobile-searchbar').length) {
+                mobileSearchDropdown.removeClass('show');
+            }
+        });
+    });
+
 </script>
 @endpush

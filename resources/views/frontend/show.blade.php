@@ -225,7 +225,7 @@
 .share-product-price {
     font-size: 22px;
     font-weight: 800;
-    background: linear-gradient(135deg, #629d23, #7cb929);
+    background: linear-gradient(135deg, #08437b, #7cb929);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -374,7 +374,7 @@
 }
 
 .share-link-copy:focus-within {
-    border-color: #629d23;
+    border-color: #08437b;
     box-shadow: 0 0 0 4px rgba(98, 157, 35, 0.1);
 }
 
@@ -389,7 +389,7 @@
 }
 
 .share-copy-btn {
-    background: linear-gradient(135deg, #629d23, #7cb929);
+    background: linear-gradient(135deg, #08437b, #7cb929);
     color: #ffffff;
     border: none;
     padding: 10px 20px;
@@ -481,8 +481,8 @@
 }
 
 .share-button-main:hover {
-    border-color: #629d23;
-    color: #629d23;
+    border-color: #08437b;
+    color: #08437b;
     background: #f0fdf4;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(98, 157, 35, 0.15);
@@ -573,7 +573,7 @@
             <!-- Left: Product Images -->
             <div class="col-xl-8 col-lg-8 col-md-12">
                 <div class="product-details-popup-wrapper in-shopdetails">
-                    <div class="rts-product-details-section rts-product-details-section2 product-details-popup-section">
+                    <div class="rts-product-details-section rts-product-details-section2 product-details-popup-section w-100">
                         <div class="product-details-popup">
                             <div class="details-product-area">
                                 <!-- Product Image Gallery -->

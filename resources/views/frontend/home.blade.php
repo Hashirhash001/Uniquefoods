@@ -90,7 +90,7 @@
     </div>
 </div>
 
-{{-- Featured Categories Section - KEPT ORIGINAL --}}
+{{-- Featured Categories Section - UPDATED WITH SHOP FILTERS --}}
 <div class="rts-category-area rts-section-gapTop">
     <div class="container-2">
         <div class="row">
@@ -132,12 +132,16 @@
                                                 "840": { "slidesPerView": 5, "spaceBetween": 14 },
                                                 "1140": { "slidesPerView": 7, "spaceBetween": 16 }
                                             }
-                                        }'>
+                                        }' style="padding: 20px;">
                                             <div class="swiper-wrapper">
                                                 @forelse($featuredCategories as $category)
                                                     <div class="swiper-slide">
                                                         <div class="single-category-one">
-                                                            <a href="{{ route('category.show', $category->slug) }}">
+                                                            {{-- ✅ Updated to use shop with category filter --}}
+                                                            <a href="{{ route('shop') }}?categories[]={{ $category->id }}"
+                                                               class="category-filter-link"
+                                                               data-category-id="{{ $category->id }}"
+                                                               data-category-name="{{ $category->name }}">
                                                                 @if($category->image)
                                                                     <img src="{{ $category->image_url }}" alt="{{ $category->name }}">
                                                                 @else
@@ -150,7 +154,7 @@
                                                 @empty
                                                     <div class="swiper-slide">
                                                         <div class="single-category-one">
-                                                            <a href="#">
+                                                            <a href="{{ route('shop') }}">
                                                                 <img src="{{ asset('frontend/assets/images/category/01.png') }}" alt="category">
                                                                 <p>No Categories</p>
                                                             </a>
@@ -189,9 +193,9 @@
                         {{-- Image Area --}}
                         <div class="product-image-wrapper">
                             <a href="{{ route('product.show', $product->slug) }}" class="product-image-link">
-                                @if($product->discount_percentage > 0)
+                                @if($product->discount_percentage_calc > 0)
                                     <div class="product-badge-discount">
-                                        <span>{{ $product->discount_percentage }}% OFF</span>
+                                        <span>{{ $product->discount_percentage_calc }}% OFF</span>
                                     </div>
                                 @endif
 
@@ -255,10 +259,10 @@
 
                             {{-- Price --}}
                             <div class="product-price">
-                                <span class="price-current">₹{{ number_format($product->price, 2) }}</span>
-                                @if($product->mrp && $product->mrp > $product->price)
-                                    <span class="price-original">₹{{ number_format($product->mrp, 2) }}</span>
-                                    <span class="price-save">Save ₹{{ number_format($product->mrp - $product->price, 2) }}</span>
+                                <span class="price-current">₹{{ number_format($product->final_price, 2) }}</span>
+                                @if($product->base_price > $product->final_price)
+                                    <span class="price-original">₹{{ number_format($product->base_price, 2) }}</span>
+                                    <span class="price-save">Save ₹{{ number_format($product->base_price - $product->final_price, 2) }}</span>
                                 @endif
                             </div>
 
@@ -404,10 +408,10 @@
                                     </div>
 
                                     <div class="product-price">
-                                        <span class="price-current">₹{{ number_format($product->price, 2) }}</span>
-                                        @if($product->mrp && $product->mrp > $product->price)
-                                            <span class="price-original">₹{{ number_format($product->mrp, 2) }}</span>
-                                            <span class="price-save">Save ₹{{ number_format($product->mrp - $product->price, 2) }}</span>
+                                        <span class="price-current">₹{{ number_format($product->final_price, 2) }}</span>
+                                        @if($product->base_price > $product->final_price)
+                                            <span class="price-original">₹{{ number_format($product->base_price, 2) }}</span>
+                                            <span class="price-save">Save ₹{{ number_format($product->base_price - $product->final_price, 2) }}</span>
                                         @endif
                                     </div>
 
@@ -598,7 +602,7 @@
     .view-all-link {
         font-size: 14px;
         font-weight: 600;
-        color: #629D23;
+        color: #08437b;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
@@ -619,7 +623,7 @@
     }
 
     .rts-banner-area-three {
-        min-height: 560px;
+        min-height: 670px;
         display: flex;
         align-items: center;
         position: relative;
@@ -690,7 +694,7 @@
 
     .banner-button-next:hover,
     .banner-button-prev:hover {
-        background: #629D23;
+        background: #08437b;
         color: white;
         transform: translateY(-50%) scale(1.08);
     }
@@ -724,7 +728,7 @@
     }
 
     .banner-pagination .swiper-pagination-bullet-active {
-        background: #629D23;
+        background: #08437b;
         width: 28px;
     }
 
@@ -754,9 +758,9 @@
 
     .category-button-next:hover,
     .category-button-prev:hover {
-        background: #629D23;
+        background: #08437b;
         color: white;
-        border-color: #629D23;
+        border-color: #08437b;
         transform: scale(1.08);
     }
 
@@ -782,7 +786,7 @@
     }
 
     .single-category-one:hover {
-        border-color: #629D23;
+        border-color: #08437b;
         box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
         transform: translateY(-4px);
         z-index: 10;
@@ -810,14 +814,14 @@
     }
 
     .single-category-one:hover p {
-        color: #629D23;
+        color: #08437b;
     }
 
     /* ============================================
     NEW SHOP-STYLE PRODUCT CARDS
     ============================================ */
     :root {
-        --shop-primary: #629D23;
+        --shop-primary: #08437b;
         --shop-primary-dark: #518219;
         --shop-success: #10b981;
         --shop-danger: #ef4444;

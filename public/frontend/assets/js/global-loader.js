@@ -2,38 +2,8 @@ function showLoader(text = 'Loading...', subtitle = 'Please wait...') {
     let loader = document.getElementById('uniqueGlobalLoader');
 
     if (!loader) {
-        // Create loader element
-        loader = document.createElement('div');
-        loader.id = 'uniqueGlobalLoader';
-        loader.className = 'unique-global-loader';
-        loader.innerHTML = `
-            <div class="unique-loader-background"></div>
-            <div class="unique-loader-container">
-                <div class="unique-loader-brand">
-                    <i class="fa-solid fa-leaf"></i>
-                </div>
-
-                <div class="unique-loader-spinner-wrapper">
-                    <div class="unique-spinner-outer"></div>
-                    <div class="unique-spinner-middle"></div>
-                    <div class="unique-spinner-inner"></div>
-                </div>
-
-                <div class="unique-loader-dots">
-                    <div class="unique-dot"></div>
-                    <div class="unique-dot"></div>
-                    <div class="unique-dot"></div>
-                </div>
-
-                <div class="unique-loader-text">Loading...</div>
-                <div class="unique-loader-subtitle">Please wait...</div>
-
-                <div class="unique-loader-progress">
-                    <div class="unique-progress-bar"></div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(loader);
+        console.error('Loader element not found in DOM');
+        return;
     }
 
     // Update text
@@ -82,7 +52,7 @@ function showProcessingOrder() {
     showLoader('Processing Order...', 'Almost done!');
 }
 
-// Auto-hide on page load
+// Auto-hide on page load (DOMContentLoaded handled in layout)
 window.addEventListener('load', function() {
     hideLoader();
 });

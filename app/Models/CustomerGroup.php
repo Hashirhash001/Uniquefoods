@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\GroupDiscount;
 use App\Models\GroupProductOffer;
 use App\Models\ProductGroupPrice;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 

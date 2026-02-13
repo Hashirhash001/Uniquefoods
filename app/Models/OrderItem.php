@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderItem extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
-        'order_id',
-        'product_id',
-        'quantity',
-        'estimated_weight',
-        'actual_weight',
-        'price'
+        'order_id', 'product_id', 'product_name', 'product_sku',
+        'price', 'quantity', 'weight', 'subtotal'
     ];
 
     public function order()
@@ -25,7 +20,6 @@ class OrderItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class)
-                    ->withTrashed(); // important
+        return $this->belongsTo(Product::class);
     }
 }

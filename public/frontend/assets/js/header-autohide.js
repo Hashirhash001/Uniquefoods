@@ -1,7 +1,6 @@
 /**
  * ================================================
- * AUTO-HIDE HEADER - FINAL FIX
- * NO WHITESPACE when header is hidden
+ * AUTO-HIDE HEADER - FINAL FIX (No Bounce Issues)
  * ================================================
  */
 
@@ -11,10 +10,12 @@
     const AutoHideHeader = {
         lastScrollTop: 0,
         scrollThreshold: 100,
-        delta: 5,
+        delta: 10, // ✅ Increased from 5 to reduce sensitivity
         header: null,
         headerHeight: 0,
         isScrolling: false,
+        scrollTimeout: null,
+        lastDirection: null, // ✅ Track last direction to prevent flickering
 
         init() {
             this.header = document.querySelector('.unique-modern-header') ||
@@ -35,44 +36,78 @@
         },
 
         bindEvents() {
-            let scrollTimeout;
-
             window.addEventListener('scroll', () => {
                 if (this.isScrolling) return;
 
-                clearTimeout(scrollTimeout);
+                clearTimeout(this.scrollTimeout);
 
-                scrollTimeout = setTimeout(() => {
+                this.scrollTimeout = setTimeout(() => {
                     this.handleScroll();
-                }, 10);
+                }, 50); // ✅ Increased debounce from 10ms to 50ms
+
             }, { passive: true });
         },
 
         handleScroll() {
             const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-            if (Math.abs(this.lastScrollTop - currentScrollTop) <= this.delta) {
+            // ✅ Prevent negative scroll (mobile bounce)
+            if (currentScrollTop < 0) {
                 return;
             }
 
-            // At top - show header and add padding
-            if (currentScrollTop <= 0) {
+            // ✅ Calculate max scroll to prevent bottom bounce issues
+            const maxScroll = Math.max(
+                document.body.scrollHeight,
+                document.body.offsetHeight,
+                document.documentElement.clientHeight,
+                document.documentElement.scrollHeight,
+                document.documentElement.offsetHeight
+            ) - window.innerHeight;
+
+            // ✅ Near bottom of page - show header (prevents flickering)
+            if (currentScrollTop >= maxScroll - 50) {
                 this.showHeader();
-                this.header.classList.remove('header-compact');
                 document.body.classList.remove('header-is-hidden');
                 this.lastScrollTop = currentScrollTop;
                 return;
             }
 
-            // Scrolling down - hide header and remove padding
-            if (currentScrollTop > this.lastScrollTop && currentScrollTop > this.scrollThreshold) {
+            // Check if scroll is significant enough
+            if (Math.abs(this.lastScrollTop - currentScrollTop) <= this.delta) {
+                return;
+            }
+
+            // At top - show header
+            if (currentScrollTop <= 0) {
+                this.showHeader();
+                this.header.classList.remove('header-compact');
+                document.body.classList.remove('header-is-hidden');
+                this.lastScrollTop = currentScrollTop;
+                this.lastDirection = null;
+                return;
+            }
+
+            // ✅ Determine scroll direction
+            const isScrollingDown = currentScrollTop > this.lastScrollTop;
+
+            // ✅ Only change header state if direction changed (prevents flickering)
+            if (this.lastDirection !== null && this.lastDirection === isScrollingDown) {
+                this.lastScrollTop = currentScrollTop;
+                return;
+            }
+
+            // Scrolling down - hide header
+            if (isScrollingDown && currentScrollTop > this.scrollThreshold) {
                 this.hideHeader();
                 document.body.classList.add('header-is-hidden');
+                this.lastDirection = true;
             }
-            // Scrolling up - show header and add padding
-            else if (currentScrollTop < this.lastScrollTop) {
+            // Scrolling up - show header
+            else if (!isScrollingDown) {
                 this.showHeader();
                 document.body.classList.remove('header-is-hidden');
+                this.lastDirection = false;
             }
 
             // Compact mode

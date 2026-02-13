@@ -1,14 +1,14 @@
 /* Brand Color Variables */
 :root {
-    --color-primary: #629D23;
-    --color-primary-hover: #518219;
+    --color-primary: #0f508d;
+    --color-primary-hover: #08437b;
     --color-primary-light: rgba(98, 157, 35, 0.1);
     --text-dark: #1a1a1a;
     --text-light: #666;
     --border-color: #e0e0e0;
     --bg-light: #f8f9fa;
-    --shop-primary: #629D23;
-    --shop-primary-dark: #518219;
+    --shop-primary: #08437b;
+    --shop-primary-dark: #08437b;
     --shop-success: #10b981;
     --shop-danger: #ef4444;
     --shop-text: #111827;
@@ -812,7 +812,7 @@ input[type=checkbox]~label, input[type=radio]~label{
         z-index: 999 !important;
 
         /* Better styling */
-        background: #629D23 !important;
+        background: #08437b !important;
         padding: 14px 28px !important;
         border-radius: 10px !important;
         box-shadow: 0 4px 20px rgba(98, 157, 35, 0.4) !important;

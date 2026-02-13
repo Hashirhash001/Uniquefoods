@@ -10,9 +10,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Services\PricingService;
 
 class WishlistController extends Controller
 {
+    protected $pricingService;
+
+    public function __construct(PricingService $pricingService)
+    {
+        $this->pricingService = $pricingService;
+    }
+
     /**
      * Get wishlist (session or database)
      */
@@ -84,7 +92,8 @@ class WishlistController extends Controller
                 'success' => true,
                 'action' => $action,
                 'message' => $message,
-                'count' => $count
+                'count' => $count,
+                'in_wishlist' => ($action === 'added')
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -120,7 +129,8 @@ class WishlistController extends Controller
             'success' => true,
             'action' => $action,
             'message' => $message,
-            'count' => count($wishlist)
+            'count' => count($wishlist),
+            'in_wishlist' => ($action === 'added')
         ]);
     }
 
@@ -210,15 +220,62 @@ class WishlistController extends Controller
     }
 
     /**
-     * Get wishlist items (product IDs)
+     * Get wishlist items with pricing
      */
     public function get()
     {
-        $wishlist = $this->getWishlist();
+        $wishlistIds = $this->getWishlist();
+
+        if (empty($wishlistIds)) {
+            return response()->json([
+                'success' => true,
+                'items' => []
+            ]);
+        }
+
+        $user = Auth::user();
+
+        // ✅ Load products with group pricing
+        $products = Product::with(['category', 'brand', 'primaryImage'])
+            ->whereIn('id', $wishlistIds)
+            ->where('is_active', 1)
+            ->get()
+            ->map(function ($product) use ($user) {
+                $basePrice = (float) $product->price;
+                $finalPrice = (float) $this->pricingService->getCustomerPrice($product, $user);
+
+                $discountPercentage = 0;
+                if ($basePrice > 0 && $finalPrice < $basePrice) {
+                    $discountPercentage = round((($basePrice - $finalPrice) / $basePrice) * 100);
+                }
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'base_price' => number_format($basePrice, 2, '.', ''),
+                    'price' => number_format($finalPrice, 2, '.', ''),
+                    'mrp' => $product->mrp ? number_format((float)$product->mrp, 2, '.', '') : null,
+                    'discount_percentage' => $discountPercentage,
+                    'unit' => $product->unit,
+                    'stock' => $product->stock ?? 0,
+                    'image_url' => $product->image_url,
+                    'category' => $product->category ? [
+                        'id' => $product->category->id,
+                        'name' => $product->category->name,
+                        'slug' => $product->category->slug,
+                    ] : null,
+                    'brand' => $product->brand ? [
+                        'id' => $product->brand->id,
+                        'name' => $product->brand->name,
+                        'slug' => $product->brand->slug,
+                    ] : null,
+                ];
+            });
 
         return response()->json([
             'success' => true,
-            'items' => $wishlist
+            'items' => $products
         ]);
     }
 
@@ -227,17 +284,7 @@ class WishlistController extends Controller
      */
     public function index()
     {
-        if (Auth::check()) {
-            $wishlist = Wishlist::where('user_id', Auth::id())->first();
-            $products = $wishlist
-                ? Product::whereIn('id', $wishlist->items()->pluck('product_id'))->get()
-                : collect();
-        } else {
-            $wishlistIds = session()->get('wishlist', []);
-            $products = Product::whereIn('id', $wishlistIds)->get();
-        }
-
-        return view('frontend.wishlist', compact('products'));
+        return view('frontend.wishlist');
     }
 
     /**

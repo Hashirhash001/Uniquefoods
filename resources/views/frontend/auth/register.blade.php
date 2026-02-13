@@ -172,7 +172,7 @@
 @push('styles')
 <style>
     :root {
-        --unique-green: #629D23;
+        --unique-green: #08437b;
         --unique-green-dark: #518219;
         --unique-black: #1a1a1a;
         --unique-gray: #666666;

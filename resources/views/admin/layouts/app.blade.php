@@ -7,7 +7,7 @@
     <title>@yield('title', 'Admin Dashboard')</title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="shortcut icon" href="{{ asset('admin/assets/images/fav.png') }}">
+    <link rel="shortcut icon" href="{{ asset('admin/assets/images/logo/favicon.png') }}">
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('admin/assets/css/plugins.css') }}">
@@ -51,12 +51,16 @@
             height: 100vh;
             background: #ffffff;
             border-right: 1px solid #e5e7eb;
-            padding: 24px 12px;
+            padding: 4px 12px;
             overflow-y: auto;
             overflow-x: hidden;
             z-index: 1000;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                         transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar_left .sidebar-logo img {
+            max-width: 120px;
         }
 
         /* Minimized Sidebar (Desktop) */
@@ -67,6 +71,10 @@
         .sidebar_left.minimized .sidebar-logo {
             font-size: 24px;
             padding: 8px 0;
+        }
+
+        .sidebar_left.minimized .sidebar-logo img {
+            max-width: 60px;
         }
 
         .sidebar_left.minimized .sidebar-logo-text {
@@ -243,7 +251,7 @@
             font-size: 20px;
             font-weight: 700;
             color: #22c55e;
-            margin-bottom: 28px;
+            margin-bottom: 0px !important;
             letter-spacing: -0.3px;
             padding: 8px;
             text-decoration: none;
@@ -773,7 +781,7 @@
 
         @media (max-height: 500px) and (orientation: landscape) {
             .sidebar_left {
-                padding: 16px 12px;
+                padding: 5px 12px;
             }
 
             .sidebar-logo {
@@ -839,7 +847,8 @@
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar_left" id="sidebar">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-            <span class="sidebar-logo-text">Unique Foods</span>
+            <img src="{{ asset('admin/assets/images/logo/unique food logo3.png') }}" alt="">
+            {{-- <span class="sidebar-logo-text">Unique Foods</span> --}}
         </a>
 
         <ul class="rts-side-nav-area-left">

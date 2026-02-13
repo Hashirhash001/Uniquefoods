@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Home')</title>
 
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('frontend/assets/images/fav.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin/assets/images/logo/favicon.png') }}">
 
     {{-- template css --}}
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/global-loader.css') }}">
@@ -89,6 +89,35 @@
 </head>
 <body>
 
+{{-- INSTANT LOADER - Shows immediately before ANY content --}}
+<div id="uniqueGlobalLoader" class="unique-global-loader unique-active">
+    <div class="unique-loader-background"></div>
+    <div class="unique-loader-container">
+        <div class="unique-loader-brand">
+            <img src="{{ asset('admin/assets/images/logo/favicon.png') }}" alt="" max-width="150px">
+        </div>
+
+        <div class="unique-loader-spinner-wrapper">
+            <div class="unique-spinner-outer"></div>
+            <div class="unique-spinner-middle"></div>
+            <div class="unique-spinner-inner"></div>
+        </div>
+
+        <div class="unique-loader-dots">
+            <div class="unique-dot"></div>
+            <div class="unique-dot"></div>
+            <div class="unique-dot"></div>
+        </div>
+
+        <div class="unique-loader-text">Loading...</div>
+        <div class="unique-loader-subtitle">Please wait...</div>
+
+        <div class="unique-loader-progress">
+            <div class="unique-progress-bar"></div>
+        </div>
+    </div>
+</div>
+
 {{-- HEADER --}}
 @include('frontend.partials.header')
 
@@ -114,6 +143,19 @@
 
 {{-- Auto-Hide Header (MUST load after header is rendered) --}}
 <script src="{{ asset('frontend/assets/js/header-autohide.js') }}"></script>
+
+{{-- ✅ INSTANT HIDE on page load --}}
+<script>
+    // Hide loader as soon as DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const loader = document.getElementById('uniqueGlobalLoader');
+            if (loader) {
+                loader.classList.remove('unique-active');
+            }
+        }, 500); // Small delay for smooth UX
+    });
+</script>
 
 @stack('scripts')
 </body>

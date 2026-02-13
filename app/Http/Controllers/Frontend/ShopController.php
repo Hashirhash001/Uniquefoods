@@ -208,4 +208,71 @@ class ShopController extends Controller
 
         return view('frontend.show', compact('product', 'relatedProducts'));
     }
+
+    /**
+     * AJAX Search for products
+     */
+    public function search(Request $request, PricingService $pricingService)
+    {
+        $query = $request->get('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json([
+                'success' => true,
+                'products' => [],
+                'categories' => [],
+                'total' => 0
+            ]);
+        }
+
+        $user = Auth::user();
+
+        // Search products
+        $products = Product::with(['category', 'brand', 'primaryImage'])
+            ->where('is_active', 1)
+            ->where(function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                ->orWhere('description', 'LIKE', "%{$query}%")
+                ->orWhere('sku', 'LIKE', "%{$query}%");
+            })
+            ->limit(8)
+            ->get()
+            ->map(function ($product) use ($pricingService, $user) {
+                $basePrice = (float) $product->price;
+                $finalPrice = (float) $pricingService->getCustomerPrice($product, $user);
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'price' => number_format($finalPrice, 2, '.', ''),
+                    'base_price' => number_format($basePrice, 2, '.', ''),
+                    'image_url' => $product->image_url,
+                    'stock' => $product->stock ?? 0,
+                    'category' => $product->category ? $product->category->name : null,
+                ];
+            });
+
+        // Search categories
+        $categories = Category::where('is_active', 1)
+            ->where('name', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->get()
+            ->map(function($cat) {
+                return [
+                    'id' => $cat->id,
+                    'name' => $cat->name,
+                    'slug' => $cat->slug,
+                    'image' => $cat->image_url,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'products' => $products,
+            'categories' => $categories,
+            'total' => $products->count() + $categories->count()
+        ]);
+    }
+
 }

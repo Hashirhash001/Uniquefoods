@@ -20,6 +20,7 @@
     overflow: hidden !important;
 }
 
+/* Active state shows immediately */
 .unique-global-loader.unique-active {
     opacity: 1 !important;
     visibility: visible !important;
@@ -64,7 +65,7 @@
     width: 60px !important;
     height: 60px !important;
     margin: 0 auto 24px !important;
-    background: linear-gradient(135deg, #629D23 0%, #518219 100%) !important;
+    background: linear-gradient(135deg, #08437b 0%, #518219 100%) !important;
     border-radius: 16px !important;
     display: flex !important;
     align-items: center !important;
@@ -101,8 +102,8 @@
     width: 100% !important;
     height: 100% !important;
     border: 4px solid rgba(98, 157, 35, 0.1) !important;
-    border-top-color: #629D23 !important;
-    border-right-color: #629D23 !important;
+    border-top-color: #08437b !important;
+    border-right-color: #08437b !important;
     border-radius: 50% !important;
     animation: uniqueSpinClockwise 1.5s linear infinite !important;
     box-sizing: border-box !important;
@@ -134,7 +135,7 @@
     height: 24px !important;
     margin-top: -12px !important;
     margin-left: -12px !important;
-    background: linear-gradient(135deg, #629D23 0%, #7CB342 100%) !important;
+    background: linear-gradient(135deg, #08437b 0%, #7CB342 100%) !important;
     border-radius: 50% !important;
     box-shadow: 0 0 20px rgba(98, 157, 35, 0.5) !important;
     animation: uniqueInnerPulse 1s ease-in-out infinite !important;
@@ -188,7 +189,7 @@
 .unique-dot {
     width: 10px !important;
     height: 10px !important;
-    background: linear-gradient(135deg, #629D23 0%, #7CB342 100%) !important;
+    background: linear-gradient(135deg, #08437b 0%, #7CB342 100%) !important;
     border-radius: 50% !important;
     animation: uniqueDotBounce 1.4s infinite ease-in-out both !important;
     box-shadow: 0 2px 8px rgba(98, 157, 35, 0.3) !important;
@@ -255,11 +256,11 @@
     height: 100% !important;
     width: 100% !important;
     background: linear-gradient(90deg,
-        #629D23 0%,
+        #08437b 0%,
         #7CB342 25%,
-        #629D23 50%,
+        #08437b 50%,
         #7CB342 75%,
-        #629D23 100%) !important;
+        #08437b 100%) !important;
     background-size: 200% 100% !important;
     border-radius: 8px !important;
     animation: uniqueProgressSlide 2s linear infinite !important;

@@ -4,6 +4,16 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/wishlist.css') }}">
+<style>
+    .price-save {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--shop-success);
+        background: rgba(16, 185, 129, 0.1);
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -61,7 +71,7 @@
                 <div class="modern-empty-state">
                     <div class="empty-icon wishlist-empty">
                         <i class="fa-regular fa-heart"></i>
-                        <div class="heart-animation"></div>
+                        {{-- <div class="heart-animation"></div> --}}
                     </div>
                     <h3>Your wishlist is empty</h3>
                     <p>Start adding products you love to your wishlist</p>
@@ -88,15 +98,16 @@ $(document).ready(function() {
     loadWishlist();
 
     function loadWishlist() {
-        showLoader();
+        showLoader('Loading Wishlist...', 'Please wait');
+
         $.ajax({
             url: '{{ route("wishlist.get") }}',
             type: 'GET',
             success: function(response) {
-                if (response.success && response.items.length > 0) {
-                    loadWishlistProducts(response.items);
+                hideLoader();
+                if (response.success && response.items && response.items.length > 0) {
+                    displayWishlist(response.items);
                 } else {
-                    hideLoader();
                     showEmptyState();
                 }
             },
@@ -104,26 +115,10 @@ $(document).ready(function() {
                 hideLoader();
                 console.error('Failed to load wishlist:', xhr);
                 showEmptyState();
-            }
-        });
-    }
 
-    function loadWishlistProducts(productIds) {
-        $.ajax({
-            url: '{{ route("shop.filter") }}',
-            type: 'GET',
-            data: { product_ids: productIds },
-            success: function(response) {
-                hideLoader();
-                if (response.success && response.products.length > 0) {
-                    displayWishlist(response.products);
-                } else {
-                    showEmptyState();
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('Failed to load wishlist');
                 }
-            },
-            error: function() {
-                hideLoader();
-                showEmptyState();
             }
         });
     }
@@ -145,7 +140,7 @@ $(document).ready(function() {
             const card = `
                 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div class="modern-wishlist-card">
-                        <button class="wishlist-heart active" data-product-id="${product.id}" title="Remove from wishlist">
+                        <button class="wishlist-heart active wishlist-toggle-btn" data-product-id="${product.id}" title="Remove from wishlist">
                             <i class="fa-solid fa-heart"></i>
                         </button>
 
@@ -186,8 +181,9 @@ $(document).ready(function() {
 
                             <div class="product-pricing">
                                 <span class="current-price">₹${parseFloat(product.price).toFixed(2)}</span>
-                                ${product.mrp && product.mrp > product.price ? `
-                                    <span class="original-price">₹${parseFloat(product.mrp).toFixed(2)}</span>
+                                ${product.base_price > product.price ? `
+                                    <span class="original-price">₹${parseFloat(product.base_price).toFixed(2)}</span>
+                                    <span class="price-save">Save ₹${(parseFloat(product.base_price) - parseFloat(product.price)).toFixed(2)}</span>
                                 ` : ''}
                             </div>
 
@@ -211,9 +207,9 @@ $(document).ready(function() {
             grid.append(card);
         });
 
-        // Initialize cart states
-        if (typeof window.Cart !== 'undefined') {
-            window.Cart.syncAllProductCards();
+        // Initialize wishlist/cart states from cart-wishlist.js
+        if (typeof window.initializeWishlistStates === 'function') {
+            window.initializeWishlistStates();
         }
     }
 
@@ -223,15 +219,20 @@ $(document).ready(function() {
         $('#wishlistItemCount').text('0');
     }
 
-    // Remove from wishlist
-    $(document).on('click', '.wishlist-heart', function() {
-        const productId = $(this).data('product-id');
-        const button = $(this);
+    // Remove from wishlist using cart-wishlist.js toggle
+    $(document).on('click', '.wishlist-heart.wishlist-toggle-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-        button.addClass('removing');
+        const button = $(this);
+        const productId = button.data('product-id');
+        const card = button.closest('.modern-wishlist-card').parent();
+
+        // Add removing animation
+        card.css('opacity', '0.5');
 
         $.ajax({
-            url: '{{ route("wishlist.remove") }}',
+            url: '{{ route("wishlist.toggle") }}',
             type: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
@@ -244,15 +245,36 @@ $(document).ready(function() {
                         window.updateWishlistCount(response.count);
                     }
 
-                    // Reload wishlist with animation
-                    setTimeout(() => {
-                        loadWishlist();
-                    }, 300);
+                    // Slide up and remove card
+                    card.slideUp(300, function() {
+                        $(this).remove();
+
+                        // Check if wishlist is empty now
+                        if ($('#wishlistItemsGrid .col-xl-3').length === 0) {
+                            showEmptyState();
+                        } else {
+                            // Update count
+                            $('#wishlistItemCount').text($('#wishlistItemsGrid .col-xl-3').length);
+                        }
+                    });
 
                     // Show toast
                     if (typeof toastr !== 'undefined') {
-                        toastr.success(response.message);
+                        toastr.success(response.message || 'Removed from wishlist');
                     }
+                } else {
+                    card.css('opacity', '1');
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(response.message || 'Failed to remove from wishlist');
+                    }
+                }
+            },
+            error: function(xhr) {
+                card.css('opacity', '1');
+                console.error('Failed to remove from wishlist:', xhr);
+
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('Failed to remove from wishlist');
                 }
             }
         });
@@ -260,3 +282,4 @@ $(document).ready(function() {
 });
 </script>
 @endpush
+

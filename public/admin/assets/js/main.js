@@ -21,7 +21,7 @@
 
 (function ($) {
     'use strict';
-    
+
     let device_width = window.innerWidth;
 
     var rtsJs = {
@@ -55,7 +55,7 @@
                 $.fn.DataTable.ext.pager.numbers_length = 5;
                   $('#example').DataTable( {
                      "pagingType":"full_numbers",
-                  } );  
+                  } );
             });
         },
 
@@ -67,7 +67,7 @@
                         name: "Sales",
                         data: [23, 11, 22, 27, 13, 22, 37, 21, 44],
                     },
-        
+
                     {
                         name: "Visitors",
                         data: [30, 25, 36, 30, 45, 35, 64, 52, 59],
@@ -77,7 +77,7 @@
                         data: [15, 35, 15, 45, 35, 65, 10, 44, 5],
                     },
                 ],
-        
+
                 chart: {
                     fontFamily: "Jost, sans-serif",
                     height: 430,
@@ -90,7 +90,7 @@
                         autoScaleYaxis: true
                       }
                 },
-        
+
                 xaxis: {
                     type: "category",
                     categories: [
@@ -131,7 +131,7 @@
                     tickAmount: 5,
                     show: false,
                 },
-                colors: ["#629D23", "#455A3F", "#FF965D"],
+                colors: ["#08437b", "#455A3F", "#FF965D"],
                 fill: {
                     type: 'gradient',
                     gradient: {
@@ -141,7 +141,7 @@
                         stops: [0, 100]
                     }
                 },
-        
+
                 legend: {
                     show: true,
                     position: "top",
@@ -160,7 +160,7 @@
                 dataLabels: {
                     enabled: false,
                 },
-                
+
                 grid: {
                     show: true,
                     xaxis: {
@@ -172,12 +172,12 @@
                         lines: {
                             show: false,
                         },
-                    },  
+                    },
                     column: {
                         opacity: 0.2
-                    }, 
+                    },
                 },
-        
+
                 tooltip: {
                     enabled: true,
                     custom: function({ series, seriesIndex, dataPointIndex, w }) {
@@ -187,7 +187,7 @@
                         '</div>';
                     }
                 },
-                
+
                 responsive: [
                     {
                         breakpoint: 1024,
@@ -206,7 +206,7 @@
                         },
                     },
                 ],
-                
+
             };
             let lineOptions_2 = {
                 series: [
@@ -214,7 +214,7 @@
                         name: "Sales",
                         data: [23, 11, 22, 27, 13, 22, 37, 21, 44],
                     },
-        
+
                     {
                         name: "Visitors",
                         data: [30, 25, 36, 30, 45, 35, 64, 52, 59],
@@ -224,7 +224,7 @@
                         data: [15, 35, 15, 45, 35, 65, 10, 44, 5],
                     },
                 ],
-        
+
                 chart: {
                     fontFamily: "Jost, sans-serif",
                     height: 505,
@@ -237,7 +237,7 @@
                         autoScaleYaxis: true
                       }
                 },
-        
+
                 xaxis: {
                     type: "category",
                     categories: [
@@ -278,7 +278,7 @@
                     tickAmount: 5,
                     show: false,
                 },
-                colors: ["#629D23", "#455A3F", "#FF965D"],
+                colors: ["#08437b", "#455A3F", "#FF965D"],
                 fill: {
                     type: 'gradient',
                     gradient: {
@@ -288,7 +288,7 @@
                         stops: [0, 100]
                     }
                 },
-        
+
                 legend: {
                     show: true,
                     position: "top",
@@ -307,7 +307,7 @@
                 dataLabels: {
                     enabled: false,
                 },
-                
+
                 grid: {
                     show: true,
                     xaxis: {
@@ -319,12 +319,12 @@
                         lines: {
                             show: false,
                         },
-                    },  
+                    },
                     column: {
                         opacity: 0.2
-                    }, 
+                    },
                 },
-        
+
                 tooltip: {
                     enabled: true,
                     custom: function({ series, seriesIndex, dataPointIndex, w }) {
@@ -334,7 +334,7 @@
                         '</div>';
                     }
                 },
-                
+
                 responsive: [
                     {
                         breakpoint: 1024,
@@ -353,7 +353,7 @@
                         },
                     },
                 ],
-                
+
             };
             let lineOptions__3 = {
                 series: [
@@ -361,7 +361,7 @@
                         name: "Sales",
                         data: [23, 11, 22, 27, 13, 22, 37, 21, 44],
                     },
-        
+
                     {
                         name: "Visitors",
                         data: [30, 25, 36, 30, 45, 35, 64, 52, 59],
@@ -371,7 +371,7 @@
                         data: [15, 35, 15, 45, 35, 65, 10, 44, 5],
                     },
                 ],
-        
+
                 chart: {
                     fontFamily: "Jost, sans-serif",
                     height: 505,
@@ -384,7 +384,7 @@
                         autoScaleYaxis: true
                       }
                 },
-        
+
                 xaxis: {
                     type: "category",
                     categories: [
@@ -425,7 +425,7 @@
                     tickAmount: 5,
                     show: false,
                 },
-                colors: ["#629D23", "#455A3F", "#FF965D"],
+                colors: ["#08437b", "#455A3F", "#FF965D"],
                 fill: {
                     type: 'gradient',
                     gradient: {
@@ -435,7 +435,7 @@
                         stops: [0, 100]
                     }
                 },
-        
+
                 legend: {
                     show: true,
                     position: "top",
@@ -454,7 +454,7 @@
                 dataLabels: {
                     enabled: false,
                 },
-                
+
                 grid: {
                     show: true,
                     xaxis: {
@@ -466,12 +466,12 @@
                         lines: {
                             show: false,
                         },
-                    },  
+                    },
                     column: {
                         opacity: 0.2
-                    }, 
+                    },
                 },
-        
+
                 tooltip: {
                     enabled: true,
                     custom: function({ series, seriesIndex, dataPointIndex, w }) {
@@ -481,7 +481,7 @@
                         '</div>';
                     }
                 },
-                
+
                 responsive: [
                     {
                         breakpoint: 1024,
@@ -500,9 +500,9 @@
                         },
                     },
                 ],
-                
+
             };
-            
+
             let lineChartContainer = document.querySelector("#line-chart");
             let lineChartContainer_2 = document.querySelector("#line-chart-2");
             let lineChartContainer_3 = document.querySelector("#line-chart-3");
@@ -517,7 +517,7 @@
 
 
 
-        
+
             // Stack Chart
             let stackOptions = {
                 chart: {
@@ -533,13 +533,13 @@
                         name: 'PRODUCT A',
                         data: [2, 5, 1, 7, 2, 4, 1, 4],
                         dataLabels: true,
-                    }, 
+                    },
                     {
                         name: 'PRODUCT B',
                         data: [1, 3, 2, 8, 3, 7, 3, 2],
                         dataLabels: true,
                     }
-                ], 
+                ],
                 xaxis: {
                     type: "category",
                     categories: ['jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
@@ -590,14 +590,14 @@
                     }
                 },
                 fill: {
-                    colors: ["#629D23", "#629D23"],
+                    colors: ["#08437b", "#08437b"],
                 },
             };
-        
+
             let stackChartContainer = document.querySelector("#stack-chart");
             let stackChart = stackChartContainer && new ApexCharts(stackChartContainer, stackOptions);
             stackChart && stackChart.render();
-            
+
         },
 
         // sticky Header Activation
@@ -688,7 +688,7 @@
           $(".single_action__haeader svg, .avatar").click(function(e) {
               e.preventDefault();
               var $popup = $(this).siblings('.slide-down__click');
-          
+
               $popup.slideToggle();
               $(".slide-down__click").not($popup).slideUp(0);
           });
@@ -701,7 +701,7 @@
               $popup.slideToggle();
               $(".action-edit-deleate").not($popup).slideUp(0);
           });
-          
+
         //   single acton on edit view
           $(".between-stock-table.action img").click(function(e) {
               e.preventDefault();
@@ -746,7 +746,7 @@
           (function($) {
 
             $.fn.niceSelect = function(method) {
-        
+
                 // Methods
                 if (typeof method == 'string') {
                     if (method == 'update') {
@@ -754,11 +754,11 @@
                             var $select = $(this);
                             var $dropdown = $(this).next('.nice-select');
                             var open = $dropdown.hasClass('open');
-        
+
                             if ($dropdown.length) {
                                 $dropdown.remove();
                                 create_nice_select($select);
-        
+
                                 if (open) {
                                     $select.next().trigger('click');
                                 }
@@ -768,7 +768,7 @@
                         this.each(function() {
                             var $select = $(this);
                             var $dropdown = $(this).next('.nice-select');
-        
+
                             if ($dropdown.length) {
                                 $dropdown.remove();
                                 $select.css('display', '');
@@ -782,19 +782,19 @@
                     }
                     return this;
                 }
-        
+
                 // Hide native select
                 this.hide();
-        
+
                 // Create custom markup
                 this.each(function() {
                     var $select = $(this);
-        
+
                     if (!$select.next().hasClass('nice-select')) {
                         create_nice_select($select);
                     }
                 });
-        
+
                 function create_nice_select($select) {
                     $select.after($('<div></div>')
                         .addClass('nice-select')
@@ -804,7 +804,7 @@
                         .attr('tabindex', $select.attr('disabled') ? null : '0')
                         .html($select.attr('multiple') ? '<span class="multiple-options"></span><div class="nice-select-search-box"><input type="text" class="nice-select-search" placeholder="Поиск..."/></div><ul class="list"></ul>' : '<span class="current"></span><div class="nice-select-search-box"><input type="text" class="nice-select-search" placeholder="Поиск..."/></div><ul class="list"></ul>')
                     );
-        
+
                     var $dropdown = $select.next();
                     var $options = $select.find('option');
                     if ($select.attr('multiple')) {
@@ -813,11 +813,11 @@
                         $selected.each(function() {
                             $selected_option = $(this);
                             $selected_text = $selected_option.data('display') ||  $selected_option.text();
-        
+
                             if (!$selected_option.val()) {
                                 return;
                             }
-        
+
                             $selected_html += '<span class="current">' + $selected_text + '</span>';
                         });
                         $select_placeholder = $select.data('js-placeholder') || $select.attr('js-placeholder');
@@ -828,12 +828,12 @@
                         var $selected = $select.find('option:selected');
                         $dropdown.find('.current').html($selected.data('display') ||  $selected.text());
                     }
-        
-        
+
+
                     $options.each(function(i) {
                         var $option = $(this);
                         var display = $option.data('display');
-        
+
                         $dropdown.find('ul').append($('<li></li>')
                             .attr('data-value', $option.val())
                             .attr('data-display', (display || null))
@@ -844,19 +844,19 @@
                         );
                     });
                 }
-        
+
                 /* Event listeners */
-        
+
                 // Unbind existing events in case that the plugin has been initialized before
                 $(document).off('.nice_select');
-        
+
                 // Open/close
                 $(document).on('click.nice_select', '.nice-select', function(event) {
                     var $dropdown = $(this);
-        
+
                     $('.nice-select').not($dropdown).removeClass('open');
                     $dropdown.toggleClass('open');
-        
+
                     if ($dropdown.hasClass('open')) {
                         $dropdown.find('.option');
                         $dropdown.find('.nice-select-search').val('');
@@ -868,7 +868,7 @@
                         $dropdown.focus();
                     }
                 });
-        
+
                 $(document).on('click', '.nice-select-search-box', function(event) {
                     event.stopPropagation();
                     return false;
@@ -897,17 +897,17 @@
                         $self.find('.focus').removeClass('focus'),
                         $self.find('.selected').addClass('focus');
                 });
-        
+
                 // Close when clicking outside
                 $(document).on('click.nice_select', function(event) {
                     if ($(event.target).closest('.nice-select').length === 0) {
                         $('.nice-select').removeClass('open').find('.option');
                     }
                 });
-        
+
                 // Option click
                 $(document).on('click.nice_select', '.nice-select .option:not(.disabled)', function(event) {
-                    
+
                     var $option = $(this);
                     var $dropdown = $option.closest('.nice-select');
                     if ($dropdown.hasClass('has-multiple')) {
@@ -956,12 +956,12 @@
                 $(this).parent().remove();
                 console.log($('.mySelect').val())
                })
-              
+
                 // Keyboard events
                 $(document).on('keydown.nice_select', '.nice-select', function(event) {
                     var $dropdown = $(this);
                     var $focused_option = $($dropdown.find('.focus') || $dropdown.find('.list .option.selected'));
-        
+
                     // Space or Enter
                     if (event.keyCode == 32 || event.keyCode == 13) {
                         if ($dropdown.hasClass('open')) {
@@ -1006,39 +1006,39 @@
                         }
                     }
                 });
-        
+
                 // Detect CSS pointer-events support, for IE <= 10. From Modernizr.
                 var style = document.createElement('a').style;
                 style.cssText = 'pointer-events:auto';
                 if (style.pointerEvents !== 'auto') {
                     $('html').addClass('no-csspointerevents');
                 }
-        
+
                 return this;
-        
+
             };
-        
+
         }(jQuery));
-        
+
         $(document).ready(function() {
           $('.mySelect').niceSelect();
         });
-        
-        
+
+
         },
 
         // backto Top Area Start
         backToTopInit: function () {
             $(document).ready(function(){
             "use strict";
-        
+
             var progressPath = document.querySelector('.progress-wrap path');
             var pathLength = progressPath.getTotalLength();
             progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
             progressPath.style.strokeDasharray = pathLength + ' ' + pathLength;
             progressPath.style.strokeDashoffset = pathLength;
             progressPath.getBoundingClientRect();
-            progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';		
+            progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
             var updateProgress = function () {
               var scroll = $(window).scrollTop();
               var height = $(document).height() - $(window).height();
@@ -1046,7 +1046,7 @@
               progressPath.style.strokeDashoffset = progress;
             }
             updateProgress();
-            $(window).scroll(updateProgress);	
+            $(window).scroll(updateProgress);
             var offset = 150;
             var duration = 500;
             jQuery(window).on('scroll', function() {
@@ -1055,24 +1055,24 @@
               } else {
                 jQuery('.progress-wrap').removeClass('active-progress');
               }
-            });				
+            });
             jQuery('.progress-wrap').on('click', function(event) {
               event.preventDefault();
               jQuery('html, body').animate({scrollTop: 0}, duration);
               return false;
             })
-            
-            
+
+
           });
-    
+
         },
-        
+
 
 
     }
 
     rtsJs.m();
-  })(jQuery, window) 
+  })(jQuery, window)
 
 
 
