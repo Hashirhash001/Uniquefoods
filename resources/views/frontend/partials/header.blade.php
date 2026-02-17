@@ -99,7 +99,7 @@
                                         <i class="fa-regular fa-user"></i>
                                         <span>My Profile</span>
                                     </a>
-                                    <a href="#" class="unique-menu-link">
+                                    <a href="{{ route('orders.index') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-box"></i>
                                         <span>Orders</span>
                                     </a>
@@ -136,7 +136,7 @@
                                         <i class="fa-regular fa-user"></i>
                                         <span>My Profile</span>
                                     </a>
-                                    <a href="#" class="unique-menu-link">
+                                    <a href="{{ route('orders.index') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-box"></i>
                                         <span>Orders</span>
                                     </a>
@@ -176,7 +176,7 @@
                             <span class="unique-badge" id="cartCount">0</span>
                             <div class="unique-action-info">
                                 <span class="unique-action-label">Cart</span>
-                                <span class="unique-action-value">₹<span id="cartTotal">0.00</span></span>
+                                <span class="unique-action-value">£<span id="cartTotal">0.00</span></span>
                             </div>
                         </button>
 
@@ -203,10 +203,10 @@
                             <div class="unique-cart-footer" id="cartFooter" style="display: none;">
                                 <div class="unique-cart-subtotal">
                                     <span>Subtotal:</span>
-                                    <strong>₹<span id="cartSubtotal">0.00</span></strong>
+                                    <strong>£<span id="cartSubtotal">0.00</span></strong>
                                 </div>
                                 <a href="{{ route('cart.index') }}" class="unique-btn-view-cart">View Cart</a>
-                                <a href="#" class="unique-btn-checkout">Proceed to Checkout</a>
+                                <a href="{{ route('checkout.index') }}" class="unique-btn-checkout">Proceed to Checkout</a>
                             </div>
                         </div>
                     </div>
@@ -302,7 +302,7 @@
                 <!-- Promo Banner -->
                 <div class="unique-promo-banner">
                     <i class="fa-solid fa-gift"></i>
-                    <span>Free delivery on orders over ₹500</span>
+                    <span>Free delivery on orders over £500</span>
                 </div>
             </div>
         </div>
@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="search-item-meta">${product.category || 'General'}</div>
                                     ${stockText}
                                 </div>
-                                <div class="search-item-price">₹${product.price}</div>
+                                <div class="search-item-price">£${product.price}</div>
                             </a>
                         `;
                     });
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="search-item-info">
                                     <div class="search-item-name">${product.name}</div>
                                 </div>
-                                <div class="search-item-price">₹${product.price}</div>
+                                <div class="search-item-price">£${product.price}</div>
                             </a>
                         `;
                     });

@@ -180,10 +180,10 @@ $(document).ready(function() {
                             </div>
 
                             <div class="product-pricing">
-                                <span class="current-price">₹${parseFloat(product.price).toFixed(2)}</span>
+                                <span class="current-price">£${parseFloat(product.price).toFixed(2)}</span>
                                 ${product.base_price > product.price ? `
-                                    <span class="original-price">₹${parseFloat(product.base_price).toFixed(2)}</span>
-                                    <span class="price-save">Save ₹${(parseFloat(product.base_price) - parseFloat(product.price)).toFixed(2)}</span>
+                                    <span class="original-price">£${parseFloat(product.base_price).toFixed(2)}</span>
+                                    <span class="price-save">Save £${(parseFloat(product.base_price) - parseFloat(product.price)).toFixed(2)}</span>
                                 ` : ''}
                             </div>
 

@@ -415,7 +415,7 @@ $(document).ready(function() {
 
         if (hasFilters) {
             if (activeFilters.minPrice > 0 || activeFilters.maxPrice < 10000) {
-                html += `<span class="shop-active-filter-tag">₹${activeFilters.minPrice} - ₹${activeFilters.maxPrice} <i class="fa-solid fa-xmark shop-remove-filter" data-type="price"></i></span>`;
+                html += `<span class="shop-active-filter-tag">£${activeFilters.minPrice} - £${activeFilters.maxPrice} <i class="fa-solid fa-xmark shop-remove-filter" data-type="price"></i></span>`;
             }
 
             activeFilters.categories.forEach(id => {
@@ -597,10 +597,10 @@ $(document).ready(function() {
                                 <span class="rating-count">(4.0)</span>
                             </div>
                             <div class="product-price">
-                                <span class="price-current">₹${finalPrice.toFixed(2)}</span>
+                                <span class="price-current">£${finalPrice.toFixed(2)}</span>
                                 ${showStrike ? `
-                                    <span class="price-original">₹${basePrice.toFixed(2)}</span>
-                                    <span class="price-save">Save ₹${(basePrice - finalPrice).toFixed(2)}</span>
+                                    <span class="price-original">£${basePrice.toFixed(2)}</span>
+                                    <span class="price-save">Save £${(basePrice - finalPrice).toFixed(2)}</span>
                                 ` : ''}
                             </div>
                             ${product.stock > 0 ? `

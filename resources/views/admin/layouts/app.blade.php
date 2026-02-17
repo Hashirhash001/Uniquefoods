@@ -250,7 +250,7 @@
             gap: 8px;
             font-size: 20px;
             font-weight: 700;
-            color: #22c55e;
+            color: #08437b;
             margin-bottom: 0px !important;
             letter-spacing: -0.3px;
             padding: 8px;
@@ -259,7 +259,7 @@
         }
 
         .sidebar-logo:hover {
-            color: #16a34a;
+            color: #0f508d;
         }
 
         .sidebar-logo-icon {
@@ -332,7 +332,7 @@
         /* Active parent */
         .single-menu-item.active > a,
         .single-menu-item.uf-open > a {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            background: linear-gradient(135deg, #b9cfe3 0%, #e4f2ff 100%);
             color: #15803d;
             font-weight: 600;
         }
@@ -660,7 +660,7 @@
             height: 46px;
             cursor: pointer;
             display: none;
-            background: #22c55e;
+            background: #08437b;
             border-radius: 50%;
             z-index: 1000;
             opacity: 0;
@@ -809,7 +809,7 @@
         }
 
         .avatar:hover {
-            border-color: #22c55e;
+            border-color: #08437b;
             background: #f0fdf4;
         }
 
@@ -820,7 +820,7 @@
         }
 
         .avatar:hover i {
-            color: #22c55e;
+            color: #08437b;
         }
 
         /* Alternative: Avatar with initials */
@@ -830,7 +830,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            background: linear-gradient(135deg, #08437b 0%, #0f508d 100%);
             color: white;
             font-size: 16px;
             font-weight: 600;
@@ -972,8 +972,8 @@
             </li>
 
             <!-- Orders -->
-            <li class="single-menu-item">
-                <a href="#" data-title="Orders">
+            <li class="single-menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.orders.index') }}" data-title="Orders">
                     <i class="fas fa-shopping-cart icon"></i>
                     <span>Orders</span>
                 </a>

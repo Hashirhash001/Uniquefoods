@@ -58,7 +58,7 @@
         }
 
         .btn-create {
-            background: #22c55e;
+            background: #08437b;
             border: none;
             color: white;
             padding: 0.625rem 1.25rem;
@@ -72,7 +72,7 @@
         }
 
         .btn-create:hover {
-            background: #16a34a;
+            background: #0f508d;
             box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
         }
 
@@ -253,7 +253,7 @@
         }
 
         .modal-title i {
-            color: #22c55e !important;
+            color: #08437b !important;
             margin-right: 0.5rem !important;
             font-size: 18px !important;
         }
@@ -291,7 +291,7 @@
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #22c55e;
+            border-color: #08437b;
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
             outline: none;
         }
@@ -312,8 +312,8 @@
         }
 
         .form-check-input:checked {
-            background-color: #22c55e;
-            border-color: #22c55e;
+            background-color: #08437b;
+            border-color: #08437b;
         }
 
         /* Buttons */
@@ -334,7 +334,7 @@
         }
 
         .btn-primary-modal {
-            background: #22c55e;
+            background: #08437b;
             border: none;
             color: white;
             padding: 0.625rem 1.25rem;
@@ -345,7 +345,7 @@
         }
 
         .btn-primary-modal:hover {
-            background: #16a34a;
+            background: #0f508d;
             box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
         }
 
@@ -376,8 +376,8 @@
         }
 
         .pagination .page-item.active .page-link {
-            background: #22c55e;
-            border-color: #22c55e;
+            background: #08437b;
+            border-color: #08437b;
             color: white;
             font-weight: 600;
         }
@@ -404,7 +404,7 @@
             height: 40px;
             margin: -20px 0 0 -20px;
             border: 3px solid #f3f4f6;
-            border-top-color: #22c55e;
+            border-top-color: #08437b;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -725,7 +725,7 @@
                         icon: 'error',
                         title: 'Error',
                         text: 'Failed to load brands',
-                        confirmButtonColor: '#22c55e',
+                        confirmButtonColor: '#08437b',
                         width: '30em',
                         padding: '2rem'
                     });
@@ -821,7 +821,7 @@
                         icon: 'success',
                         title: 'Success!',
                         text: response.message,
-                        confirmButtonColor: '#22c55e',
+                        confirmButtonColor: '#08437b',
                         confirmButtonText: 'OK',
                         width: '30em',
                         padding: '2rem',
@@ -842,7 +842,7 @@
                             icon: 'error',
                             title: 'Validation Error',
                             text: 'Please check the form for errors',
-                            confirmButtonColor: '#22c55e',
+                            confirmButtonColor: '#08437b',
                             confirmButtonText: 'OK',
                             width: '30em',
                             padding: '2rem'
@@ -852,7 +852,7 @@
                             icon: 'error',
                             title: 'Error',
                             text: xhr.responseJSON?.message || 'Something went wrong',
-                            confirmButtonColor: '#22c55e',
+                            confirmButtonColor: '#08437b',
                             confirmButtonText: 'OK',
                             width: '30em',
                             padding: '2rem'
@@ -870,7 +870,7 @@
                 text: `Change status to ${newStatus ? 'Active' : 'Inactive'}?`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#22c55e',
+                confirmButtonColor: '#08437b',
                 cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Yes, change it!',
                 cancelButtonText: 'Cancel',
@@ -889,7 +889,7 @@
                                 icon: 'success',
                                 title: 'Updated!',
                                 text: 'Status changed successfully',
-                                confirmButtonColor: '#22c55e',
+                                confirmButtonColor: '#08437b',
                                 confirmButtonText: 'OK',
                                 timer: 1500,
                                 showConfirmButton: false,
@@ -903,7 +903,7 @@
                                 icon: 'error',
                                 title: 'Error',
                                 text: 'Failed to update status',
-                                confirmButtonColor: '#22c55e',
+                                confirmButtonColor: '#08437b',
                                 confirmButtonText: 'OK',
                                 width: '30em',
                                 padding: '2rem'
@@ -947,7 +947,7 @@
                                 icon: 'success',
                                 title: 'Deleted!',
                                 text: response.message,
-                                confirmButtonColor: '#22c55e',
+                                confirmButtonColor: '#08437b',
                                 confirmButtonText: 'OK',
                                 width: '30em',
                                 padding: '2rem',
@@ -960,7 +960,7 @@
                                 icon: 'error',
                                 title: 'Error',
                                 text: xhr.responseJSON?.message || 'Failed to delete brand',
-                                confirmButtonColor: '#22c55e',
+                                confirmButtonColor: '#08437b',
                                 confirmButtonText: 'OK',
                                 width: '30em',
                                 padding: '2rem'

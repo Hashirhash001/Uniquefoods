@@ -13,14 +13,14 @@
     }
     .breadcrumb-item { color: #6b7280; }
     .breadcrumb-item a { color: #6b7280; text-decoration: none; transition: color 0.2s; }
-    .breadcrumb-item a:hover { color: #22c55e; }
+    .breadcrumb-item a:hover { color: #08437b; }
     .breadcrumb-item.active { color: #111827; font-weight: 500; }
     .breadcrumb-item + .breadcrumb-item::before { color: #d1d5db; content: "/"; }
 
     /* Header Card */
     .group-info-card {
-        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-        border: 1px solid #22c55e;
+        background: linear-gradient(135deg, #b9cfe3 0%, #e4f2ff 100%);
+        border: 1px solid #08437b;
         border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
@@ -39,7 +39,7 @@
         gap: 0.75rem;
     }
 
-    .group-info h3 i { color: #22c55e; }
+    .group-info h3 i { color: #08437b; }
 
     .group-meta {
         display: flex;
@@ -55,12 +55,12 @@
         gap: 0.375rem;
     }
 
-    .group-meta span i { color: #22c55e; }
+    .group-meta span i { color: #08437b; }
 
     .back-btn {
         background: white;
-        border: 2px solid #22c55e;
-        color: #22c55e;
+        border: 2px solid #08437b;
+        color: #08437b;
         padding: 0.625rem 1.25rem;
         border-radius: 8px;
         font-weight: 600;
@@ -73,7 +73,7 @@
     }
 
     .back-btn:hover {
-        background: #22c55e;
+        background: #08437b;
         color: white;
     }
 
@@ -106,7 +106,7 @@
         gap: 0.5rem;
     }
 
-    .card-header h4 i { color: #22c55e; }
+    .card-header h4 i { color: #08437b; }
 
     .card-body { padding: 1.5rem; }
 
@@ -130,7 +130,7 @@
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: #22c55e;
+        border-color: #08437b;
         box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
         outline: none;
     }
@@ -184,13 +184,13 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        background: linear-gradient(135deg, #08437b 0%, #0f508d 100%);
         color: white;
         box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3);
     }
 
     .btn-primary:hover {
-        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        background: linear-gradient(135deg, #0f508d 0%, #15803d 100%);
         transform: translateY(-1px);
         box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
     }
@@ -349,7 +349,7 @@
                         <label class="form-label">Discount Type <span class="text-danger">*</span></label>
                         <select name="type" class="form-select" id="discountType">
                             <option value="percentage">Percentage (%)</option>
-                            <option value="fixed">Fixed Amount (₹)</option>
+                            <option value="fixed">Fixed Amount (£)</option>
                         </select>
                         <small class="form-text">Choose discount calculation method</small>
                     </div>
@@ -367,7 +367,7 @@
                     <div class="col-md-3">
                         <label class="form-label">Minimum Order Amount</label>
                         <div class="input-group">
-                            <span class="input-group-text">₹</span>
+                            <span class="input-group-text">£</span>
                             <input type="number" step="0.01" name="min_order_amount"
                                    class="form-control" placeholder="500" min="0">
                         </div>
@@ -428,13 +428,13 @@
                                 @if($discount->type == 'percentage')
                                     {{ $discount->value }}%
                                 @else
-                                    ₹{{ number_format($discount->value, 2) }}
+                                    £{{ number_format($discount->value, 2) }}
                                 @endif
                             </strong>
                         </td>
                         <td>
                             @if($discount->min_order_amount)
-                                ₹{{ number_format($discount->min_order_amount, 2) }}
+                                £{{ number_format($discount->min_order_amount, 2) }}
                             @else
                                 <span style="color: #9ca3af;">No minimum</span>
                             @endif
@@ -484,7 +484,7 @@ $(document).ready(function() {
     // Change symbol based on discount type
     $('#discountType').on('change', function() {
         const type = $(this).val();
-        $('#discountSymbol').text(type === 'percentage' ? '%' : '₹');
+        $('#discountSymbol').text(type === 'percentage' ? '%' : '£');
 
         const input = $('input[name="value"]');
         if (type === 'percentage') {
@@ -522,7 +522,7 @@ $(document).ready(function() {
                     icon: 'success',
                     title: 'Success!',
                     text: response.message,
-                    confirmButtonColor: '#22c55e',
+                    confirmButtonColor: '#08437b',
                     timer: 2000
                 }).then(() => {
                     location.reload();
@@ -542,7 +542,7 @@ $(document).ready(function() {
                         icon: 'error',
                         title: 'Validation Error',
                         text: 'Please check the form and try again',
-                        confirmButtonColor: '#22c55e'
+                        confirmButtonColor: '#08437b'
                     });
                 }
             }
@@ -566,7 +566,7 @@ $(document).ready(function() {
             text: `Are you sure you want to ${newStatus.toLowerCase()} this discount rule?`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: isCurrentlyActive ? '#ef4444' : '#22c55e',
+            confirmButtonColor: isCurrentlyActive ? '#ef4444' : '#08437b',
             cancelButtonColor: '#6b7280',
             confirmButtonText: `Yes, ${newStatus}`,
             cancelButtonText: 'Cancel'
@@ -608,7 +608,7 @@ $(document).ready(function() {
                             icon: 'error',
                             title: 'Error',
                             text: xhr.responseJSON?.message || 'Failed to update status',
-                            confirmButtonColor: '#22c55e'
+                            confirmButtonColor: '#08437b'
                         });
                     },
                     complete: function() {
@@ -645,7 +645,7 @@ $(document).ready(function() {
                             icon: 'success',
                             title: 'Deleted!',
                             text: response.message,
-                            confirmButtonColor: '#22c55e',
+                            confirmButtonColor: '#08437b',
                             timer: 2000
                         });
 
@@ -662,7 +662,7 @@ $(document).ready(function() {
                             icon: 'error',
                             title: 'Error',
                             text: xhr.responseJSON?.message || 'Failed to delete discount',
-                            confirmButtonColor: '#22c55e'
+                            confirmButtonColor: '#08437b'
                         });
                     }
                 });

@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/global-loader.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/plugins.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}">
+    {{-- SweetAlert2 CSS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     {{-- Header Auto-Hide CSS --}}
     <style>
@@ -156,6 +158,8 @@
         }, 500); // Small delay for smooth UX
     });
 </script>
+{{-- SweetAlert2 JS --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @stack('scripts')
 </body>

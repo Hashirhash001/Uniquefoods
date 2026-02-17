@@ -22,8 +22,8 @@
       --muted:#6b7280;
       --border:#e5e7eb;
       --shadow: 0 20px 50px rgba(17,24,39,.10);
-      --brand:#22c55e;
-      --brand2:#16a34a;
+      --brand:#08437b;
+      --brand2:#0f508d;
       --danger:#ef4444;
       --ring: 0 0 0 .25rem rgba(34,197,94,.18);
     }

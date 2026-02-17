@@ -28,7 +28,7 @@
     }
 
     .breadcrumb-item a:hover {
-        color: #22c55e;
+        color: #08437b;
     }
 
     .breadcrumb-item.active {
@@ -52,7 +52,7 @@
     }
 
     .card-header {
-        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        background: linear-gradient(135deg, #b9cfe3 0%, #e4f2ff 100%);
         border-bottom: 1px solid #e5e7eb;
         padding: 1.5rem 2rem;
     }
@@ -68,7 +68,7 @@
     }
 
     .card-header h4 i {
-        color: #22c55e;
+        color: #08437b;
         font-size: 24px;
     }
 
@@ -95,14 +95,14 @@
         color: #111827;
         margin-bottom: 1.25rem;
         padding-bottom: 0.75rem;
-        border-bottom: 2px solid #22c55e;
+        border-bottom: 2px solid #08437b;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
     .section-title i {
-        color: #22c55e;
+        color: #08437b;
     }
 
     /* Form Labels */
@@ -146,7 +146,7 @@
 
     .form-control:focus,
     .form-select:focus {
-        border-color: #22c55e;
+        border-color: #08437b;
         box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
         outline: none;
         background: #f9fafb;
@@ -209,7 +209,7 @@
     }
 
     .customer-search-header input:focus {
-        border-color: #22c55e;
+        border-color: #08437b;
         box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
         outline: none;
     }
@@ -245,11 +245,11 @@
     }
 
     .customer-stats span i {
-        color: #22c55e;
+        color: #08437b;
     }
 
     .customer-stats .selected-count {
-        color: #22c55e;
+        color: #08437b;
         font-weight: 600;
     }
 
@@ -288,14 +288,14 @@
 
     .customer-item.selected {
         background: #f0fdf4;
-        border-left: 3px solid #22c55e;
+        border-left: 3px solid #08437b;
     }
 
     .customer-item input[type="checkbox"] {
         cursor: pointer;
         width: 18px;
         height: 18px;
-        accent-color: #22c55e;
+        accent-color: #08437b;
     }
 
     .customer-info {
@@ -320,7 +320,7 @@
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        background: linear-gradient(135deg, #08437b 0%, #0f508d 100%);
         color: white;
         display: flex;
         align-items: center;
@@ -381,13 +381,13 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        background: linear-gradient(135deg, #08437b 0%, #0f508d 100%);
         color: white;
         box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3);
     }
 
     .btn-primary:hover {
-        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        background: linear-gradient(135deg, #0f508d 0%, #15803d 100%);
         box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
         transform: translateY(-1px);
     }
@@ -647,7 +647,7 @@ $(document).ready(function() {
                             You can now set up pricing rules and discounts for this group
                         </p>
                     `,
-                    confirmButtonColor: '#22c55e',
+                    confirmButtonColor: '#08437b',
                     confirmButtonText: 'View Groups'
                 }).then(() => {
                     window.location.href = "{{ route('admin.customer-groups.index') }}";
@@ -681,7 +681,7 @@ $(document).ready(function() {
                         icon: 'error',
                         title: 'Validation Errors',
                         html: `<div style="text-align: left; font-size: 14px;">${errorList.join('<br>')}</div>`,
-                        confirmButtonColor: '#22c55e',
+                        confirmButtonColor: '#08437b',
                         confirmButtonText: 'OK'
                     });
                 } else {
@@ -689,7 +689,7 @@ $(document).ready(function() {
                         icon: 'error',
                         title: 'Error',
                         text: xhr.responseJSON?.message || 'Something went wrong. Please try again.',
-                        confirmButtonColor: '#22c55e',
+                        confirmButtonColor: '#08437b',
                         confirmButtonText: 'OK'
                     });
                 }

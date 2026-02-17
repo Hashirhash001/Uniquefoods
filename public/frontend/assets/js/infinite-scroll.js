@@ -163,10 +163,10 @@
                                 <span class="rating-count">(4.0)</span>
                             </div>
                             <div class="product-price">
-                                <span class="price-current">₹${parseFloat(product.price).toFixed(2)}</span>
+                                <span class="price-current">£${parseFloat(product.price).toFixed(2)}</span>
                                 ${product.mrp && product.mrp > product.price ? `
-                                    <span class="price-original">₹${parseFloat(product.mrp).toFixed(2)}</span>
-                                    <span class="price-save">Save ₹${(product.mrp - product.price).toFixed(2)}</span>
+                                    <span class="price-original">£${parseFloat(product.mrp).toFixed(2)}</span>
+                                    <span class="price-save">Save £${(product.mrp - product.price).toFixed(2)}</span>
                                 ` : ''}
                             </div>
                             ${product.stock > 0 ? `

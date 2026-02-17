@@ -64,7 +64,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="banner-inner-content-three">
-                                        <span class="pre">Get up to 30% off on your first ₹150 purchase</span>
+                                        <span class="pre">Get up to 30% off on your first £150 purchase</span>
                                         <h1 class="title">Don't miss our amazing<br>grocery deals</h1>
                                         <p class="dsicription">We have prepared special discounts for you on grocery products. Don't miss these opportunities...</p>
                                         <a href="{{ route('shop') }}" class="rts-btn btn-primary radious-sm with-icon">
@@ -259,10 +259,10 @@
 
                             {{-- Price --}}
                             <div class="product-price">
-                                <span class="price-current">₹{{ number_format($product->final_price, 2) }}</span>
+                                <span class="price-current">£{{ number_format($product->final_price, 2) }}</span>
                                 @if($product->base_price > $product->final_price)
-                                    <span class="price-original">₹{{ number_format($product->base_price, 2) }}</span>
-                                    <span class="price-save">Save ₹{{ number_format($product->base_price - $product->final_price, 2) }}</span>
+                                    <span class="price-original">£{{ number_format($product->base_price, 2) }}</span>
+                                    <span class="price-save">Save £{{ number_format($product->base_price - $product->final_price, 2) }}</span>
                                 @endif
                             </div>
 
@@ -408,10 +408,10 @@
                                     </div>
 
                                     <div class="product-price">
-                                        <span class="price-current">₹{{ number_format($product->final_price, 2) }}</span>
+                                        <span class="price-current">£{{ number_format($product->final_price, 2) }}</span>
                                         @if($product->base_price > $product->final_price)
-                                            <span class="price-original">₹{{ number_format($product->base_price, 2) }}</span>
-                                            <span class="price-save">Save ₹{{ number_format($product->base_price - $product->final_price, 2) }}</span>
+                                            <span class="price-original">£{{ number_format($product->base_price, 2) }}</span>
+                                            <span class="price-save">Save £{{ number_format($product->base_price - $product->final_price, 2) }}</span>
                                         @endif
                                     </div>
 
@@ -504,10 +504,10 @@
                                         </div>
 
                                         <div class="product-price">
-                                            <span class="price-current">₹{{ number_format($product->price, 2) }}</span>
+                                            <span class="price-current">£{{ number_format($product->price, 2) }}</span>
                                             @if($product->mrp && $product->mrp > $product->price)
-                                                <span class="price-original">₹{{ number_format($product->mrp, 2) }}</span>
-                                                <span class="price-save">Save ₹{{ number_format($product->mrp - $product->price, 2) }}</span>
+                                                <span class="price-original">£{{ number_format($product->mrp, 2) }}</span>
+                                                <span class="price-save">Save £{{ number_format($product->mrp - $product->price, 2) }}</span>
                                             @endif
                                         </div>
 

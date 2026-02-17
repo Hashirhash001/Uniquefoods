@@ -41,7 +41,7 @@
 }
 
 .rts-btn.btn-primary {
-    background: #22c55e;
+    background: #08437b;
     color: white;
     padding: 0.625rem 1.25rem;
     border-radius: 6px;
@@ -57,7 +57,7 @@
 }
 
 .rts-btn.btn-primary:hover {
-    background: #16a34a;
+    background: #0f508d;
     box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
     color: white;
 }
@@ -102,12 +102,12 @@
 }
 
 .filters-title i {
-    color: #22c55e;
+    color: #08437b;
     font-size: 18px;
 }
 
 .active-filters-count {
-    background: #22c55e;
+    background: #08437b;
     color: white;
     padding: 0.25rem 0.625rem;
     border-radius: 12px;
@@ -174,7 +174,7 @@
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: #22c55e;
+    border-color: #08437b;
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
     outline: none;
     background: white;
@@ -285,7 +285,7 @@
 }
 
 .products-table th.sortable:hover {
-    color: #22c55e;
+    color: #08437b;
     background: #f0fdf4;
 }
 
@@ -306,7 +306,7 @@
 }
 
 .products-table th.sortable.active {
-    color: #22c55e;
+    color: #08437b;
     background: #f0fdf4;
 }
 
@@ -315,11 +315,11 @@
 }
 
 .products-table th.sortable.asc .sort-icon .fa-caret-up {
-    color: #22c55e;
+    color: #08437b;
 }
 
 .products-table th.sortable.desc .sort-icon .fa-caret-down {
-    color: #22c55e;
+    color: #08437b;
 }
 
 .products-table tbody tr {
@@ -481,8 +481,8 @@
 }
 
 .pagination .page-item.active .page-link {
-    background: #22c55e;
-    border-color: #22c55e;
+    background: #08437b;
+    border-color: #08437b;
     color: white;
     font-weight: 600;
 }
@@ -516,7 +516,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid #f3f4f6;
-    border-top-color: #22c55e;
+    border-top-color: #08437b;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -750,9 +750,9 @@
                         <i class="fas fa-rupee-sign"></i> Price Range
                     </label>
                     <div class="price-range-group">
-                        <input type="number" id="min_price" class="form-control" placeholder="Min ₹">
+                        <input type="number" id="min_price" class="form-control" placeholder="Min £">
                         <span class="price-separator">—</span>
-                        <input type="number" id="max_price" class="form-control" placeholder="Max ₹">
+                        <input type="number" id="max_price" class="form-control" placeholder="Max £">
                     </div>
                 </div>
             </div>
@@ -853,7 +853,7 @@ function loadProducts(page = 1) {
                 icon: 'error',
                 title: 'Error',
                 text: 'Failed to load products',
-                confirmButtonColor: '#22c55e'
+                confirmButtonColor: '#08437b'
             });
         }
     });
@@ -955,7 +955,7 @@ $(document).on('click', '.delete-product', function () {
                         icon: 'success',
                         title: 'Deleted!',
                         text: response.message,
-                        confirmButtonColor: '#22c55e',
+                        confirmButtonColor: '#08437b',
                         timer: 2000
                     });
                     loadProducts($('#paginationContainer .pagination .active .page-link').text() || 1);
@@ -965,7 +965,7 @@ $(document).on('click', '.delete-product', function () {
                         icon: 'error',
                         title: 'Error',
                         text: xhr.responseJSON?.message || 'Failed to delete product',
-                        confirmButtonColor: '#22c55e'
+                        confirmButtonColor: '#08437b'
                     });
                 }
             });

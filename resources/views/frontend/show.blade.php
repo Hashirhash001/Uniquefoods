@@ -644,19 +644,19 @@
 
                                     <div class="product-price-wrapper">
                                         <span class="product-price mb--15 d-block" style="color:#DC2626;font-weight:600;">
-                                            ₹{{ number_format($product->final_price, 2) }}
+                                            £{{ number_format($product->final_price, 2) }}
                                         </span>
 
                                         @if($product->base_price > $product->final_price)
-                                            <span class="old-price ml--15">₹{{ number_format($product->base_price, 2) }}</span>
+                                            <span class="old-price ml--15">£{{ number_format($product->base_price, 2) }}</span>
                                             <span class="save-badge">
-                                                Save ₹{{ number_format($product->base_price - $product->final_price, 2) }}
+                                                Save £{{ number_format($product->base_price - $product->final_price, 2) }}
                                                 ({{ $product->discount_percentage_calc }}%)
                                             </span>
                                         @elseif($product->mrp && $product->mrp > $product->final_price)
-                                            <span class="old-price ml--15">₹{{ number_format($product->mrp, 2) }}</span>
+                                            <span class="old-price ml--15">£{{ number_format($product->mrp, 2) }}</span>
                                             <span class="save-badge">
-                                                Save ₹{{ number_format($product->mrp - $product->final_price, 2) }}
+                                                Save £{{ number_format($product->mrp - $product->final_price, 2) }}
                                                 ({{ round((($product->mrp - $product->final_price) / $product->mrp) * 100) }}%)
                                             </span>
                                         @endif
@@ -805,7 +805,7 @@
                                 <img src="{{ asset('frontend/assets/images/shop/02.svg') }}" alt="icon">
                             </div>
                             <div class="details">
-                                <p>Flat ₹250 off on Credit Card EMI on orders of ₹1000+ T&C</p>
+                                <p>Flat £250 off on Credit Card EMI on orders of £1000+ T&C</p>
                             </div>
                         </div>
                         <div class="single-offer-area">
@@ -813,7 +813,7 @@
                                 <img src="{{ asset('frontend/assets/images/shop/03.svg') }}" alt="icon">
                             </div>
                             <div class="details">
-                                <p>Free delivery on orders above ₹500 T&C</p>
+                                <p>Free delivery on orders above £500 T&C</p>
                             </div>
                         </div>
                     </div>
@@ -825,7 +825,7 @@
                                 <i class="fa-solid fa-truck-fast"></i>
                                 <div>
                                     <strong>Free Delivery</strong>
-                                    <p>On orders above ₹500</p>
+                                    <p>On orders above £500</p>
                                 </div>
                             </div>
                             <div class="info-item">
@@ -920,11 +920,11 @@
                                 <span class="rating-count">(4.0)</span>
                             </div>
                             <div class="product-price">
-                                <span class="price-current">₹{{ number_format($related->final_price, 2) }}</span>
+                                <span class="price-current">£{{ number_format($related->final_price, 2) }}</span>
 
                                 @if($related->base_price > $related->final_price)
-                                    <span class="price-original">₹{{ number_format($related->base_price, 2) }}</span>
-                                    <span class="price-save">Save ₹{{ number_format($related->base_price - $related->final_price, 2) }}</span>
+                                    <span class="price-original">£{{ number_format($related->base_price, 2) }}</span>
+                                    <span class="price-save">Save £{{ number_format($related->base_price - $related->final_price, 2) }}</span>
                                 @endif
                             </div>
 
@@ -970,7 +970,7 @@
                 </div>
                 <div class="share-product-info">
                     <h4>{{ $product->name }}</h4>
-                    <div class="share-product-price">₹{{ number_format($product->final_price, 2) }}</div>
+                    <div class="share-product-price">£{{ number_format($product->final_price, 2) }}</div>
                 </div>
             </div>
 
@@ -1033,7 +1033,7 @@
 $(document).ready(function() {
     const productUrl = '{{ url()->current() }}';
     const productTitle = '{{ $product->name }}';
-    const productPrice = '₹{{ number_format($product->price, 2) }}';
+    const productPrice = '£{{ number_format($product->price, 2) }}';
     const productImage = '{{ $product->image_url }}';
 
     // Open share modal

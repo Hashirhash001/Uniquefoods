@@ -363,7 +363,7 @@
                             <h5 class="unique-cart-item-name">${item.name}</h5>
                             <div class="unique-cart-item-meta">
                                 <span class="unique-cart-item-quantity">Qty: ${item.quantity}</span>
-                                <span class="unique-cart-item-price">₹${parseFloat(item.price).toFixed(2)}</span>
+                                <span class="unique-cart-item-price">£${parseFloat(item.price).toFixed(2)}</span>
                             </div>
                         </div>
                         <button class="unique-cart-item-remove cart-remove-btn" data-product-id="${item.id}" type="button">

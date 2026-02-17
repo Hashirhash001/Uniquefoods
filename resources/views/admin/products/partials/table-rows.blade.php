@@ -61,9 +61,9 @@
                 <td data-label="Category">{{ $product->category->name ?? '-' }}</td>
                 <td data-label="Brand">{{ $product->brand->name ?? '-' }}</td>
                 <td data-label="Price">
-                    <strong>₹{{ number_format($product->price, 2) }}</strong>
+                    <strong>£{{ number_format($product->price, 2) }}</strong>
                     @if($product->mrp && $product->mrp > $product->price)
-                        <br><small style="text-decoration: line-through; color: #9ca3af;">₹{{ number_format($product->mrp, 2) }}</small>
+                        <br><small style="text-decoration: line-through; color: #9ca3af;">£{{ number_format($product->mrp, 2) }}</small>
                     @endif
                 </td>
                 <td data-label="Stock">

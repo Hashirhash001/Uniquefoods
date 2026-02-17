@@ -27,7 +27,7 @@
     }
 
     .breadcrumb-item a:hover {
-        color: #22c55e;
+        color: #08437b;
     }
 
     .breadcrumb-item.active {
@@ -85,12 +85,12 @@
     }
 
     .btn-primary {
-        background: #22c55e;
+        background: #08437b;
         color: white;
     }
 
     .btn-primary:hover {
-        background: #16a34a;
+        background: #0f508d;
         box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
     }
 
@@ -176,7 +176,7 @@
 
     .banner-subtitle {
         font-size: 13px;
-        color: #22c55e;
+        color: #08437b;
         margin: 0 0 0.375rem 0;
         font-weight: 500;
     }
@@ -454,7 +454,7 @@ $(document).ready(function() {
                     icon: 'success',
                     title: 'Success',
                     text: response.message,
-                    confirmButtonColor: '#22c55e',
+                    confirmButtonColor: '#08437b',
                     timer: 2000,
                     width: '30em',
                     padding: '2rem'
@@ -500,7 +500,7 @@ $(document).ready(function() {
                             icon: 'success',
                             title: 'Deleted!',
                             text: response.message,
-                            confirmButtonColor: '#22c55e',
+                            confirmButtonColor: '#08437b',
                             timer: 2000,
                             width: '30em',
                             padding: '2rem'

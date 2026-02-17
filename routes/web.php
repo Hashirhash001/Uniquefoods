@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerGroupController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GroupPricingController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Frontend\Auth\AuthController;
 use App\Http\Controllers\Frontend\Auth\GoogleController;
@@ -64,21 +65,24 @@ Route::prefix('wishlist')->name('wishlist.')->group(function () {
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.create-payment-intent');
 Route::post('/checkout/process', [CheckoutController::class, 'processOrder'])->name('checkout.process');
-Route::get('/checkout/success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/orders', [CheckoutController::class, 'orders'])->name('orders.index');
+Route::get('/orders/{orderNumber}', [CheckoutController::class, 'orderDetails'])->name('orders.details');
 
 // Guest routes
 Route::middleware('guest')->group(function () {
-    // Login
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1'); // 5 attempts per minute
 
-    // Register
     Route::get('register', [AuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('register', [AuthController::class, 'register']);
+    Route::post('register', [AuthController::class, 'register'])->middleware('throttle:3,1'); // 3 attempts per minute
 
     // Google OAuth
-    Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
-    Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+    Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])
+        ->name('auth.google')
+        ->middleware('throttle:10,1'); // 10 attempts per minute
+
+    Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
+        ->middleware('throttle:10,1');
 });
 
 // Logout (authenticated users)
@@ -153,6 +157,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::delete('product-offers/{offer}', [GroupPricingController::class, 'destroyProductOffer'])
             ->name('product-offers.destroy');
+
+        // Orders Management
+        Route::prefix('orders')->name('orders.')->group(function () {
+            Route::get('/', [OrderController::class, 'index'])->name('index');
+            Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+            Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('update-status');
+            Route::put('/{order}/payment-status', [OrderController::class, 'updatePaymentStatus'])->name('update-payment-status');
+            Route::delete('/{order}', [OrderController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-delete', [OrderController::class, 'bulkDelete'])->name('bulk-delete');
+            Route::get('/export/csv', [OrderController::class, 'export'])->name('export');
+            Route::get('/{order}/invoice', [OrderController::class, 'invoice'])->name('invoice');
+        });
 
     });
 

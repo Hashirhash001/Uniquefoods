@@ -31,7 +31,7 @@
     }
 
     .breadcrumb-item a:hover {
-        color: #22c55e;
+        color: #08437b;
     }
 
     .breadcrumb-item.active {
@@ -88,7 +88,7 @@
         color: #111827;
         margin-bottom: 1.25rem;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid #22c55e;
+        border-bottom: 2px solid #08437b;
         display: inline-block;
     }
 
@@ -118,7 +118,7 @@
 
     .form-control:focus,
     .form-select:focus {
-        border-color: #22c55e;
+        border-color: #08437b;
         box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
         outline: none;
     }
@@ -175,7 +175,7 @@
     }
 
     .image-upload-box:hover {
-        border-color: #22c55e;
+        border-color: #08437b;
         background: #f0fdf4;
     }
 
@@ -289,7 +289,7 @@
         width: 20px;
         height: 20px;
         cursor: pointer;
-        accent-color: #22c55e;
+        accent-color: #08437b;
     }
 
     .checkbox-label {
@@ -338,12 +338,12 @@
     }
 
     .btn-primary {
-        background: #22c55e;
+        background: #08437b;
         color: white;
     }
 
     .btn-primary:hover {
-        background: #16a34a;
+        background: #0f508d;
         box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
     }
 
@@ -407,7 +407,7 @@
 
                         <div class="col-md-12">
                             <label class="form-label">Subtitle / Promo Text</label>
-                            <input type="text" name="subtitle" class="form-control" placeholder="e.g., Get up to 30% off on your first ₹150 purchase">
+                            <input type="text" name="subtitle" class="form-control" placeholder="e.g., Get up to 30% off on your first £150 purchase">
                             <small class="text-danger error-subtitle"></small>
                         </div>
 
@@ -484,7 +484,7 @@
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" name="is_active" id="isActive" value="1" checked>
                                 <label class="checkbox-label" for="isActive">
-                                    <i class="fas fa-check-circle" style="color: #22c55e;"></i> Publish this banner
+                                    <i class="fas fa-check-circle" style="color: #08437b;"></i> Publish this banner
                                 </label>
                             </div>
                             <small class="form-text">Only active banners are displayed on the website</small>
@@ -554,7 +554,7 @@ $(document).ready(function() {
                 icon: 'error',
                 title: 'File Too Large',
                 text: 'Image size must be less than 2MB',
-                confirmButtonColor: '#22c55e',
+                confirmButtonColor: '#08437b',
                 width: '30em',
                 padding: '2rem'
             });
@@ -583,7 +583,7 @@ $(document).ready(function() {
     // Drag and drop
     imageUploadBox.addEventListener('dragover', function(e) {
         e.preventDefault();
-        this.style.borderColor = '#22c55e';
+        this.style.borderColor = '#08437b';
         this.style.background = '#f0fdf4';
     });
 
@@ -631,7 +631,7 @@ $(document).ready(function() {
                     icon: 'success',
                     title: 'Success!',
                     text: response.message,
-                    confirmButtonColor: '#22c55e',
+                    confirmButtonColor: '#08437b',
                     width: '30em',
                     padding: '2rem'
                 }).then(() => {
@@ -662,7 +662,7 @@ $(document).ready(function() {
                         icon: 'error',
                         title: 'Error',
                         text: xhr.responseJSON?.message || 'Something went wrong',
-                        confirmButtonColor: '#22c55e',
+                        confirmButtonColor: '#08437b',
                         width: '30em',
                         padding: '2rem'
                     });

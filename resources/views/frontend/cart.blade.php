@@ -98,27 +98,27 @@
                     <div class="summary-content">
                         <div class="summary-row">
                             <span class="label">Subtotal</span>
-                            <span class="value">₹<span id="summarySubtotal">0.00</span></span>
+                            <span class="value">£<span id="summarySubtotal">0.00</span></span>
                         </div>
 
-                        <div class="summary-row">
+                        {{-- <div class="summary-row">
                             <span class="label">Tax (18% GST)</span>
-                            <span class="value">₹<span id="summaryTax">0.00</span></span>
-                        </div>
+                            <span class="value">£<span id="summaryTax">0.00</span></span>
+                        </div> --}}
 
-                        <div class="summary-row shipping-row">
+                        {{-- <div class="summary-row shipping-row">
                             <span class="label">
                                 Shipping
-                                <small>Free delivery on orders ₹500+</small>
+                                <small>Free delivery on orders £500+</small>
                             </span>
                             <span class="value shipping-value" id="summaryShipping">FREE</span>
-                        </div>
+                        </div> --}}
 
                         <hr class="summary-divider">
 
                         <div class="summary-row total-row">
                             <span class="label">Total Amount</span>
-                            <span class="value total-value">₹<span id="summaryTotal">0.00</span></span>
+                            <span class="value total-value">£<span id="summaryTotal">0.00</span></span>
                         </div>
                     </div>
 
@@ -156,7 +156,7 @@
                     <i class="fa-solid fa-gift"></i>
                     <div class="promo-text">
                         <strong>Special Offer!</strong>
-                        <span>Get 10% off on orders above ₹1000</span>
+                        <span>Get 10% off on orders above £1000</span>
                     </div>
                 </div>
             </div>
@@ -240,7 +240,7 @@ $(document).ready(function() {
                             ${item.stock > 0 ? 'In Stock' : 'Out of Stock'}
                         </span>
                     </div>
-                    <div class="item-price-mobile">₹${parseFloat(item.price).toFixed(2)}</div>
+                    <div class="item-price-mobile">£${parseFloat(item.price).toFixed(2)}</div>
                 </div>
 
                 <div class="item-quantity">
@@ -257,12 +257,12 @@ $(document).ready(function() {
 
                 <div class="item-price">
                     <div class="price-label">Price</div>
-                    <div class="price-value">₹${parseFloat(item.price).toFixed(2)}</div>
+                    <div class="price-value">£${parseFloat(item.price).toFixed(2)}</div>
                 </div>
 
                 <div class="item-subtotal">
                     <div class="subtotal-label">Subtotal</div>
-                    <div class="subtotal-value">₹${(item.price * item.quantity).toFixed(2)}</div>
+                    <div class="subtotal-value">£${(item.price * item.quantity).toFixed(2)}</div>
                 </div>
 
                 <div class="item-remove">
@@ -277,20 +277,20 @@ $(document).ready(function() {
     // ==================== UPDATE SUMMARY ====================
     function updateSummary(cart) {
         const subtotal = cart.subtotal || 0;
-        const tax = subtotal * 0.18;
-        const shipping = subtotal >= 500 ? 0 : 50;
-        const total = subtotal + tax + shipping;
+        // const tax = subtotal * 0.18;
+        // const shipping = subtotal >= 500 ? 0 : 50;
+        const total = subtotal;
 
         // Animate number changes
         animateValue('summarySubtotal', subtotal);
-        animateValue('summaryTax', tax);
+        // animateValue('summaryTax', tax);
         animateValue('summaryTotal', total);
 
-        if (shipping === 0) {
-            $('#summaryShipping').html('<span class="free-badge">FREE</span>');
-        } else {
-            $('#summaryShipping').html('₹' + shipping.toFixed(2));
-        }
+        // if (shipping === 0) {
+        //     $('#summaryShipping').html('<span class="free-badge">FREE</span>');
+        // } else {
+        //     $('#summaryShipping').html('£' + shipping.toFixed(2));
+        // }
     }
 
     // ==================== ANIMATE NUMBER CHANGES ====================

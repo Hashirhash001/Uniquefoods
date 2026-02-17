@@ -28,7 +28,7 @@
     }
 
     .title-area h3.title i {
-        color: #22c55e;
+        color: #08437b;
         font-size: 32px;
     }
 
@@ -39,7 +39,7 @@
     }
 
     .rts-btn.btn-primary {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        background: linear-gradient(135deg, #08437b 0%, #0f508d 100%);
         color: white;
         padding: 0.75rem 1.5rem;
         border-radius: 8px;
@@ -55,7 +55,7 @@
     }
 
     .rts-btn.btn-primary:hover {
-        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        background: linear-gradient(135deg, #0f508d 0%, #15803d 100%);
         box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
         transform: translateY(-1px);
     }
@@ -80,7 +80,7 @@
 
     .form-control:focus,
     .form-select:focus {
-        border-color: #22c55e;
+        border-color: #08437b;
         box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
         outline: none;
     }
@@ -338,7 +338,7 @@ $(document).ready(function() {
                     icon: 'error',
                     title: 'Error',
                     text: 'Failed to load groups',
-                    confirmButtonColor: '#22c55e'
+                    confirmButtonColor: '#08437b'
                 });
             }
         });
@@ -369,7 +369,7 @@ $(document).ready(function() {
             text: `Are you sure you want to ${newStatus.toLowerCase()} this customer group?`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: isCurrentlyActive ? '#ef4444' : '#22c55e',
+            confirmButtonColor: isCurrentlyActive ? '#ef4444' : '#08437b',
             cancelButtonColor: '#6b7280',
             confirmButtonText: `Yes, ${newStatus}`,
             cancelButtonText: 'Cancel'
@@ -412,7 +412,7 @@ $(document).ready(function() {
                             icon: 'error',
                             title: 'Error',
                             text: xhr.responseJSON?.message || 'Failed to update status',
-                            confirmButtonColor: '#22c55e'
+                            confirmButtonColor: '#08437b'
                         });
                     },
                     complete: function() {
@@ -460,7 +460,7 @@ $(document).ready(function() {
                             icon: 'error',
                             title: 'Error',
                             text: 'Failed to delete group',
-                            confirmButtonColor: '#22c55e'
+                            confirmButtonColor: '#08437b'
                         });
                     }
                 });

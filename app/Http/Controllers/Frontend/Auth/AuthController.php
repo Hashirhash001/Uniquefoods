@@ -35,7 +35,6 @@ class AuthController extends Controller
             CartController::mergeSessionCartToDatabase(Auth::id());
             WishlistController::mergeSessionWishlistToDatabase(Auth::id());
 
-            // Check if AJAX request
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -48,7 +47,6 @@ class AuthController extends Controller
                            ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
         }
 
-        // Failed login
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
@@ -62,21 +60,6 @@ class AuthController extends Controller
         throw ValidationException::withMessages([
             'email' => ['The provided credentials do not match our records.'],
         ]);
-    }
-
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('home')
-                       ->with('success', 'You have been logged out successfully.');
-    }
-
-    public function showRegistrationForm()
-    {
-        return view('frontend.auth.register');
     }
 
     public function register(Request $request)
@@ -98,11 +81,10 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        // ⚡ MERGE GUEST CART & WISHLIST TO NEW USER ACCOUNT
+        // MERGE GUEST CART & WISHLIST TO NEW USER ACCOUNT
         CartController::mergeSessionCartToDatabase($user->id);
         WishlistController::mergeSessionWishlistToDatabase($user->id);
 
-        // Check if AJAX request
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -113,5 +95,20 @@ class AuthController extends Controller
 
         return redirect()->route('home')
                        ->with('success', 'Registration successful! Welcome to Unique Foods.');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home')
+                       ->with('success', 'You have been logged out successfully.');
+    }
+
+    public function showRegistrationForm()
+    {
+        return view('frontend.auth.register');
     }
 }

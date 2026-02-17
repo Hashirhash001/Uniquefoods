@@ -25,8 +25,10 @@ class User extends Authenticatable
         'password',
         'provider',
         'provider_id',
+        'avatar',
         'is_admin',
-        'is_verified'
+        'is_verified',
+        'email_verified_at'
     ];
 
     /**
@@ -63,5 +65,20 @@ class User extends Authenticatable
     public function buyAgainProducts()
     {
         return $this->hasMany(BuyAgain::class);
+    }
+
+    // ✅ ADD HELPER METHOD
+    public function isSocialUser()
+    {
+        return !empty($this->provider);
+    }
+
+    // ✅ ADD PROFILE PICTURE METHOD
+    public function getProfilePictureAttribute()
+    {
+        if ($this->avatar) {
+            return $this->avatar;
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=0f508d&color=fff&size=200';
     }
 }

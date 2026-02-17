@@ -22,7 +22,7 @@
         }
 
         .btn-create {
-            background: #22c55e;
+            background: #08437b;
             border: none;
             color: white;
             padding: 0.625rem 1.25rem;
@@ -36,7 +36,7 @@
         }
 
         .btn-create:hover {
-            background: #16a34a;
+            background: #0f508d;
             box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
         }
 
@@ -385,7 +385,7 @@
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #22c55e;
+            border-color: #08437b;
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
             outline: none;
         }
@@ -402,8 +402,8 @@
         }
 
         .form-check-input:checked {
-            background-color: #22c55e;
-            border-color: #22c55e;
+            background-color: #08437b;
+            border-color: #08437b;
         }
 
         .btn-secondary {
@@ -422,7 +422,7 @@
         }
 
         .btn-primary-modal {
-            background: #22c55e;
+            background: #08437b;
             border: none;
             color: white;
             padding: 0.625rem 1.25rem;
@@ -432,7 +432,7 @@
         }
 
         .btn-primary-modal:hover {
-            background: #16a34a;
+            background: #0f508d;
         }
 
         /* Green Pagination Styling */
@@ -452,8 +452,8 @@
         }
 
         .pagination .page-item.active .page-link {
-            background: #22c55e;
-            border-color: #22c55e;
+            background: #08437b;
+            border-color: #08437b;
             color: white;
             font-weight: 600;
         }
@@ -480,7 +480,7 @@
             height: 40px;
             margin: -20px 0 0 -20px;
             border: 3px solid #f3f4f6;
-            border-top-color: #22c55e;
+            border-top-color: #08437b;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -926,7 +926,7 @@
         }
 
         .image-upload-box:hover {
-            border-color: #22c55e;
+            border-color: #08437b;
             background: #f0fdf4;
         }
 
@@ -942,7 +942,7 @@
 
         .image-upload-label i {
             font-size: 2rem;
-            color: #22c55e;
+            color: #08437b;
         }
 
         .image-upload-label span {
@@ -1332,7 +1332,7 @@
                 icon: 'error',
                 title: 'File Too Large',
                 text: 'Image must be less than 100KB',
-                confirmButtonColor: '#22c55e'
+                confirmButtonColor: '#08437b'
             });
             event.target.value = '';
             return;
@@ -1390,7 +1390,7 @@
                 text: `Change to ${newStatus ? 'Active' : 'Inactive'}?`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#22c55e'
+                confirmButtonColor: '#08437b'
             }).then((result) => {
                 if (result.isConfirmed) {
                     jQuery.ajax({

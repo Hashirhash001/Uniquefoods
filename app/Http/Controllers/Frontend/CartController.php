@@ -408,7 +408,7 @@ class CartController extends Controller
     /**
      * Merge session cart to database (called after login)
      */
-    public static function mergeSessionCartToDatabase($userId, PricingService $pricingService)
+    public static function mergeSessionCartToDatabase($userId)
     {
         $sessionCart = session()->get('cart', []);
 
@@ -419,7 +419,10 @@ class CartController extends Controller
         DB::beginTransaction();
         try {
             $cart = Cart::firstOrCreate(['user_id' => $userId]);
-            $user = Auth::user();
+            $user = \App\Models\User::find($userId);
+
+            // ✅ Create PricingService instance
+            $pricingService = app(\App\Services\PricingService::class);
 
             foreach ($sessionCart as $productId => $item) {
                 $product = Product::find($productId);
@@ -433,7 +436,7 @@ class CartController extends Controller
 
                     if ($existingItem) {
                         $existingItem->quantity += ($item['quantity'] ?? 1);
-                        $existingItem->price = $finalPrice; // ✅ Update to group price
+                        $existingItem->price = $finalPrice;
                         $existingItem->save();
                     } else {
                         CartItem::create([
@@ -441,7 +444,7 @@ class CartController extends Controller
                             'product_id' => $productId,
                             'quantity' => $item['quantity'] ?? 1,
                             'weight' => $item['weight'] ?? null,
-                            'price' => $finalPrice, // ✅ Store group price
+                            'price' => $finalPrice,
                             'price_per_kg' => $product->price_per_kg,
                         ]);
                     }
@@ -457,4 +460,5 @@ class CartController extends Controller
             Log::error('Cart merge failed: ' . $e->getMessage());
         }
     }
+
 }

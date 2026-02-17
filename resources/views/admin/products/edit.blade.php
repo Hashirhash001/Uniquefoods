@@ -32,7 +32,7 @@
     }
 
     .breadcrumb-item a:hover {
-        color: #22c55e;
+        color: #08437b;
     }
 
     .breadcrumb-item.active {
@@ -91,7 +91,7 @@
         color: #111827;
         margin-bottom: 1.25rem;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid #22c55e;
+        border-bottom: 2px solid #08437b;
         display: inline-block;
     }
 
@@ -124,7 +124,7 @@
 
     .form-control:focus,
     .form-select:focus {
-        border-color: #22c55e;
+        border-color: #08437b;
         box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
         outline: none;
     }
@@ -195,7 +195,7 @@
     }
 
     .input-group .form-control:focus {
-        border-left: 1px solid #22c55e;
+        border-left: 1px solid #08437b;
     }
 
     /* Image Upload */
@@ -210,7 +210,7 @@
     }
 
     .image-upload-box:hover {
-        border-color: #22c55e;
+        border-color: #08437b;
         background: #f0fdf4;
     }
 
@@ -281,7 +281,7 @@
         position: absolute;
         bottom: 0.5rem;
         left: 0.5rem;
-        background: #22c55e;
+        background: #08437b;
         color: white;
         padding: 0.25rem 0.5rem;
         border-radius: 4px;
@@ -328,12 +328,12 @@
     }
 
     .btn-primary {
-        background: #22c55e;
+        background: #08437b;
         color: white;
     }
 
     .btn-primary:hover {
-        background: #16a34a;
+        background: #0f508d;
         box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
     }
 
@@ -534,7 +534,7 @@
                         <div class="col-md-3">
                             <label class="form-label">Selling Price <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">₹</span>
+                                <span class="input-group-text">£</span>
                                 <input type="number" step="0.01" name="price" class="form-control"
                                        placeholder="0.00" value="{{ old('price', $product->price) }}">
                             </div>
@@ -544,7 +544,7 @@
                         <div class="col-md-3">
                             <label class="form-label">MRP (Optional)</label>
                             <div class="input-group">
-                                <span class="input-group-text">₹</span>
+                                <span class="input-group-text">£</span>
                                 <input type="number" step="0.01" name="mrp" class="form-control"
                                        placeholder="0.00" value="{{ old('mrp', $product->mrp) }}">
                             </div>
@@ -555,7 +555,7 @@
                         <div class="col-md-3 {{ old('is_weight_based', $product->is_weight_based) ? '' : 'd-none' }}" id="pricePerKgWrapper">
                             <label class="form-label">Price per KG <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">₹</span>
+                                <span class="input-group-text">£</span>
                                 <input type="number" step="0.01" name="price_per_kg" class="form-control"
                                        placeholder="0.00" value="{{ old('price_per_kg', $product->price_per_kg) }}">
                             </div>
@@ -693,7 +693,7 @@ uploadBox.onclick = () => imageInput.click();
 
 uploadBox.ondragover = (e) => {
     e.preventDefault();
-    uploadBox.style.borderColor = '#22c55e';
+    uploadBox.style.borderColor = '#08437b';
     uploadBox.style.background = '#f0fdf4';
 };
 
@@ -737,7 +737,7 @@ function showImageError(message) {
         icon: 'error',
         title: 'Image Upload Error',
         html: message,
-        confirmButtonColor: '#22c55e',
+        confirmButtonColor: '#08437b',
         confirmButtonText: 'OK',
         width: '35em',
         padding: '2rem'
@@ -881,7 +881,7 @@ $('#productForm').submit(function (e) {
                 icon: 'success',
                 title: 'Success!',
                 text: response.message || 'Product updated successfully',
-                confirmButtonColor: '#22c55e',
+                confirmButtonColor: '#08437b',
                 confirmButtonText: 'View Products',
                 width: '30em',
                 padding: '2rem'
@@ -933,7 +933,7 @@ $('#productForm').submit(function (e) {
                     icon: 'error',
                     title: 'Validation Errors',
                     html: `<div style="text-align: left; font-size: 14px;">${errorList}</div>`,
-                    confirmButtonColor: '#22c55e',
+                    confirmButtonColor: '#08437b',
                     confirmButtonText: 'OK',
                     width: '40em',
                     padding: '2rem'
@@ -943,7 +943,7 @@ $('#productForm').submit(function (e) {
                     icon: 'error',
                     title: 'File Too Large',
                     text: 'Total upload size is too large. Please upload smaller files.',
-                    confirmButtonColor: '#22c55e',
+                    confirmButtonColor: '#08437b',
                     confirmButtonText: 'OK',
                     width: '30em',
                     padding: '2rem'
@@ -953,7 +953,7 @@ $('#productForm').submit(function (e) {
                     icon: 'error',
                     title: 'Error',
                     text: xhr.responseJSON?.message || 'Something went wrong. Please try again.',
-                    confirmButtonColor: '#22c55e',
+                    confirmButtonColor: '#08437b',
                     confirmButtonText: 'OK',
                     width: '30em',
                     padding: '2rem'
