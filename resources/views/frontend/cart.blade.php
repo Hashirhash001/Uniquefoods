@@ -225,24 +225,24 @@ $(document).ready(function() {
 
     // ==================== CREATE CART ITEM HTML ====================
     function createCartItemHtml(item) {
-        return `
-            <div class="modern-cart-item" data-product-id="${item.id}">
-                <div class="item-image">
-                    <img src="${item.image}" alt="${item.name}">
-                    ${item.stock <= 0 ? '<span class="stock-badge out-stock">Out of Stock</span>' : ''}
-                </div>
+        const isWeightBased = item.weight && parseFloat(item.weight) > 0;
 
-                <div class="item-details">
-                    <a href="/product/${item.slug}" class="item-name">${item.name}</a>
-                    <div class="item-meta">
-                        <span class="stock-indicator ${item.stock > 0 ? 'in-stock' : 'out-stock'}">
-                            <i class="fa-solid fa-circle"></i>
-                            ${item.stock > 0 ? 'In Stock' : 'Out of Stock'}
-                        </span>
+        // Quantity/weight control block
+        const quantityBlock = isWeightBased
+            ? `
+                <div class="item-quantity">
+                    <div class="weight-display-badge">
+                        <i class="fa-regular fa-weight-scale"></i>
+                        <span>${parseFloat(item.weight) % 1 === 0
+                            ? parseInt(item.weight)
+                            : parseFloat(item.weight)}kg</span>
                     </div>
-                    <div class="item-price-mobile">£${parseFloat(item.price).toFixed(2)}</div>
+                    <a href="/product/${item.slug}" class="weight-change-link">
+                        <i class="fa-regular fa-pen"></i> Change
+                    </a>
                 </div>
-
+            `
+            : `
                 <div class="item-quantity">
                     <div class="modern-quantity-control">
                         <button class="qty-btn qty-decrease" data-product-id="${item.id}" ${item.quantity <= 1 ? 'disabled' : ''}>
@@ -254,15 +254,52 @@ $(document).ready(function() {
                         </button>
                     </div>
                 </div>
+            `;
+
+        // Subtotal: weight × price or qty × price
+        const subtotal = isWeightBased
+            ? (parseFloat(item.price) * parseFloat(item.weight)).toFixed(2)
+            : (parseFloat(item.price) * item.quantity).toFixed(2);
+
+        // Price label: per kg or per item
+        const priceLabel = isWeightBased
+            ? `£${parseFloat(item.price).toFixed(2)}<small>/kg</small>`
+            : `£${parseFloat(item.price).toFixed(2)}`;
+
+        return `
+            <div class="modern-cart-item" data-product-id="${item.id}">
+                <div class="item-image">
+                    <img src="${item.image}" alt="${item.name}"
+                        onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
+                    ${item.stock <= 0 ? '<span class="stock-badge out-stock">Out of Stock</span>' : ''}
+                </div>
+
+                <div class="item-details">
+                    <a href="/product/${item.slug}" class="item-name">${item.name}</a>
+                    <div class="item-meta">
+                        ${isWeightBased ? `
+                            <span class="weight-tag">
+                                <i class="fa-regular fa-weight-scale"></i> Weight-based
+                            </span>
+                        ` : ''}
+                        <span class="stock-indicator ${item.stock > 0 ? 'in-stock' : 'out-stock'}">
+                            <i class="fa-solid fa-circle"></i>
+                            ${item.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                    </div>
+                    <div class="item-price-mobile">${priceLabel}</div>
+                </div>
+
+                ${quantityBlock}
 
                 <div class="item-price">
-                    <div class="price-label">Price</div>
-                    <div class="price-value">£${parseFloat(item.price).toFixed(2)}</div>
+                    <div class="price-label">${isWeightBased ? 'Per kg' : 'Price'}</div>
+                    <div class="price-value">${priceLabel}</div>
                 </div>
 
                 <div class="item-subtotal">
                     <div class="subtotal-label">Subtotal</div>
-                    <div class="subtotal-value">£${(item.price * item.quantity).toFixed(2)}</div>
+                    <div class="subtotal-value">£${subtotal}</div>
                 </div>
 
                 <div class="item-remove">

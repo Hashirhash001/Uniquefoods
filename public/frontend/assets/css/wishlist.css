@@ -35,15 +35,15 @@
 
 .wishlist-icon-wrapper {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: 38px;
+    height: 38px;
     background: linear-gradient(135deg, var(--wish-primary) 0%, var(--wish-primary-dark) 100%);
     border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 28px;
+    font-size: 21px;
 }
 
 .wishlist-pulse {

@@ -43,7 +43,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="modern-wishlist-header">
-                    <div class="header-left">
+                    <div class="header-left d-flex align-items-center gap-3">
                         <div class="wishlist-icon-wrapper">
                             <i class="fa-solid fa-heart"></i>
                             <span class="wishlist-pulse"></span>
@@ -138,7 +138,7 @@ $(document).ready(function() {
 
         products.forEach(product => {
             const card = `
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="modern-wishlist-card">
                         <button class="wishlist-heart active wishlist-toggle-btn" data-product-id="${product.id}" title="Remove from wishlist">
                             <i class="fa-solid fa-heart"></i>
@@ -189,10 +189,17 @@ $(document).ready(function() {
 
                             <div class="card-actions">
                                 ${product.stock > 0 ? `
-                                    <button class="btn-add-cart add-to-cart-btn" data-product-id="${product.id}">
-                                        <i class="fa-regular fa-cart-shopping"></i>
-                                        Add to Cart
-                                    </button>
+                                    ${product.is_weight_based ? `
+                                        <a href="/product/${product.slug}" class="btn-add-cart">
+                                            <i class="fa-regular fa-weight-scale"></i>
+                                            Select Weight
+                                        </a>
+                                    ` : `
+                                        <button class="btn-add-cart add-to-cart-btn" data-product-id="${product.id}">
+                                            <i class="fa-regular fa-cart-shopping"></i>
+                                            Add to Cart
+                                        </button>
+                                    `}
                                 ` : `
                                     <button class="btn-add-cart disabled" disabled>
                                         <i class="fa-regular fa-circle-xmark"></i>
@@ -214,7 +221,7 @@ $(document).ready(function() {
     }
 
     function showEmptyState() {
-        $('#wishlistItemsGrid').hide();
+        $('#wishlistItemsGrid').hide().empty();
         $('#emptyWishlistState').show();
         $('#wishlistItemCount').text('0');
     }
@@ -226,9 +233,8 @@ $(document).ready(function() {
 
         const button = $(this);
         const productId = button.data('product-id');
-        const card = button.closest('.modern-wishlist-card').parent();
+        const card = button.closest('.col-xl-3, .col-lg-4, .col-md-6, .col-sm-6'); // target the column, not just the card
 
-        // Add removing animation
         card.css('opacity', '0.5');
 
         $.ajax({
@@ -240,45 +246,42 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    // Update header count
                     if (typeof window.updateWishlistCount === 'function') {
                         window.updateWishlistCount(response.count);
                     }
 
-                    // Slide up and remove card
                     card.slideUp(300, function() {
                         $(this).remove();
 
-                        // Check if wishlist is empty now
-                        if ($('#wishlistItemsGrid .col-xl-3').length === 0) {
-                            showEmptyState();
+                        // ✅ Count remaining cards using a broader selector
+                        const remaining = $('#wishlistItemsGrid > [class*="col-"]').length;
+
+                        if (remaining === 0) {
+                            showEmptyState(); // ✅ this now correctly fires on last item
                         } else {
-                            // Update count
-                            $('#wishlistItemCount').text($('#wishlistItemsGrid .col-xl-3').length);
+                            $('#wishlistItemCount').text(remaining);
                         }
                     });
 
-                    // Show toast
                     if (typeof toastr !== 'undefined') {
                         toastr.success(response.message || 'Removed from wishlist');
                     }
                 } else {
                     card.css('opacity', '1');
                     if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message || 'Failed to remove from wishlist');
+                        toastr.error(response.message || 'Failed to remove');
                     }
                 }
             },
             error: function(xhr) {
                 card.css('opacity', '1');
-                console.error('Failed to remove from wishlist:', xhr);
-
                 if (typeof toastr !== 'undefined') {
                     toastr.error('Failed to remove from wishlist');
                 }
             }
         });
     });
+
 });
 </script>
 @endpush

@@ -18,6 +18,17 @@
         margin: 0 auto;
     }
 
+    .badge-shipped {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .badge-delivered {
+        background: #d1fae5;
+        color: #059669;
+    }
+
+
     /* Header */
     .order-header {
         background: white;
@@ -605,15 +616,15 @@
                 <div class="card-body">
                     <div class="summary-row">
                         <span class="summary-label">Subtotal</span>
-                        <span class="summary-value">${{ number_format($order->subtotal, 2) }}</span>
+                        <span class="summary-value">£{{ number_format($order->subtotal, 2) }}</span>
                     </div>
                     <div class="summary-row">
                         <span class="summary-label">Shipping Cost</span>
-                        <span class="summary-value">${{ number_format($order->shipping_cost, 2) }}</span>
+                        <span class="summary-value">£{{ number_format($order->shipping_cost, 2) }}</span>
                     </div>
                     <div class="summary-row">
                         <span class="summary-label">Tax (20%)</span>
-                        <span class="summary-value">${{ number_format($order->tax, 2) }}</span>
+                        <span class="summary-value">£{{ number_format($order->tax, 2) }}</span>
                     </div>
                     @if($order->discount > 0)
                         <div class="summary-row">
@@ -625,7 +636,7 @@
                     @endif
                     <div class="summary-row total">
                         <span class="summary-label">Total</span>
-                        <span class="summary-value">${{ number_format($order->total, 2) }}</span>
+                        <span class="summary-value">£{{ number_format($order->total, 2) }}</span>
                     </div>
                 </div>
             </div>
@@ -709,9 +720,9 @@
                             <select name="status" class="form-control" required>
                                 <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
-                                <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Shipped</option>
+                                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
                                 <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                <option value="refunded" {{ $order->status == 'refunded' ? 'selected' : '' }}>Refunded</option>
                             </select>
                         </div>
 
@@ -816,11 +827,11 @@
                             </div>
                         @endif
 
-                        @if($order->status == 'completed')
+                        @if(in_array($order->status, ['shipped', 'delivered']))
                             <div class="timeline-item">
-                                <div class="timeline-dot success"></div>
+                                <div class="timeline-dot {{ $order->status == 'delivered' ? 'success' : 'warning' }}"></div>
                                 <div class="timeline-content">
-                                    <div class="timeline-title">Order Completed</div>
+                                    <div class="timeline-title">Order {{ ucfirst($order->status) }}</div>
                                     <div class="timeline-time">{{ $order->updated_at->format('M d, Y h:i A') }}</div>
                                 </div>
                             </div>

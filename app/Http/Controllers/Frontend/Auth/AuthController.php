@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Frontend\Auth;
 
 use App\Models\User;
+use App\Mail\OtpMail;
+use App\Mail\WelcomeMail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Frontend\CartController;
-use App\Http\Controllers\Frontend\WishlistController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\WishlistController;
 
 class AuthController extends Controller
 {
@@ -65,36 +70,73 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'mobile' => 'nullable|string|max:20',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users',
+            'mobile'   => 'nullable|string|max:20',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'mobile' => $request->mobile,
-            'password' => Hash::make($request->password),
-            'is_verified' => false,
+            'name'             => $request->name,
+            'email'            => $request->email,
+            'mobile'           => $request->filled('mobile') ? $request->mobile : null,
+            'password'         => Hash::make($request->password),
+            'is_verified'      => true, // already OTP verified
+            'email_verified_at' => now(), // mark as verified since OTP passed
         ]);
+
+        // Just pass $user — no $verificationUrl needed
+        Mail::to($user->email)->send(new WelcomeMail($user));
 
         Auth::login($user);
 
-        // MERGE GUEST CART & WISHLIST TO NEW USER ACCOUNT
         CartController::mergeSessionCartToDatabase($user->id);
         WishlistController::mergeSessionWishlistToDatabase($user->id);
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'success' => true,
-                'message' => 'Registration successful! Welcome to Unique Foods.',
+                'success'  => true,
+                'message'  => 'Account created! Welcome to Unique Foods.',
                 'redirect' => route('home')
             ]);
         }
 
         return redirect()->route('home')
-                       ->with('success', 'Registration successful! Welcome to Unique Foods.');
+            ->with('success', 'Welcome to Unique Foods, ' . $user->name . '!');
+    }
+
+    // Called after step 1 (email entered)
+    public function sendOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email|unique:users,email']);
+
+        $otp = rand(100000, 999999);
+
+        // Store OTP in cache for 10 minutes
+        Cache::put('otp_' . $request->email, $otp, now()->addMinutes(10));
+
+        Mail::to($request->email)->send(new OtpMail($otp));
+
+        return response()->json(['success' => true, 'message' => 'OTP sent to your email.']);
+    }
+
+    // Called after step 2 (OTP entered)
+    public function verifyOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email', 'otp' => 'required|digits:6']);
+
+        $cachedOtp = Cache::get('otp_' . $request->email);
+
+        if (!$cachedOtp || $cachedOtp != $request->otp) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired OTP.'], 422);
+        }
+
+        Cache::forget('otp_' . $request->email);
+
+        // Store verified flag for final registration
+        Cache::put('email_verified_' . $request->email, true, now()->addMinutes(15));
+
+        return response()->json(['success' => true, 'message' => 'Email verified!']);
     }
 
     public function logout(Request $request)

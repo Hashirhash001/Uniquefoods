@@ -239,7 +239,7 @@
                     123 Business Street<br>
                     Kerala, India 682001<br>
                     Phone: +91 1234567890<br>
-                    Email: info@uniquefoods.com
+                    Email: info@unique-food.co.uk
                 </p>
             </div>
             <div class="invoice-meta">
@@ -348,7 +348,7 @@
             <h3>Thank You For Your Business!</h3>
             <p>
                 If you have any questions about this invoice, please contact us at<br>
-                <strong>info@uniquefoods.com</strong> or call <strong>+91 1234567890</strong>
+                <strong>info@unique-food.co.uk</strong> or call <strong>+91 1234567890</strong>
             </p>
             @if($order->customer_notes)
                 <p style="margin-top: 20px;">

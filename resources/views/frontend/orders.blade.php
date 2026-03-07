@@ -342,7 +342,19 @@
                                 <div class="order-item-details">
                                     <div class="order-item-name">{{ $item->product_name }}</div>
                                     <div class="order-item-meta">
-                                        Qty: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}
+                                        @if($item->weight && floatval($item->weight) > 0)
+                                            <span style="display:inline-flex; align-items:center; gap:4px;
+                                                        background:#eff6ff; color:#08437b; border:1px solid #bfdbfe;
+                                                        border-radius:99px; padding:2px 8px; font-size:12px; font-weight:700;">
+                                                <i class="fa-regular fa-weight-scale"></i>
+                                                {{ rtrim(rtrim(number_format(floatval($item->weight), 2), '0'), '.') }}kg
+                                            </span>
+                                            <span style="font-size:13px; color:#64748b;">
+                                                × £{{ number_format($item->price, 2) }}/kg
+                                            </span>
+                                        @else
+                                            Qty: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="order-item-price">

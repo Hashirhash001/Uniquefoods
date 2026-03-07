@@ -100,7 +100,7 @@ class OrderController extends Controller
             'total_orders' => Order::count(),
             'pending_orders' => Order::where('status', 'pending')->count(),
             'processing_orders' => Order::where('status', 'processing')->count(),
-            'completed_orders' => Order::where('status', 'completed')->count(),
+            'completed_orders' => Order::where('status', 'delivered')->count(),
             'cancelled_orders' => Order::where('status', 'cancelled')->count(),
             'total_revenue' => Order::where('status', '!=', 'cancelled')->sum('total'),
             'today_orders' => Order::whereDate('created_at', today())->count(),
@@ -126,7 +126,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,completed,cancelled,refunded',
+            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
             'admin_notes' => 'nullable|string|max:1000'
         ]);
 

@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
+use App\Models\GroupProductOffer;
+use App\Models\ProductImage;
+use App\Models\ProductReview;
+use App\Models\SubstitutionGroup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -171,4 +175,15 @@ class Product extends Model
         // Return the actual stock value
         return $value ?? 0;
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class)->where('is_approved', true);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating'), 1);
+    }
+
 }

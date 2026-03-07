@@ -99,14 +99,14 @@
                                         <i class="fa-regular fa-user"></i>
                                         <span>My Profile</span>
                                     </a>
-                                    <a href="{{ route('orders.index') }}" class="unique-menu-link">
+                                    {{-- <a href="{{ route('orders.index') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-box"></i>
                                         <span>Orders</span>
                                     </a>
                                     <a href="{{ route('wishlist.index') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-heart"></i>
                                         <span>Wishlist</span>
-                                    </a>
+                                    </a> --}}
                                     <a href="#" class="unique-menu-link">
                                         <i class="fa-regular fa-location-dot"></i>
                                         <span>Addresses</span>
@@ -136,14 +136,14 @@
                                         <i class="fa-regular fa-user"></i>
                                         <span>My Profile</span>
                                     </a>
-                                    <a href="{{ route('orders.index') }}" class="unique-menu-link">
+                                    {{-- <a href="{{ route('orders.index') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-box"></i>
                                         <span>Orders</span>
-                                    </a>
-                                    <a href="{{ route('wishlist.index') }}" class="unique-menu-link">
+                                    </a> --}}
+                                    {{-- <a href="{{ route('wishlist.index') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-heart"></i>
                                         <span>Wishlist</span>
-                                    </a>
+                                    </a> --}}
                                     <a href="#" class="unique-menu-link">
                                         <i class="fa-regular fa-gear"></i>
                                         <span>Settings</span>
@@ -277,23 +277,17 @@
                                 <span>Shop</span>
                             </a>
                         </li>
-                        <li class="unique-nav-item">
+                        {{-- <li class="unique-nav-item">
                             <a href="#" class="unique-navlink">
                                 <i class="fa-regular fa-tags"></i>
                                 <span>Deals</span>
                                 <span class="unique-hot-badge">Hot</span>
                             </a>
-                        </li>
-                        <li class="unique-nav-item">
-                            <a href="#" class="unique-navlink">
+                        </li> --}}
+                        <li class="unique-nav-item {{ request()->routeIs('orders.index') ? 'unique-active' : '' }}">
+                            <a href="{{ route('orders.index') }}" class="unique-navlink">
                                 <i class="fa-regular fa-newspaper"></i>
-                                <span>Blog</span>
-                            </a>
-                        </li>
-                        <li class="unique-nav-item">
-                            <a href="#" class="unique-navlink">
-                                <i class="fa-regular fa-headset"></i>
-                                <span>Contact</span>
+                                <span>Orders</span>
                             </a>
                         </li>
                     </ul>
@@ -338,7 +332,7 @@
                         id="mobileSearchInput"
                         placeholder="Search products..."
                         autocomplete="off">
-                    <button type="button" id="mobileSearchBtn">
+                    <button type="button" id="mobileSearchBtn" style="width: unset !important;">
                         <i class="fa-regular fa-magnifying-glass"></i>
                     </button>
                 </form>
@@ -399,14 +393,6 @@
                 <i class="fa-regular fa-box"></i>
                 <span>Orders</span>
             </a>
-            <a href="#" class="unique-mobile-link">
-                <i class="fa-regular fa-newspaper"></i>
-                <span>Blog</span>
-            </a>
-            <a href="#" class="unique-mobile-link">
-                <i class="fa-regular fa-headset"></i>
-                <span>Contact Us</span>
-            </a>
         </nav>
 
         <div class="unique-mobile-categories">
@@ -435,9 +421,9 @@
                 <i class="fa-regular fa-phone"></i>
                 <span>258 3268 21485</span>
             </a>
-            <a href="mailto:info@uniquefoods.com">
+            <a href="mailto:info@unique-food.co.uk">
                 <i class="fa-regular fa-envelope"></i>
-                <span>info@uniquefoods.com</span>
+                <span>info@unique-food.co.uk</span>
             </a>
         </div>
     </div>

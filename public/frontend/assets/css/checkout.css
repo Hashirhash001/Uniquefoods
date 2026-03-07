@@ -614,3 +614,21 @@ textarea.unique-form-control {
 .unique-btn-place-order:disabled i {
     animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
+/* Weight-based item qty display */
+.unique-order-item-qty.weight-qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #08437b;
+    font-weight: 600;
+    font-size: 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 99px;
+    padding: 2px 8px;
+    margin-top: 4px;
+}
+
+.unique-order-item-qty.weight-qty i {
+    font-size: 11px;
+}

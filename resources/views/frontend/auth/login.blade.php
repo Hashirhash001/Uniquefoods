@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="unique-auth-wrapper">
+<div class="unique-auth-wrapper" style="padding-top: 120px; padding-bottom: 120px;">
     <div class="unique-auth-container">
 
         {{-- Left Side - Image/Branding --}}
@@ -126,7 +126,7 @@
                             <span class="checkmark"></span>
                             <span class="label-text">Remember me</span>
                         </label>
-                        <a href="#" class="unique-forgot-link">Forgot Password?</a>
+                        <a href="{{ route('password.request') }}" class="unique-forgot-link">Forgot Password?</a>
                     </div>
 
                     {{-- Submit Button --}}
@@ -638,6 +638,14 @@
             gap: 12px;
         }
     }
+
+
+    @media (max-width: 767px) {
+        .unique-sidebar-header {
+            display: none !important;
+        }
+    }
+
 </style>
 @endpush
 

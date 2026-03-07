@@ -27593,9 +27593,9 @@ header.header-three .sub-dropdown .submenu.third-lvl.base {
   z-index: 5;
 }
 
-.product-details-popup-wrapper.in-shopdetails .product-details-popup .product-thumb {
+/* .product-details-popup-wrapper.in-shopdetails .product-details-popup .product-thumb {
   width: 450px;
-}
+} */
 
 .share-option-shop-details {
   display: flex;

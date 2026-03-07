@@ -10,28 +10,31 @@ use App\Http\Controllers\Admin\GroupPricingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Frontend\Auth\AuthController;
+use App\Http\Controllers\Frontend\Auth\ForgotPasswordController;
 use App\Http\Controllers\Frontend\Auth\GoogleController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ProductController as FrontendProductController;
+use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Controllers\Frontend\ShopController;
 use App\Http\Controllers\Frontend\WishlistController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+// ============================================
+// PUBLIC ROUTES
+// ============================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
-// Shop page (all products with filters)
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
-
-Route::get('/product/{slug}', [ShopController::class, 'show'])
-    ->name('product.show');
-
+Route::get('/product/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/shop/filter', [ShopController::class, 'filter'])->name('shop.filter');
-
-// Category page (products filtered by category)
 Route::get('/category/{slug}', [ShopController::class, 'category'])->name('category.show');
+
 
 // ============================================
 // CART ROUTES (Guest + Authenticated)
@@ -43,10 +46,9 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('clear', [CartController::class, 'clear'])->name('clear');
     Route::get('count', [CartController::class, 'count'])->name('count');
     Route::get('get', [CartController::class, 'get'])->name('get');
-
-    // Cart page
     Route::get('/', [CartController::class, 'index'])->name('index');
 });
+
 
 // ============================================
 // WISHLIST ROUTES (Guest + Authenticated)
@@ -57,37 +59,85 @@ Route::prefix('wishlist')->name('wishlist.')->group(function () {
     Route::post('remove', [WishlistController::class, 'remove'])->name('remove');
     Route::get('count', [WishlistController::class, 'count'])->name('count');
     Route::get('get', [WishlistController::class, 'get'])->name('get');
-
-    // Wishlist page
     Route::get('/', [WishlistController::class, 'index'])->name('index');
 });
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.create-payment-intent');
-Route::post('/checkout/process', [CheckoutController::class, 'processOrder'])->name('checkout.process');
-Route::get('/orders', [CheckoutController::class, 'orders'])->name('orders.index');
-Route::get('/orders/{orderNumber}', [CheckoutController::class, 'orderDetails'])->name('orders.details');
 
-// Guest routes
+// ============================================
+// EMAIL VERIFICATION ROUTES
+// ============================================
+Route::middleware('auth')->group(function () {
+
+    // Show "please verify your email" notice
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    // Handle verification link click
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('home')->with('success', 'Email verified successfully! Welcome to Unique Foods.');
+    })->middleware('signed')->name('verification.verify');
+
+    // Resend verification email
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', 'Verification link sent! Please check your inbox.');
+    })->middleware('throttle:6,1')->name('verification.send');
+
+});
+
+
+// ============================================
+// CHECKOUT & ORDERS (Auth + Verified Required)
+// ============================================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.create-payment-intent');
+    Route::post('/checkout/process', [CheckoutController::class, 'processOrder'])->name('checkout.process');
+    Route::get('/orders', [CheckoutController::class, 'orders'])->name('orders.index');
+    Route::get('/orders/{orderNumber}', [CheckoutController::class, 'orderDetails'])->name('orders.details');
+
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+});
+
+
+// ============================================
+// GUEST ROUTES (Login / Register)
+// ============================================
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1'); // 5 attempts per minute
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
     Route::get('register', [AuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('register', [AuthController::class, 'register'])->middleware('throttle:3,1'); // 3 attempts per minute
+    Route::post('register', [AuthController::class, 'register'])->middleware('throttle:3,1');
+
+    Route::post('/register/send-otp', [AuthController::class, 'sendOtp'])->name('register.send-otp')->middleware('throttle:3,1');
+    Route::post('/register/verify-otp', [AuthController::class, 'verifyOtp'])->name('register.verify-otp');
+
+    // Forgot Password
+    Route::get('forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
+    Route::post('forgot-password/send-otp', [ForgotPasswordController::class, 'sendOtp'])->name('password.send-otp')->middleware('throttle:3,1');
+    Route::post('forgot-password/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verify-otp');
+    Route::post('forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('password.reset');
 
     // Google OAuth
     Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])
         ->name('auth.google')
-        ->middleware('throttle:10,1'); // 10 attempts per minute
+        ->middleware('throttle:10,1');
 
     Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
         ->middleware('throttle:10,1');
 });
 
-// Logout (authenticated users)
+
+// Logout
 Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+
+// ============================================
+// ADMIN ROUTES
+// ============================================
 Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/login', [LoginController::class, 'showLogin'])
@@ -102,7 +152,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-        // products
+        // Products
         Route::resource('products', ProductController::class);
 
         // Categories
@@ -110,43 +160,33 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('categories/{category}/toggle-status', [CategoryController::class, 'toggleStatus'])
             ->name('categories.toggle-status');
 
-        // brands
+        // Brands
         Route::resource('brands', BrandController::class)->except(['show']);
-        Route::post('brands/{brand}/toggle-status', [BrandController::class, 'toggleStatus'])->name('brands.toggle-status');
+        Route::post('brands/{brand}/toggle-status', [BrandController::class, 'toggleStatus'])
+            ->name('brands.toggle-status');
 
         // Banners
         Route::resource('banners', BannerController::class)->except(['show']);
         Route::post('banners/{banner}/toggle-status', [BannerController::class, 'toggleStatus'])
             ->name('banners.toggle-status');
 
-        // ===== CUSTOMER GROUPS =====
+        // Customer Groups
         Route::resource('customer-groups', CustomerGroupController::class)->except(['show']);
         Route::post('customer-groups/{customerGroup}/toggle-status', [CustomerGroupController::class, 'toggleStatus'])
             ->name('customer-groups.toggle-status');
 
-        // ===== GROUP PRICING & DISCOUNTS =====
-
-        // Group-wide Discounts
+        // Group Pricing & Discounts
         Route::prefix('customer-groups/{group}')->name('customer-groups.')->group(function () {
-            Route::get('discounts', [GroupPricingController::class, 'groupDiscounts'])
-                ->name('discounts');
-            Route::post('discounts', [GroupPricingController::class, 'storeGroupDiscount'])
-                ->name('discounts.store');
+            Route::get('discounts', [GroupPricingController::class, 'groupDiscounts'])->name('discounts');
+            Route::post('discounts', [GroupPricingController::class, 'storeGroupDiscount'])->name('discounts.store');
 
-            // Product-specific Prices
-            Route::get('product-prices', [GroupPricingController::class, 'productPrices'])
-                ->name('product-prices');
-            Route::post('product-prices', [GroupPricingController::class, 'storeProductPrice'])
-                ->name('product-prices.store');
+            Route::get('product-prices', [GroupPricingController::class, 'productPrices'])->name('product-prices');
+            Route::post('product-prices', [GroupPricingController::class, 'storeProductPrice'])->name('product-prices.store');
 
-            // Product Offers (Time-limited)
-            Route::get('product-offers', [GroupPricingController::class, 'productOffers'])
-                ->name('product-offers');
-            Route::post('product-offers', [GroupPricingController::class, 'storeProductOffer'])
-                ->name('product-offers.store');
+            Route::get('product-offers', [GroupPricingController::class, 'productOffers'])->name('product-offers');
+            Route::post('product-offers', [GroupPricingController::class, 'storeProductOffer'])->name('product-offers.store');
         });
 
-        // Delete routes (outside the prefix for easier routing)
         Route::delete('group-discounts/{discount}', [GroupPricingController::class, 'destroyGroupDiscount'])
             ->name('group-discounts.destroy');
         Route::post('group-discounts/{discount}/toggle', [GroupPricingController::class, 'toggleGroupDiscount'])
@@ -169,7 +209,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/export/csv', [OrderController::class, 'export'])->name('export');
             Route::get('/{order}/invoice', [OrderController::class, 'invoice'])->name('invoice');
         });
-
     });
-
 });

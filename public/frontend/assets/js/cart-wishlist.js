@@ -355,14 +355,33 @@
             container.empty();
 
             items.forEach(item => {
+                // Build the quantity/weight display
+                let quantityDisplay;
+                if (item.weight && parseFloat(item.weight) > 0) {
+                    // Weight-based product: show weight instead of qty
+                    const weightFormatted = parseFloat(item.weight) % 1 === 0
+                        ? parseFloat(item.weight).toFixed(0)
+                        : parseFloat(item.weight);
+                    quantityDisplay = `
+                        <span class="unique-cart-item-weight">
+                            <i class="fa-regular fa-weight-scale"></i> ${weightFormatted}kg
+                        </span>
+                    `;
+                } else {
+                    // Standard product: show qty
+                    quantityDisplay = `
+                        <span class="unique-cart-item-quantity">Qty: ${item.quantity}</span>
+                    `;
+                }
+
                 const itemHtml = `
                     <div class="unique-cart-item" data-product-id="${item.id}">
                         <img src="${item.image}" alt="${item.name}" class="unique-cart-item-image"
-                             onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
+                            onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
                         <div class="unique-cart-item-details">
                             <h5 class="unique-cart-item-name">${item.name}</h5>
                             <div class="unique-cart-item-meta">
-                                <span class="unique-cart-item-quantity">Qty: ${item.quantity}</span>
+                                ${quantityDisplay}
                                 <span class="unique-cart-item-price">£${parseFloat(item.price).toFixed(2)}</span>
                             </div>
                         </div>
@@ -487,8 +506,9 @@
                 method: 'GET',
                 success: (response) => {
                     if (response.success && response.items) {
-                        response.items.forEach(productId => {
-                            const buttons = $(`.wishlist-toggle-btn[data-product-id="${productId}"]`);
+                        response.items.forEach(product => {
+                            // ✅ Use product.id, not the whole object
+                            const buttons = $(`.wishlist-toggle-btn[data-product-id="${product.id}"]`);
                             buttons.addClass('active');
                             buttons.find('i').removeClass('fa-regular').addClass('fa-solid');
                         });

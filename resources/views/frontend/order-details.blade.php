@@ -324,15 +324,29 @@
                         <div class="order-item-info">
                             <div class="order-item-name">{{ $item->product_name }}</div>
                             <div class="order-item-meta">
-                                Quantity: {{ $item->quantity }}
-                                @if($item->weight)
-                                    | Weight: {{ $item->weight }}g
+                                @if($item->weight && floatval($item->weight) > 0)
+                                    {{-- Weight-based item --}}
+                                    <span style="display:inline-flex; align-items:center; gap:5px;
+                                                background:#eff6ff; color:#08437b; border:1px solid #bfdbfe;
+                                                border-radius:99px; padding:2px 10px; font-size:12px; font-weight:700;">
+                                        <i class="fa-regular fa-weight-scale"></i>
+                                        {{ rtrim(rtrim(number_format(floatval($item->weight), 2), '0'), '.') }}kg
+                                        &times; £{{ number_format($item->price, 2) }}/kg
+                                    </span>
+                                @else
+                                    {{-- Standard qty item --}}
+                                    Qty: {{ $item->quantity }}
+                                    &times; £{{ number_format($item->price, 2) }} each
                                 @endif
                             </div>
                         </div>
 
                         <div class="order-item-price">
-                            <div class="unit-price">£{{ number_format($item->price, 2) }} each</div>
+                            @if($item->weight && floatval($item->weight) > 0)
+                                <div class="unit-price">£{{ number_format($item->price, 2) }}/kg</div>
+                            @else
+                                <div class="unit-price">£{{ number_format($item->price, 2) }} each</div>
+                            @endif
                             <div class="total-price">£{{ number_format($item->subtotal, 2) }}</div>
                         </div>
                     </div>

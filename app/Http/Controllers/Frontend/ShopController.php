@@ -88,7 +88,23 @@ class ShopController extends Controller
 
         $user = Auth::user();
 
-        $productsData = $products->map(function ($product) use ($pricingService, $user) {
+        $wishlistedIds = [];
+        if ($user) {
+            // Get the user's wishlist first, then get product IDs from wishlist_items
+            $wishlist = \App\Models\Wishlist::where('user_id', $user->id)->first();
+            if ($wishlist) {
+                $wishlistedIds = \App\Models\WishlistItem::where('wishlist_id', $wishlist->id)
+                    ->pluck('product_id')
+                    ->toArray();
+            }
+        } else {
+            // Guest — fetch from session
+            $sessionWishlist = session()->get('wishlist', []);
+            $wishlistedIds = array_keys($sessionWishlist);
+        }
+
+
+        $productsData = $products->map(function ($product) use ($pricingService, $user, $wishlistedIds) {
             $basePrice  = (float) $product->price;
             $finalPrice = (float) $pricingService->getCustomerPrice($product, $user); // your service logic [file:8]
 
@@ -116,6 +132,7 @@ class ShopController extends Controller
                 'unit' => $product->unit,
                 'stock' => $product->stock ?? 0,
                 'image_url' => $product->image_url,
+                'is_wishlisted'       => in_array($product->id, $wishlistedIds),
 
                 'category' => $product->category ? [
                     'id' => $product->category->id,
@@ -175,38 +192,64 @@ class ShopController extends Controller
      */
     public function show($slug, PricingService $pricingService)
     {
-        $product = Product::with(['category', 'brand', 'images'])
+        $product = Product::with(['category', 'brand', 'images', 'reviews.user'])
             ->where('slug', $slug)
             ->where('is_active', 1)
             ->firstOrFail();
 
         $user = Auth::user();
 
-        // Main product computed pricing
         $product->base_price = (float) $product->price;
         $product->final_price = (float) $pricingService->getCustomerPrice($product, $user);
         $product->discount_percentage_calc = ($product->base_price > 0 && $product->final_price < $product->base_price)
             ? round((($product->base_price - $product->final_price) / $product->base_price) * 100)
             : 0;
 
-        // Related products
+        // ✅ Fetch offers for this user's group
+        $offers = collect();
+        if ($user) {
+            $groupIds = $user->groups->pluck('id');
+            if ($groupIds->isNotEmpty()) {
+                $offers = \App\Models\GroupProductOffer::with(['customerGroup'])
+                    ->whereIn('customer_group_id', $groupIds)
+                    ->where(function($q) use ($product) {
+                        $q->where(fn($q) => $q->where('offer_type', 'product')->where('product_id', $product->id))
+                        ->orWhere(fn($q) => $q->where('offer_type', 'category')->where('category_id', $product->category_id))
+                        ->orWhere(fn($q) => $q->where('offer_type', 'brand')->where('brand_id', $product->brand_id));
+                    })
+                    ->active()
+                    ->get();
+            }
+        }
+
+        // ✅ Check if user has purchased this product (for review eligibility)
+        $hasPurchased = false;
+        $hasReviewed  = false;
+        if ($user) {
+            $hasPurchased = \App\Models\Order::where('user_id', $user->id)
+                ->whereIn('status', ['delivered'])
+                ->whereHas('items', fn($q) => $q->where('product_id', $product->id))
+                ->exists();
+            $hasReviewed = \App\Models\ProductReview::where('product_id', $product->id)
+                ->where('user_id', $user->id)
+                ->exists();
+        }
+
         $relatedProducts = Product::with(['category', 'brand', 'primaryImage'])
             ->where('is_active', 1)
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->limit(8)
-            ->get();
+            ->limit(8)->get();
 
         $relatedProducts->transform(function ($p) use ($pricingService, $user) {
             $p->base_price = (float) $p->price;
             $p->final_price = (float) $pricingService->getCustomerPrice($p, $user);
             $p->discount_percentage_calc = ($p->base_price > 0 && $p->final_price < $p->base_price)
-                ? round((($p->base_price - $p->final_price) / $p->base_price) * 100)
-                : 0;
+                ? round((($p->base_price - $p->final_price) / $p->base_price) * 100) : 0;
             return $p;
         });
 
-        return view('frontend.show', compact('product', 'relatedProducts'));
+        return view('frontend.show', compact('product', 'relatedProducts', 'offers', 'hasPurchased', 'hasReviewed'));
     }
 
     /**

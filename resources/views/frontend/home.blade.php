@@ -211,8 +211,8 @@
                             {{-- Quick Actions --}}
                             <div class="product-quick-actions">
                                 {{-- Wishlist (same as shop) --}}
-                                <button class="quick-action-btn wishlist-toggle-btn"
-                                        title="Add to Wishlist"
+                                <button class="quick-action-btn wishlist-toggle-btn {{ $product->is_wishlisted ? 'active' : '' }}"
+                                        title="{{ $product->is_wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist' }}"
                                         data-product-id="{{ $product->id }}">
                                     <i class="fa-regular fa-heart"></i>
                                 </button>
@@ -365,8 +365,8 @@
 
                                     <div class="product-quick-actions">
                                         {{-- Wishlist (same as shop) --}}
-                                        <button class="quick-action-btn wishlist-toggle-btn"
-                                                title="Add to Wishlist"
+                                        <button class="quick-action-btn wishlist-toggle-btn {{ $product->is_wishlisted ? 'active' : '' }}"
+                                                title="{{ $product->is_wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist' }}"
                                                 data-product-id="{{ $product->id }}">
                                             <i class="fa-regular fa-heart"></i>
                                         </button>

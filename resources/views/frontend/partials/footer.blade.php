@@ -15,14 +15,6 @@
                             Fresh groceries delivered to your doorstep. Subscribe for exclusive deals and offers.
                         </p>
 
-                        <form action="#" method="POST">
-                            @csrf
-                            <input type="email" name="email" placeholder="Enter your email" required>
-                            <button class="rts-btn btn-primary" type="submit">
-                                <i class="fa-light fa-arrow-right"></i>
-                            </button>
-                        </form>
-
                         <div class="social-style-dash">
                             <ul>
                                 <li><a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a></li>
@@ -87,7 +79,7 @@
                                 <div class="information-area">
                                     <p class="disc">
                                         Available 24/7<br>
-                                        <a href="tel:+919999999999">+91 99999 99999</a>
+                                        <a href="tel:+919999999999">+44 7425 837716</a>
                                     </p>
                                 </div>
                             </div>
@@ -99,7 +91,7 @@
                                 <div class="information-area">
                                     <p class="disc">
                                         Email Support<br>
-                                        <a href="mailto:support@uniquefoods.com">support@uniquefoods.com</a>
+                                        <a href="mailto:info@unique-food.co.uk">info@unique-food.co.uk</a>
                                     </p>
                                 </div>
                             </div>

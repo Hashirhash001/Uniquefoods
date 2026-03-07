@@ -91,24 +91,19 @@
 </head>
 <body>
 
-{{-- INSTANT LOADER - Shows immediately before ANY content --}}
+{{-- GLOBAL LOADER --}}
 <div id="uniqueGlobalLoader" class="unique-global-loader unique-active">
-    <div class="unique-loader-background"></div>
     <div class="unique-loader-container">
+
         <div class="unique-loader-brand">
-            <img src="{{ asset('admin/assets/images/logo/favicon.png') }}" alt="" max-width="150px">
+            <img src="{{ asset('admin/assets/images/logo/favicon.png') }}"
+                 alt="Unique Foods"
+                 style="width: 40px; height: 40px; object-fit: contain;">
         </div>
 
         <div class="unique-loader-spinner-wrapper">
             <div class="unique-spinner-outer"></div>
-            <div class="unique-spinner-middle"></div>
             <div class="unique-spinner-inner"></div>
-        </div>
-
-        <div class="unique-loader-dots">
-            <div class="unique-dot"></div>
-            <div class="unique-dot"></div>
-            <div class="unique-dot"></div>
         </div>
 
         <div class="unique-loader-text">Loading...</div>
@@ -117,6 +112,7 @@
         <div class="unique-loader-progress">
             <div class="unique-progress-bar"></div>
         </div>
+
     </div>
 </div>
 

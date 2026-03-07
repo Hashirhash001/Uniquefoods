@@ -508,7 +508,7 @@
             <div class="stat-value">{{ number_format($stats['processing_orders']) }}</div>
         </div>
         <div class="stat-card success">
-            <div class="stat-label">Completed</div>
+            <div class="stat-label">Delivered</div>  {{-- was "Completed" --}}
             <div class="stat-value">{{ number_format($stats['completed_orders']) }}</div>
         </div>
         <div class="stat-card danger">
@@ -525,7 +525,7 @@
         </div>
         <div class="stat-card success">
             <div class="stat-label">Today Revenue</div>
-            <div class="stat-value">${{ number_format($stats['today_revenue'], 2) }}</div>
+            <div class="stat-value">£{{ number_format($stats['today_revenue'], 2) }}</div>  {{-- was $ --}}
         </div>
     </div>
 
@@ -549,11 +549,10 @@
                     <label>Status</label>
                     <select name="status" class="form-control">
                         <option value="">All Statuses</option>
-                        <option value="pending">Pending</option>
                         <option value="processing">Processing</option>
-                        <option value="completed">Completed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
                         <option value="cancelled">Cancelled</option>
-                        <option value="refunded">Refunded</option>
                     </select>
                 </div>
 

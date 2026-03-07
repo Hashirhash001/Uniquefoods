@@ -562,10 +562,10 @@ $(document).ready(function() {
                                     onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
                             </a>
                             <div class="product-quick-actions">
-                                <button class="quick-action-btn wishlist-toggle-btn"
-                                        title="Add to Wishlist"
+                                <button class="quick-action-btn wishlist-toggle-btn ${product.is_wishlisted ? 'active' : ''}"
+                                        title="${product.is_wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}"
                                         data-product-id="${product.id}">
-                                    <i class="fa-regular fa-heart"></i>
+                                    <i class="${product.is_wishlisted ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}"></i>
                                 </button>
                                 <a href="/product/${product.slug}"
                                 class="quick-action-btn shop-quick-view-btn"

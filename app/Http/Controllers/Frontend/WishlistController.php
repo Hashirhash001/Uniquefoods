@@ -260,6 +260,7 @@ class WishlistController extends Controller
                     'unit' => $product->unit,
                     'stock' => $product->stock ?? 0,
                     'image_url' => $product->image_url,
+                    'is_weight_based' => (bool) $product->is_weight_based,
                     'category' => $product->category ? [
                         'id' => $product->category->id,
                         'name' => $product->category->name,

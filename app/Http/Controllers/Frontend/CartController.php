@@ -37,22 +37,26 @@ class CartController extends Controller
                 ->with(['product.primaryImage', 'product.category', 'product.brand'])
                 ->get()
                 ->map(function ($item) use ($user) {
-                    // ✅ Apply group pricing
+                    // Apply group pricing
                     $finalPrice = (float) $this->pricingService->getCustomerPrice($item->product, $user);
 
                     return [
-                        'id' => $item->product_id,
-                        'cart_item_id' => $item->id,
-                        'name' => $item->product->name,
-                        'slug' => $item->product->slug,
-                        'price' => $finalPrice, // ✅ Use group price
-                        'base_price' => (float) $item->product->price, // ✅ Original price
-                        'image' => $item->product->image_url,
-                        'quantity' => $item->quantity,
-                        'weight' => $item->weight,
+                        'id'              => $item->product_id,
+                        'cart_item_id'    => $item->id,
+                        'name'            => $item->product->name,
+                        'slug'            => $item->product->slug,
+                        'price'           => $item->product->is_weight_based
+                                                ? (float) $item->price
+                                                : $finalPrice,
+                        'base_price'      => (float) $item->product->price,
+                        'image'           => $item->product->image_url,
+                        'quantity'        => $item->quantity,
+                        'weight'          => $item->weight,
                         'is_weight_based' => $item->product->is_weight_based,
-                        'stock' => $item->product->stock,
-                        'subtotal' => $finalPrice * $item->quantity, // ✅ Calculated with group price
+                        'stock'           => $item->product->stock,
+                        'subtotal'        => $item->product->is_weight_based
+                                                ? (float) $item->price
+                                                : $finalPrice * $item->quantity,
                     ];
                 })
                 ->toArray();
@@ -71,42 +75,45 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'nullable|integer|min:1',
-            'weight' => 'nullable|numeric|min:0.001'
+            'quantity'   => 'nullable|integer|min:1',
+            'weight'     => 'nullable|numeric|min:0.001'
         ]);
 
         $productId = $request->product_id;
-        $quantity = $request->quantity ?? 1;
-        $weight = $request->weight;
+        $quantity  = $request->quantity ?? 1;
+        $weight    = $request->weight ? (float) $request->weight : null;
 
         $product = Product::with('category', 'brand')->find($productId);
 
         if (!$product || !$product->is_active) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Product not available'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Product not available'], 404);
         }
 
-        // Stock validation for non-weight based
+        // Weight-based validation
+        if ($product->is_weight_based) {
+            if (!$weight) {
+                return response()->json(['success' => false, 'message' => 'Please select a weight.'], 422);
+            }
+            if ($product->min_weight && $weight < (float) $product->min_weight) {
+                return response()->json(['success' => false, 'message' => "Minimum order is {$product->min_weight}kg."], 422);
+            }
+            if ($product->max_weight && $weight > (float) $product->max_weight) {
+                return response()->json(['success' => false, 'message' => "Maximum order is {$product->max_weight}kg."], 422);
+            }
+        }
+
+        // Stock validation for non-weight based only
         if (!$product->is_weight_based && $product->stock < $quantity) {
-            return response()->json([
-                'success' => false,
-                'message' => "Insufficient stock. Only {$product->stock} items available."
-            ], 400);
+            return response()->json(['success' => false, 'message' => "Insufficient stock. Only {$product->stock} items available."], 400);
         }
 
-        // ✅ Calculate price with group discount
-        $user = Auth::user();
+        $user  = Auth::user();
         $price = (float) $this->pricingService->getCustomerPrice($product, $user);
 
         if (Auth::check()) {
-            // Database cart for authenticated users
             return $this->addToDatabase($product, $quantity, $weight, $price);
-        } else {
-            // Session cart for guests
-            return $this->addToSession($product, $quantity, $weight, $price);
         }
+        return $this->addToSession($product, $quantity, $weight, $price);
     }
 
     /**
@@ -123,21 +130,26 @@ class CartController extends Controller
                 ->first();
 
             if ($existingItem) {
-                $existingItem->quantity += $quantity;
-                if ($weight) {
-                    $existingItem->weight += $weight;
+                if ($product->is_weight_based) {
+                    // ✅ REPLACE weight, don't accumulate
+                    $existingItem->weight    = $weight;
+                    $existingItem->quantity  = 1;
+                    // ✅ Recalculate line price = price_per_kg × weight
+                    $existingItem->price     = round($price * $weight, 2);
+                } else {
+                    $existingItem->quantity += $quantity;
+                    $existingItem->price     = $price;
                 }
-                // ✅ Update price with latest group discount
-                $existingItem->price = $price;
                 $existingItem->save();
             } else {
                 CartItem::create([
-                    'cart_id' => $cart->id,
-                    'product_id' => $product->id,
-                    'quantity' => $quantity,
-                    'weight' => $weight,
-                    'price' => $price, // ✅ Store group-discounted price
-                    'price_per_kg' => $product->price_per_kg,
+                    'cart_id'     => $cart->id,
+                    'product_id'  => $product->id,
+                    'quantity'    => $product->is_weight_based ? 1 : $quantity,
+                    'weight'      => $weight,
+                    // ✅ For weight-based: store total line price (price_per_kg × weight)
+                    'price'       => $product->is_weight_based ? round($price * $weight, 2) : $price,
+                    'price_per_kg'=> $product->price_per_kg,
                 ]);
             }
 
@@ -146,14 +158,11 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "{$product->name} added to cart",
-                'cart' => $this->getCartData()
+                'cart'    => $this->getCartData()
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to add to cart'
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to add to cart'], 500);
         }
     }
 
@@ -164,26 +173,29 @@ class CartController extends Controller
     {
         $cart = session()->get('cart', []);
 
+        // ✅ Calculate line price correctly for weight-based
+        $linePrice = $product->is_weight_based ? round($price * $weight, 2) : $price;
+
         if (isset($cart[$product->id])) {
-            // Update existing item
-            $cart[$product->id]['quantity'] += $quantity;
-            if ($weight) {
-                $cart[$product->id]['weight'] += $weight;
+            if ($product->is_weight_based) {
+                // ✅ REPLACE weight, recalculate price
+                $cart[$product->id]['weight'] = $weight;
+                $cart[$product->id]['price']  = $linePrice;
+            } else {
+                $cart[$product->id]['quantity'] += $quantity;
+                $cart[$product->id]['price']     = $price;
             }
-            // ✅ Update price
-            $cart[$product->id]['price'] = $price;
         } else {
-            // Add new item
             $cart[$product->id] = [
-                'id' => $product->id,
-                'name' => $product->name,
-                'slug' => $product->slug,
-                'price' => $price, // ✅ Store price (no group discount for guests)
-                'image' => $product->image_url,
-                'quantity' => $quantity,
-                'weight' => $weight,
+                'id'              => $product->id,
+                'name'            => $product->name,
+                'slug'            => $product->slug,
+                'price'           => $linePrice, // ✅ Total line price
+                'image'           => $product->image_url,
+                'quantity'        => $product->is_weight_based ? 1 : $quantity,
+                'weight'          => $weight,
                 'is_weight_based' => $product->is_weight_based,
-                'stock' => $product->stock,
+                'stock'           => $product->stock,
             ];
         }
 
@@ -192,7 +204,7 @@ class CartController extends Controller
         return response()->json([
             'success' => true,
             'message' => "{$product->name} added to cart",
-            'cart' => $this->getCartData()
+            'cart'    => $this->getCartData()
         ]);
     }
 

@@ -176,16 +176,34 @@
 
                 <div class="unique-order-items">
                     @foreach($cart as $item)
+                        @php
+                            $isWeightBased = !empty($item['weight']) && floatval($item['weight']) > 0;
+                            $itemSubtotal  = $isWeightBased
+                                ? $item['price'] * floatval($item['weight'])
+                                : $item['price'] * $item['quantity'];
+                            $weightFormatted = $isWeightBased
+                                ? rtrim(rtrim(number_format(floatval($item['weight']), 2), '0'), '.')
+                                : null;
+                        @endphp
                         <div class="unique-order-item">
                             <img src="{{ $item['image'] }}"
-                                 alt="{{ $item['name'] }}"
-                                 class="unique-order-item-image"
-                                 onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
+                                alt="{{ $item['name'] }}"
+                                class="unique-order-item-image"
+                                onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
                             <div class="unique-order-item-details">
                                 <div class="unique-order-item-name">{{ $item['name'] }}</div>
-                                <div class="unique-order-item-qty">Qty: {{ $item['quantity'] }}</div>
+                                @if($isWeightBased)
+                                    <div class="unique-order-item-qty weight-qty">
+                                        <i class="fa-regular fa-weight-scale"></i>
+                                        {{ $weightFormatted }}kg &times; £{{ number_format($item['price'], 2) }}/kg
+                                    </div>
+                                @else
+                                    <div class="unique-order-item-qty">
+                                        Qty: {{ $item['quantity'] }} &times; £{{ number_format($item['price'], 2) }}
+                                    </div>
+                                @endif
                             </div>
-                            <div class="unique-order-item-price">£{{ number_format($item['price'] * $item['quantity'], 2) }}</div>
+                            <div class="unique-order-item-price">£{{ number_format($itemSubtotal, 2) }}</div>
                         </div>
                     @endforeach
                 </div>

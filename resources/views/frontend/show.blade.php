@@ -7,537 +7,6 @@
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/shop.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/cart-wishlist.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/global-loader.css') }}">
-<style>
-/* Modern Share Modal Styles */
-.share-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.share-modal-overlay.active {
-    display: flex;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes modalSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.share-modal {
-    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border-radius: 24px;
-    padding: 0;
-    max-width: 480px;
-    width: 92%;
-    max-height: 90vh;
-    overflow: hidden;
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
-    animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-}
-
-/* Modern gradient border effect */
-.share-modal::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #25D366, #E1306C, #0088cc, #000000);
-    background-size: 200% 100%;
-    animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-}
-
-.share-modal-header {
-    padding: 28px 28px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.share-modal-header h3 {
-    font-size: 24px;
-    font-weight: 800;
-    color: #111827;
-    margin: 0;
-    letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #111827, #374151);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.share-modal-close {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f3f4f6;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.share-modal-close::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: #ef4444;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translate(-50%, -50%);
-}
-
-.share-modal-close:hover::before {
-    width: 100%;
-    height: 100%;
-}
-
-.share-modal-close:hover {
-    transform: rotate(90deg);
-}
-
-.share-modal-close i {
-    font-size: 18px;
-    color: #6b7280;
-    position: relative;
-    z-index: 1;
-    transition: color 0.3s;
-}
-
-.share-modal-close:hover i {
-    color: #ffffff;
-}
-
-.share-modal-body {
-    padding: 0 28px 28px;
-}
-
-/* Modern Product Preview Card */
-.share-product-preview {
-    display: flex;
-    gap: 16px;
-    padding: 20px;
-    background: linear-gradient(135deg, #ffffff, #f9fafb);
-    border-radius: 16px;
-    margin-bottom: 28px;
-    border: 1px solid #e5e7eb;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s;
-}
-
-.share-product-preview::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(98, 157, 35, 0.03), rgba(98, 157, 35, 0.08));
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.share-product-preview:hover::before {
-    opacity: 1;
-}
-
-.share-product-image {
-    width: 90px;
-    height: 90px;
-    border-radius: 12px;
-    overflow: hidden;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.share-product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
-}
-
-.share-product-preview:hover .share-product-image img {
-    transform: scale(1.1);
-}
-
-.share-product-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.share-product-info h4 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.4;
-}
-
-.share-product-price {
-    font-size: 22px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #08437b, #7cb929);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* Modern Share Options Grid */
-.share-options-section {
-    margin-bottom: 24px;
-}
-
-.share-section-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
-}
-
-.share-options-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-}
-
-.share-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 8px;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-decoration: none;
-    background: #ffffff;
-    border: 2px solid #f3f4f6;
-    position: relative;
-    overflow: hidden;
-}
-
-.share-option::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.05));
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.share-option:hover {
-    transform: translateY(-6px);
-    border-color: transparent;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-}
-
-.share-option:hover::before {
-    opacity: 1;
-}
-
-.share-option:active {
-    transform: translateY(-2px);
-}
-
-.share-option-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #ffffff;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.share-option:hover .share-option-icon {
-    transform: scale(1.15) rotate(-5deg);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-}
-
-/* Modern gradient backgrounds with glass effect */
-.share-option-icon.whatsapp {
-    background: linear-gradient(135deg, #25D366, #128C7E);
-}
-
-.share-option-icon.instagram {
-    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-}
-
-.share-option-icon.telegram {
-    background: linear-gradient(135deg, #0088cc, #006699);
-}
-
-.share-option-icon.x {
-    background: linear-gradient(135deg, #000000, #1a1a1a);
-}
-
-.share-option-icon.copy {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-}
-
-.share-option-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    text-align: center;
-    transition: color 0.3s;
-}
-
-.share-option:hover .share-option-label {
-    color: #111827;
-}
-
-/* Modern Copy Link Section */
-.share-link-section {
-    background: linear-gradient(135deg, #f9fafb, #ffffff);
-    border: 2px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 16px;
-}
-
-.share-link-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    display: block;
-}
-
-.share-link-copy {
-    display: flex;
-    gap: 10px;
-    background: #ffffff;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px 14px;
-    transition: all 0.3s;
-}
-
-.share-link-copy:focus-within {
-    border-color: #08437b;
-    box-shadow: 0 0 0 4px rgba(98, 157, 35, 0.1);
-}
-
-.share-link-copy input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    color: #374151;
-    outline: none;
-    font-weight: 500;
-}
-
-.share-copy-btn {
-    background: linear-gradient(135deg, #08437b, #7cb929);
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(98, 157, 35, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.share-copy-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transition: all 0.5s;
-    transform: translate(-50%, -50%);
-}
-
-.share-copy-btn:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
-.share-copy-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(98, 157, 35, 0.4);
-}
-
-.share-copy-btn:active {
-    transform: translateY(0);
-}
-
-.share-copy-btn.copied {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.share-copy-btn i {
-    position: relative;
-    z-index: 1;
-}
-
-/* Modern Share Button */
-.share-option-shop-details {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-
-.share-button-main {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 28px;
-    background: linear-gradient(135deg, #ffffff, #f9fafb);
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #374151;
-    font-size: 15px;
-    font-weight: 700;
-    position: relative;
-    overflow: hidden;
-}
-
-.share-button-main::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(98, 157, 35, 0.1), transparent);
-    transition: left 0.5s;
-}
-
-.share-button-main:hover::before {
-    left: 100%;
-}
-
-.share-button-main:hover {
-    border-color: #08437b;
-    color: #08437b;
-    background: #f0fdf4;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(98, 157, 35, 0.15);
-}
-
-.share-button-main i {
-    font-size: 18px;
-    transition: transform 0.3s;
-}
-
-.share-button-main:hover i {
-    transform: rotate(15deg) scale(1.1);
-}
-
-/* Responsive */
-@media (max-width: 576px) {
-    .share-modal {
-        width: 96%;
-        border-radius: 20px;
-    }
-
-    .share-options-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
-    }
-
-    .share-option {
-        padding: 12px 6px;
-    }
-
-    .share-option-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 20px;
-    }
-
-    .share-option-label {
-        font-size: 11px;
-    }
-
-    .share-modal-header h3 {
-        font-size: 20px;
-    }
-}
-
-/* Success animation */
-@keyframes successPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-.share-copy-btn.copied {
-    animation: successPulse 0.4s ease;
-}
-</style>
 @endpush
 
 @section('content')
@@ -616,24 +85,33 @@
                                 </div>
 
                                 <!-- Product Information -->
-                                <div class="contents">
+                                <div class="contents w-100">
                                     <div class="product-status">
                                         @if($product->category)
                                             <span class="product-category">{{ $product->category->name }}</span>
                                         @endif
                                     </div>
 
-                                    <div class="rating-stars-group">
-                                        <div class="rating-star">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= 4)
-                                                    <i class="fas fa-star"></i>
-                                                @else
-                                                    <i class="fas fa-star-half-alt"></i>
-                                                @endif
-                                            @endfor
+                                    <div class="d-flex align-items-center justify-content-between mb--10">
+                                        <div class="rating-stars-group">
+                                            <div class="rating-star">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= 4)
+                                                        <i class="fas fa-star"></i>
+                                                    @else
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <span>(10 Reviews)</span>
                                         </div>
-                                        <span>(10 Reviews)</span>
+
+                                        <div class="product-top-actions">
+                                            <button class="share-button-main" id="shareProductBtn">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                                <span>Share</span>
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <h2 class="product-title">{{ $product->name }}</h2>
@@ -677,33 +155,111 @@
                                     </div>
 
                                     <div class="product-bottom-action">
-                                        <button class="rts-btn btn-primary radious-sm with-icon add-to-cart-btn"
-                                                data-product-id="{{ $product->id }}"
-                                                {{ $product->stock == 0 ? 'disabled' : '' }}>
-                                            <div class="btn-text">
-                                                {{ $product->stock > 0 ? 'Add To Cart' : 'Out of Stock' }}
-                                            </div>
-                                            <div class="arrow-icon">
-                                                <i class="fa-regular fa-cart-shopping"></i>
-                                            </div>
-                                        </button>
+                                        @if($product->is_weight_based)
+                                            <div class="weight-purchase-block">
 
-                                        <button class="rts-btn btn-primary wishlist-toggle-btn"
-                                                data-product-id="{{ $product->id }}"
-                                                title="Add to Wishlist">
-                                            <i class="fa-light fa-heart"></i>
-                                        </button>
+                                                {{-- Stepper --}}
+                                                <div class="weight-selector-row">
+                                                    <button type="button" class="weight-step-btn" id="weightMinus">
+                                                        <i class="fa-solid fa-minus"></i>
+                                                    </button>
+                                                    <div class="weight-input-wrapper">
+                                                        <input type="number"
+                                                            id="weightInput"
+                                                            value="{{ number_format($product->min_weight ?? 0.5, 1) }}"
+                                                            min="{{ $product->min_weight ?? 0.5 }}"
+                                                            max="{{ $product->max_weight ?? 3 }}"
+                                                            step="0.5">
+                                                        <span class="weight-unit-label">kg</span>
+                                                    </div>
+                                                    <button type="button" class="weight-step-btn" id="weightPlus">
+                                                        <i class="fa-solid fa-plus"></i>
+                                                    </button>
+                                                </div>
+
+                                                {{-- Quick weight pills --}}
+                                                <div class="weight-quick-btns">
+                                                    @php
+                                                        $minW = (float)($product->min_weight ?? 0.5);
+                                                        $maxW = (float)($product->max_weight ?? 3);
+                                                        $presetWeights = [0.5, 1, 2, 3];
+                                                    @endphp
+                                                    @foreach($presetWeights as $w)
+                                                        @if($w >= $minW && $w <= $maxW)
+                                                            <button type="button"
+                                                                    class="weight-quick-btn {{ $w == $minW ? 'active' : '' }}"
+                                                                    data-weight="{{ $w }}" style="width: unset;">
+                                                                {{ rtrim(rtrim(number_format($w, 2), '0'), '.') }}kg
+                                                            </button>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+
+                                                {{-- Live price --}}
+                                                <div class="weight-total-row">
+                                                    <span class="weight-price-label">
+                                                        £{{ number_format($product->final_price, 2) }}/kg × <span id="weightDisplay">{{ number_format($product->min_weight ?? 0.5, 1) }}</span>kg
+                                                    </span>
+                                                    <span class="weight-total-price" id="weightTotalPrice">
+                                                        £{{ number_format($product->final_price * ($product->min_weight ?? 0.5), 2) }}
+                                                    </span>
+                                                </div>
+
+                                                @if($product->min_weight)
+                                                    <p class="weight-min-note">
+                                                        <i class="fa-regular fa-circle-info"></i>
+                                                        Min order: {{ $product->min_weight }}kg
+                                                        @if($product->max_weight) · Max: {{ $product->max_weight }}kg @endif
+                                                    </p>
+                                                @endif
+
+                                                {{-- Add To Cart + Wishlist side by side --}}
+                                                <div class="cart-action-row">
+                                                    <button type="button"
+                                                            class="rts-btn btn-primary radious-sm with-icon"
+                                                            id="weightAddToCartBtn"
+                                                            {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                                                        <div class="btn-text">{{ $product->stock > 0 ? 'Add To Cart' : 'Out of Stock' }}</div>
+                                                        <div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>
+                                                    </button>
+
+                                                    <button class="wishlist-toggle-btn wishlist-icon-btn"
+                                                            data-product-id="{{ $product->id }}"
+                                                            title="Add to Wishlist">
+                                                        <i class="fa-light fa-heart"></i>
+                                                    </button>
+                                                </div>
+
+                                            </div>
+
+                                        @else
+                                            {{-- Standard product: Add To Cart + Wishlist side by side --}}
+                                            <div class="cart-action-row">
+                                                <button class="rts-btn btn-primary radious-sm with-icon add-to-cart-btn"
+                                                        data-product-id="{{ $product->id }}"
+                                                        {{ $product->stock === 0 ? 'disabled' : '' }}>
+                                                    <div class="btn-text">{{ $product->stock > 0 ? 'Add To Cart' : 'Out of Stock' }}</div>
+                                                    <div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>
+                                                </button>
+
+                                                <button class="wishlist-toggle-btn wishlist-icon-btn"
+                                                        data-product-id="{{ $product->id }}"
+                                                        title="Add to Wishlist">
+                                                    <i class="fa-light fa-heart"></i>
+                                                </button>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="product-uniques">
-                                        <span class="sku product-unique mb--10">
+                                        {{-- <span class="sku product-unique mb--10">
                                             <span style="font-weight: 400; margin-right: 10px;">SKU:</span>
                                             <span>{{ $product->sku ?? 'N/A' }}</span>
-                                        </span>
+                                        </span> --}}
 
                                         @if($product->category)
-                                            <span class="categories product-unique mb--10">
-                                                <span style="font-weight: 400; margin-right: 10px;">Category:</span>
+                                            <span class="categories product-unique mb--10" style="font-size: 15px;">
+                                                <span style="font-weight: 500; margin-right: 10px;">Category:</span>
                                                 <span>{{ $product->category->name }}</span>
                                             </span>
                                         @endif
@@ -717,72 +273,227 @@
                                     </div>
 
                                     <!-- Modern Share Button -->
-                                    <div class="share-option-shop-details">
+                                    {{-- <div class="share-option-shop-details">
                                         <button class="share-button-main" id="shareProductBtn">
                                             <i class="fa-solid fa-share-nodes"></i>
                                             <span>Share Product</span>
                                         </button>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Product Tabs -->
+                {{-- Product Tabs --}}
                 <div class="product-description-tab-shop mt--50">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
+
+                        @if($product->description)
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="details-tab" data-bs-toggle="tab"
-                                    data-bs-target="#details-tab-pane" type="button" role="tab">
+                            <button class="nav-link active" id="details-tab"
+                                    data-bs-toggle="tab" data-bs-target="#details-tab-pane"
+                                    type="button" role="tab">
                                 Product Details
                             </button>
                         </li>
+                        @endif
+
+                        @if($product->weight || $product->brand_id)
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="additional-tab" data-bs-toggle="tab"
+                            <button class="nav-link {{ !$product->description ? 'active' : '' }}"
+                                    id="additional-tab" data-bs-toggle="tab"
                                     data-bs-target="#additional-tab-pane" type="button" role="tab">
                                 Additional Information
                             </button>
                         </li>
+                        @endif
+
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab"
+                            <button class="nav-link {{ !$product->description && !$product->weight && !$product->brand_id ? 'active' : '' }}"
+                                    id="reviews-tab" data-bs-toggle="tab"
                                     data-bs-target="#reviews-tab-pane" type="button" role="tab">
-                                Customer Reviews (10)
+                                Reviews
+                                @if($product->reviews->count() > 0)
+                                    <span class="badge bg-primary ms-1">{{ $product->reviews->count() }}</span>
+                                @endif
                             </button>
                         </li>
+
                     </ul>
 
                     <div class="tab-content" id="myTabContent">
+
+                        {{-- Product Details --}}
+                        @if($product->description)
                         <div class="tab-pane fade show active" id="details-tab-pane" role="tabpanel">
                             <div class="single-tab-content-shop-details">
                                 <p class="disc">{!! nl2br(e($product->description)) !!}</p>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="additional-tab-pane" role="tabpanel">
+                        @endif
+
+                        {{-- Additional Information --}}
+                        @if($product->weight || $product->brand_id)
+                        <div class="tab-pane fade {{ !$product->description ? 'show active' : '' }}"
+                            id="additional-tab-pane" role="tabpanel">
                             <div class="single-tab-content-shop-details">
                                 <table class="table table-bordered">
                                     <tbody>
-                                        <tr>
-                                            <td><strong>Weight</strong></td>
-                                            <td>{{ $product->weight ?? 'N/A' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Dimensions</strong></td>
-                                            <td>{{ $product->dimensions ?? 'N/A' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Brand</strong></td>
-                                            <td>{{ $product->brand->name ?? 'N/A' }}</td>
-                                        </tr>
+                                        @if($product->weight)
+                                        <tr><td><strong>Weight</strong></td><td>{{ $product->weight }}</td></tr>
+                                        @endif
+                                        @if($product->brand)
+                                        <tr><td><strong>Brand</strong></td><td>{{ $product->brand->name }}</td></tr>
+                                        @endif
+                                        @if($product->unit)
+                                        <tr><td><strong>Unit</strong></td><td>{{ $product->unit }}</td></tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="reviews-tab-pane" role="tabpanel">
-                            <div class="single-tab-content-shop-details">
-                                <p class="disc">Reviews coming soon...</p>
+                        @endif
+
+                        {{-- Reviews Tab --}}
+                        <div class="tab-pane fade {{ !$product->description && !$product->weight && !$product->brand_id ? 'show active' : '' }}"
+                            id="reviews-tab-pane" role="tabpanel">
+                            <div class="reviews-section">
+
+                                {{-- Rating Summary --}}
+                                @if($product->reviews->count() > 0)
+                                <div class="review-summary-bar">
+                                    <div class="review-avg-score">
+                                        <span class="avg-number">{{ $product->average_rating }}</span>
+                                        <div class="avg-stars">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fa-{{ $i <= round($product->average_rating) ? 'solid' : 'regular' }} fa-star"></i>
+                                            @endfor
+                                        </div>
+                                        <span class="avg-label">{{ $product->reviews->count() }} {{ Str::plural('review', $product->reviews->count()) }}</span>
+                                    </div>
+                                    <div class="review-bars">
+                                        @for($star = 5; $star >= 1; $star--)
+                                            @php $count = $product->reviews->where('rating', $star)->count(); @endphp
+                                            @php $pct = $product->reviews->count() > 0 ? round(($count / $product->reviews->count()) * 100) : 0; @endphp
+                                            <div class="rating-bar-row">
+                                                <span class="bar-label">{{ $star }} <i class="fa-solid fa-star"></i></span>
+                                                <div class="bar-track"><div class="bar-fill" style="width: {{ $pct }}%"></div></div>
+                                                <span class="bar-count">{{ $count }}</span>
+                                            </div>
+                                        @endfor
+                                    </div>
+                                </div>
+                                @endif
+
+                                {{-- Write Review --}}
+                                @auth
+                                    @if($hasPurchased && !$hasReviewed)
+                                    <div class="write-review-card">
+                                        <h5 class="review-form-title">
+                                            <i class="fa-solid fa-pen-to-square"></i> Write a Review
+                                        </h5>
+                                        <form id="reviewForm">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                                            <div class="star-rating-input mb-3">
+                                                <label class="form-label">Your Rating <span class="text-danger">*</span></label>
+                                                <div class="star-input-group" id="starInput">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="fa-regular fa-star star-pick" data-value="{{ $i }}"></i>
+                                                    @endfor
+                                                    <input type="hidden" name="rating" id="ratingValue" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Review Title</label>
+                                                <input type="text" name="title" class="form-control"
+                                                    placeholder="Sum up your experience in one line" maxlength="100">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Your Review</label>
+                                                <textarea name="body" class="form-control" rows="4"
+                                                        placeholder="Share your honest experience with this product..."
+                                                        maxlength="1000"></textarea>
+                                            </div>
+
+                                            <button type="submit" class="btn-submit-review" id="submitReviewBtn">
+                                                <i class="fa-solid fa-paper-plane"></i> Submit Review
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    @elseif($hasReviewed)
+                                    <div class="review-notice reviewed">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <div>
+                                            <strong>You've already reviewed this product.</strong>
+                                            <p>Thank you for sharing your feedback!</p>
+                                        </div>
+                                    </div>
+
+                                    @elseif(!$hasPurchased)
+                                    <div class="review-notice not-purchased">
+                                        <i class="fa-solid fa-lock"></i>
+                                        <div>
+                                            <strong>Purchase required to review</strong>
+                                            <p>Only customers who have purchased and received this product can leave a review.</p>
+                                        </div>
+                                    </div>
+                                    @endif
+                                @else
+                                    <div class="review-notice login-required">
+                                        <i class="fa-solid fa-user-circle"></i>
+                                        <div>
+                                            <strong>Login to write a review</strong>
+                                            <p>Already have an account? <a href="{{ route('login') }}">Sign in</a> to share your experience.</p>
+                                        </div>
+                                    </div>
+                                @endauth
+
+                                {{-- Existing Reviews List --}}
+                                @if($product->reviews->count() > 0)
+                                <div class="reviews-list mt-4">
+                                    @foreach($product->reviews->sortByDesc('created_at') as $review)
+                                    <div class="review-card">
+                                        <div class="review-card-header">
+                                            <img src="{{ $review->user->profile_picture }}"
+                                                alt="{{ $review->user->name }}" class="reviewer-avatar">
+                                            <div class="reviewer-info">
+                                                <span class="reviewer-name">{{ $review->user->name }}</span>
+                                                <span class="review-date">{{ $review->created_at->format('d M Y') }}</span>
+                                            </div>
+                                            <div class="review-stars ms-auto">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="fa-{{ $i <= $review->rating ? 'solid' : 'regular' }} fa-star"></i>
+                                                @endfor
+                                            </div>
+                                        </div>
+                                        @if($review->title)
+                                            <h6 class="review-title">{{ $review->title }}</h6>
+                                        @endif
+                                        @if($review->body)
+                                            <p class="review-body">{{ $review->body }}</p>
+                                        @endif
+                                        <span class="verified-badge">
+                                            <i class="fa-solid fa-circle-check"></i> Verified Purchase
+                                        </span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @else
+                                <div class="no-reviews-state">
+                                    <i class="fa-regular fa-star"></i>
+                                    <p>No reviews yet. Be the first to review this product!</p>
+                                </div>
+                                @endif
+
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -790,35 +501,53 @@
             <!-- Sidebar -->
             <div class="col-xl-4 col-lg-4 col-md-12">
                 <div class="theiaStickySidebar">
+                    {{-- Available Offers --}}
                     <div class="shop-sight-sticky-sidebar mb--20">
                         <h6 class="title">Available Offers</h6>
-                        <div class="single-offer-area">
-                            <div class="icon">
-                                <img src="{{ asset('frontend/assets/images/shop/01.svg') }}" alt="icon">
+
+                        @if(Auth::check() && $offers->count() > 0)
+                            @foreach($offers as $offer)
+                            <div class="single-offer-area">
+                                <div class="icon">
+                                    @if($offer->discount_type === 'percentage')
+                                        <img src="{{ asset('frontend/assets/images/shop/01.svg') }}" alt="offer">
+                                    @else
+                                        <img src="{{ asset('frontend/assets/images/shop/02.svg') }}" alt="offer">
+                                    @endif
+                                </div>
+                                <div class="details">
+                                    <p>
+                                        @if($offer->offer_price)
+                                            Special price <strong>£{{ number_format($offer->offer_price, 2) }}</strong>
+                                        @elseif($offer->discount_type === 'percentage')
+                                            <strong>{{ $offer->discount_value }}% off</strong>
+                                        @else
+                                            <strong>£{{ number_format($offer->discount_value, 2) }} off</strong>
+                                        @endif
+                                        on {{ $offer->offer_name }}
+                                        @if($offer->ends_at)
+                                            · Valid till {{ $offer->ends_at->format('d M') }}
+                                        @endif
+                                    </p>
+                                </div>
                             </div>
-                            <div class="details">
-                                <p>Get 5% instant discount for the 1st order using UPI T&C</p>
+                            @endforeach
+
+                        @else
+                            <div class="no-offers-state">
+                                <i class="fa-regular fa-tag"></i>
+                                <p>
+                                    @auth
+                                        No special offers available for this product at the moment.
+                                    @else
+                                        <a href="{{ route('login') }}">Sign in</a> to see exclusive offers available for your account.
+                                    @endauth
+                                </p>
                             </div>
-                        </div>
-                        <div class="single-offer-area">
-                            <div class="icon">
-                                <img src="{{ asset('frontend/assets/images/shop/02.svg') }}" alt="icon">
-                            </div>
-                            <div class="details">
-                                <p>Flat £250 off on Credit Card EMI on orders of £1000+ T&C</p>
-                            </div>
-                        </div>
-                        <div class="single-offer-area">
-                            <div class="icon">
-                                <img src="{{ asset('frontend/assets/images/shop/03.svg') }}" alt="icon">
-                            </div>
-                            <div class="details">
-                                <p>Free delivery on orders above £500 T&C</p>
-                            </div>
-                        </div>
+                        @endif
                     </div>
 
-                    <div class="shop-sight-sticky-sidebar">
+                    {{-- <div class="shop-sight-sticky-sidebar">
                         <h6 class="title">Delivery & Returns</h6>
                         <div class="delivery-info">
                             <div class="info-item">
@@ -843,7 +572,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -851,6 +580,7 @@
 </div>
 
 <!-- Related Products -->
+@if ($relatedProducts->isNotEmpty())
 <div class="rts-grocery-feature-area rts-section-gap bglight-1">
     <div class="container">
         <div class="row">
@@ -952,6 +682,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <!-- Modern Share Modal -->
 <div class="share-modal-overlay" id="shareModalOverlay">
@@ -979,34 +710,24 @@
                 <div class="share-section-label">Share via</div>
                 <div class="share-options-grid">
                     <a href="#" class="share-option" data-platform="whatsapp">
-                        <div class="share-option-icon whatsapp">
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </div>
+                        <div class="share-option-icon whatsapp"><i class="fa-brands fa-whatsapp"></i></div>
                         <span class="share-option-label">WhatsApp</span>
                     </a>
                     <a href="#" class="share-option" data-platform="instagram">
-                        <div class="share-option-icon instagram">
-                            <i class="fa-brands fa-instagram"></i>
-                        </div>
+                        <div class="share-option-icon instagram"><i class="fa-brands fa-instagram"></i></div>
                         <span class="share-option-label">Instagram</span>
                     </a>
                     <a href="#" class="share-option" data-platform="telegram">
-                        <div class="share-option-icon telegram">
-                            <i class="fa-brands fa-telegram"></i>
-                        </div>
+                        <div class="share-option-icon telegram"><i class="fa-brands fa-telegram"></i></div>
                         <span class="share-option-label">Telegram</span>
                     </a>
-                    <a href="#" class="share-option" data-platform="x">
-                        <div class="share-option-icon x">
-                            <i class="fa-brands fa-x-twitter"></i>
-                        </div>
+                    {{-- <a href="#" class="share-option" data-platform="x">
+                        <div class="share-option-icon x"><i class="fa-brands fa-x-twitter"></i></div>
                         <span class="share-option-label">X</span>
-                    </a>
-                    <a href="#" class="share-option" data-platform="copy">
-                        <div class="share-option-icon copy">
-                            <i class="fa-solid fa-link"></i>
-                        </div>
-                        <span class="share-option-label">Copy Link</span>
+                    </a> --}}
+                    <a href="" class="share-option" data-platform="facebook">
+                        <div class="share-option-icon facebook"><i class="fa-brands fa-facebook-f"></i></div>
+                        <span class="share-option-label">Facebook</span>
                     </a>
                 </div>
             </div>
@@ -1016,7 +737,7 @@
                 <label class="share-link-label">Product Link</label>
                 <div class="share-link-copy">
                     <input type="text" id="shareProductUrl" value="{{ url()->current() }}" readonly>
-                    <button class="share-copy-btn" id="copyLinkBtn">
+                    <button class="share-copy-btn" id="copyLinkBtn" style="width: unset;">
                         <i class="fa-solid fa-copy"></i> Copy
                     </button>
                 </div>
@@ -1080,6 +801,11 @@ $(document).ready(function() {
                 shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}`;
                 window.open(shareUrl, '_blank', 'width=600,height=400');
                 break;
+
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${productUrl}`;
+                break;
+
             case 'copy':
                 copyToClipboard();
                 break;
@@ -1092,22 +818,26 @@ $(document).ready(function() {
     });
 
     function copyToClipboard() {
-        const input = document.getElementById('shareProductUrl');
-        input.select();
-        input.setSelectionRange(0, 99999);
-
-        try {
+        const url = window.location.href; // ✅ Always use current URL
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('copyLinkBtn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        } else {
+            // Fallback for non-HTTPS
+            const input = document.getElementById('shareProductUrl');
+            input.select();
             document.execCommand('copy');
-            const btn = $('#copyLinkBtn');
-            btn.html('<i class="fa-solid fa-check"></i> Copied!').addClass('copied');
-
-            setTimeout(() => {
-                btn.html('<i class="fa-solid fa-copy"></i> Copy').removeClass('copied');
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy:', err);
         }
     }
+
+    document.getElementById('copyLinkBtn').onclick = copyToClipboard;
 
     // Cart & Wishlist
     $(document).on('click', '.add-to-cart-btn', function(e) {
@@ -1148,6 +878,159 @@ $(document).ready(function() {
             $('body').css('overflow', 'auto');
         }
     });
+
+    // ── Star Rating Picker ──────────────────────────
+    $(document).on('mouseover', '.star-pick', function () {
+        const val = $(this).data('value');
+        $('.star-pick').each(function () {
+            $(this).toggleClass('hovered fa-solid', $(this).data('value') <= val)
+                .toggleClass('fa-regular', $(this).data('value') > val);
+        });
+    }).on('mouseleave', '#starInput', function () {
+        const selected = parseInt($('#ratingValue').val()) || 0;
+        $('.star-pick').each(function () {
+            $(this).toggleClass('selected fa-solid', $(this).data('value') <= selected)
+                .toggleClass('fa-regular', $(this).data('value') > selected);
+        });
+    }).on('click', '.star-pick', function () {
+        const val = $(this).data('value');
+        $('#ratingValue').val(val);
+        $('.star-pick').each(function () {
+            $(this).addClass('selected')
+                .toggleClass('fa-solid', $(this).data('value') <= val)
+                .toggleClass('fa-regular', $(this).data('value') > val);
+        });
+    });
+
+    // ── Submit Review ───────────────────────────────
+    $('#reviewForm').on('submit', function (e) {
+        e.preventDefault();
+
+        if (!$('#ratingValue').val()) {
+            Toast.warning('Please select a star rating.');
+            return;
+        }
+
+        const btn = $('#submitReviewBtn');
+        btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Submitting...');
+
+        $.ajax({
+            url: '{{ route("reviews.store") }}',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (res) {
+                if (res.success) {
+                    Toast.success(res.message);
+                    $('#reviewForm').closest('.write-review-card').html(`
+                        <div class="review-notice reviewed">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <div>
+                                <strong>Review submitted successfully!</strong>
+                                <p>Thank you for sharing your feedback.</p>
+                            </div>
+                        </div>
+                    `);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    Toast.error(res.message);
+                    btn.prop('disabled', false).html('<i class="fa-solid fa-paper-plane"></i> Submit Review');
+                }
+            },
+            error: function (xhr) {
+                const msg = xhr.responseJSON?.message || 'Failed to submit review.';
+                Toast.error(msg);
+                btn.prop('disabled', false).html('<i class="fa-solid fa-paper-plane"></i> Submit Review');
+            }
+        });
+    });
+
 });
+
+// ── Weight-based product logic ─────────────────────────
+@if($product->is_weight_based)
+(function () {
+    const pricePerKg = parseFloat('{{ (float)$product->final_price }}');
+    const minWeight  = parseFloat('{{ (float)($product->min_weight ?? 0.5) }}');
+    const maxWeight  = parseFloat('{{ (float)($product->max_weight ?? 3) }}');
+    const step       = 0.5;
+
+    const $input        = $('#weightInput');
+    const $display      = $('#weightDisplay');
+    const $totalPrice   = $('#weightTotalPrice');
+    const $minusBtn     = $('#weightMinus');
+    const $plusBtn      = $('#weightPlus');
+    const $quickBtns    = $('.weight-quick-btn');
+    const $addToCartBtn = $('#weightAddToCartBtn');
+
+    function clamp(val) {
+        return Math.max(minWeight, Math.min(maxWeight, val));
+    }
+
+    function snapToStep(val) {
+        const snapped = Math.round(val / step) * step;
+        return clamp(parseFloat(snapped.toFixed(2)));
+    }
+
+    function getCurrentWeight() {
+        const raw = parseFloat($input.val()) || minWeight;
+        return snapToStep(raw);
+    }
+
+    function updateUI(weight) {
+        const w = snapToStep(weight);
+        $input.val(w.toFixed(1));
+        $display.text(w.toFixed(1));
+        $totalPrice.text((w * pricePerKg).toFixed(2));
+
+        $quickBtns.removeClass('active');
+        $quickBtns.each(function () {
+            const val = parseFloat($(this).data('weight'));
+            if (Math.abs(val - w) < 0.001) {
+                $(this).addClass('active');
+            }
+        });
+
+        $minusBtn.prop('disabled', w <= minWeight);
+        $plusBtn.prop('disabled', w >= maxWeight);
+    }
+
+    // Init
+    updateUI(minWeight);
+
+    $input.on('input', function () {
+        const w = getCurrentWeight();
+        updateUI(w);
+    });
+
+    $plusBtn.on('click', function () {
+        const w = getCurrentWeight() + step;
+        updateUI(w);
+    });
+
+    $minusBtn.on('click', function () {
+        const w = getCurrentWeight() - step;
+        updateUI(w);
+    });
+
+    $quickBtns.on('click', function () {
+        const w = parseFloat($(this).data('weight'));
+        updateUI(w);
+    });
+
+    $addToCartBtn.on('click', function () {
+        const w = getCurrentWeight();
+
+        if (w < minWeight) {
+            Toast.warning(`Minimum order is ${minWeight}kg.`);
+            return;
+        }
+
+        if (typeof window.Cart !== 'undefined') {
+            window.Cart.add('{{ $product->id }}', 1, w);
+        }
+    });
+})();
+@endif
+
 </script>
 @endpush
