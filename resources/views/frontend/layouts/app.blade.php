@@ -120,7 +120,7 @@
 @include('frontend.partials.header')
 
 {{-- PAGE CONTENT --}}
-<main role="main" class="main-content">
+<main role="main" class="main-content" style="padding-top: 13px;">
     @yield('content')
 </main>
 

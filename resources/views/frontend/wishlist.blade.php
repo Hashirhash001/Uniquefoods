@@ -71,14 +71,21 @@
                 <div class="modern-empty-state">
                     <div class="empty-icon wishlist-empty">
                         <i class="fa-regular fa-heart"></i>
-                        {{-- <div class="heart-animation"></div> --}}
                     </div>
                     <h3>Your wishlist is empty</h3>
-                    <p>Start adding products you love to your wishlist</p>
-                    <a href="{{ route('shop') }}" class="btn-primary-large">
-                        <i class="fa-regular fa-store"></i>
-                        Discover Products
-                    </a>
+                    <p>Save products you love and come back to them anytime</p>
+                    <div class="empty-state-actions">
+                        <a href="{{ route('shop') }}" class="btn-primary-large">
+                            <i class="fa-regular fa-store"></i>
+                            Browse Products
+                        </a>
+                        @guest
+                        <a href="{{ route('login') }}" class="btn-outline-secondary">
+                            <i class="fa-regular fa-user"></i>
+                            Sign in to see saved items
+                        </a>
+                        @endguest
+                    </div>
                 </div>
             </div>
         </div>
@@ -94,51 +101,26 @@
 @push('scripts')
 <script src="{{ asset('frontend/assets/js/cart-wishlist.js') }}"></script>
 <script>
+// Products already available from server — no AJAX needed on load
+const serverProducts = @json($products->values());
+
 $(document).ready(function() {
-    loadWishlist();
-
-    function loadWishlist() {
-        showLoader('Loading Wishlist...', 'Please wait');
-
-        $.ajax({
-            url: '{{ route("wishlist.get") }}',
-            type: 'GET',
-            success: function(response) {
-                hideLoader();
-                if (response.success && response.items && response.items.length > 0) {
-                    displayWishlist(response.items);
-                } else {
-                    showEmptyState();
-                }
-            },
-            error: function(xhr) {
-                hideLoader();
-                console.error('Failed to load wishlist:', xhr);
-                showEmptyState();
-
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to load wishlist');
-                }
-            }
-        });
+    if (serverProducts.length > 0) {
+        displayWishlist(serverProducts);
+    } else {
+        showEmptyState();
     }
 
     function displayWishlist(products) {
         const grid = $('#wishlistItemsGrid');
         grid.empty();
-
-        if (products.length === 0) {
-            showEmptyState();
-            return;
-        }
-
         $('#wishlistItemsGrid').show();
         $('#emptyWishlistState').hide();
         $('#wishlistItemCount').text(products.length);
 
         products.forEach(product => {
             const card = `
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div class="modern-wishlist-card">
                         <button class="wishlist-heart active wishlist-toggle-btn" data-product-id="${product.id}" title="Remove from wishlist">
                             <i class="fa-solid fa-heart"></i>
@@ -153,7 +135,7 @@ $(document).ready(function() {
 
                         <div class="card-image">
                             <a href="/product/${product.slug}">
-                                <img src="${product.image_url}" alt="${product.name}" class="product-img">
+                                <img src="${product.image_url}" alt="${product.name}" class="product-img" loading="lazy">
                             </a>
                             ${product.stock <= 0 ? '<span class="stock-badge out">Out of Stock</span>' : ''}
                         </div>
@@ -164,20 +146,7 @@ $(document).ready(function() {
                                 ${product.category?.name || 'General'}
                             </div>
 
-                            <a href="/product/${product.slug}" class="product-title">
-                                ${product.name}
-                            </a>
-
-                            <div class="product-rating">
-                                <div class="stars">
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-regular fa-star"></i>
-                                </div>
-                                <span class="rating-text">4.0 (128)</span>
-                            </div>
+                            <a href="/product/${product.slug}" class="product-title">${product.name}</a>
 
                             <div class="product-pricing">
                                 <span class="current-price">£${parseFloat(product.price).toFixed(2)}</span>
@@ -214,7 +183,6 @@ $(document).ready(function() {
             grid.append(card);
         });
 
-        // Initialize wishlist/cart states from cart-wishlist.js
         if (typeof window.initializeWishlistStates === 'function') {
             window.initializeWishlistStates();
         }
@@ -226,63 +194,43 @@ $(document).ready(function() {
         $('#wishlistItemCount').text('0');
     }
 
-    // Remove from wishlist using cart-wishlist.js toggle
+    // Remove from wishlist
     $(document).on('click', '.wishlist-heart.wishlist-toggle-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
 
         const button = $(this);
         const productId = button.data('product-id');
-        const card = button.closest('.col-xl-3, .col-lg-4, .col-md-6, .col-sm-6'); // target the column, not just the card
+        const card = button.closest('[class*="col-"]');
 
         card.css('opacity', '0.5');
 
         $.ajax({
             url: '{{ route("wishlist.toggle") }}',
             type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId
-            },
+            data: { _token: '{{ csrf_token() }}', product_id: productId },
             success: function(response) {
                 if (response.success) {
                     if (typeof window.updateWishlistCount === 'function') {
                         window.updateWishlistCount(response.count);
                     }
-
                     card.slideUp(300, function() {
                         $(this).remove();
-
-                        // ✅ Count remaining cards using a broader selector
                         const remaining = $('#wishlistItemsGrid > [class*="col-"]').length;
-
-                        if (remaining === 0) {
-                            showEmptyState(); // ✅ this now correctly fires on last item
-                        } else {
-                            $('#wishlistItemCount').text(remaining);
-                        }
+                        remaining === 0 ? showEmptyState() : $('#wishlistItemCount').text(remaining);
                     });
-
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success(response.message || 'Removed from wishlist');
-                    }
+                    if (typeof toastr !== 'undefined') toastr.success(response.message);
                 } else {
                     card.css('opacity', '1');
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message || 'Failed to remove');
-                    }
+                    if (typeof toastr !== 'undefined') toastr.error(response.message);
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 card.css('opacity', '1');
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to remove from wishlist');
-                }
+                if (typeof toastr !== 'undefined') toastr.error('Failed to remove from wishlist');
             }
         });
     });
-
 });
 </script>
 @endpush
-

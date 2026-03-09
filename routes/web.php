@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
 
     // Show "please verify your email" notice
     Route::get('/email/verify', function () {
-        return view('auth.verify-email');
+        return view('frontend.auth.verify-email');
     })->name('verification.notice');
 
     // Handle verification link click
@@ -99,6 +99,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{orderNumber}', [CheckoutController::class, 'orderDetails'])->name('orders.details');
 
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
 

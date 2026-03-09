@@ -285,7 +285,40 @@ class WishlistController extends Controller
      */
     public function index()
     {
-        return view('frontend.wishlist');
+        $user = Auth::user();
+        $wishlistIds = $this->getWishlist();
+
+        $products = collect();
+
+        if (!empty($wishlistIds)) {
+            $products = Product::with(['category', 'brand', 'primaryImage'])
+                ->whereIn('id', $wishlistIds)
+                ->where('is_active', 1)
+                ->get()
+                ->map(function ($product) use ($user) {
+                    $basePrice = (float) $product->price;
+                    $finalPrice = (float) $this->pricingService->getCustomerPrice($product, $user);
+                    $discountPercentage = ($basePrice > 0 && $finalPrice < $basePrice)
+                        ? round((($basePrice - $finalPrice) / $basePrice) * 100) : 0;
+
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'slug' => $product->slug,
+                        'base_price' => number_format($basePrice, 2, '.', ''),
+                        'price' => number_format($finalPrice, 2, '.', ''),
+                        'discount_percentage' => $discountPercentage,
+                        'unit' => $product->unit,
+                        'stock' => $product->stock ?? 0,
+                        'image_url' => $product->image_url,
+                        'is_weight_based' => (bool) $product->is_weight_based,
+                        'category' => $product->category?->only(['id', 'name', 'slug']),
+                        'brand' => $product->brand?->only(['id', 'name', 'slug']),
+                    ];
+                });
+        }
+
+        return view('frontend.wishlist', compact('products'));
     }
 
     /**

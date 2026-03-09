@@ -64,25 +64,29 @@ class HomeController extends Controller
             $wishlistedIds = array_keys($sessionWishlist);
         }
 
-        // ✅ Apply pricing + wishlist state to featured products
+        // Apply pricing + wishlist state to featured products
         $products->transform(function ($p) use ($pricingService, $user, $wishlistedIds) {
             $p->base_price  = (float) $p->price;
             $p->final_price = (float) $pricingService->getCustomerPrice($p, $user);
             $p->discount_percentage_calc = ($p->base_price > 0 && $p->final_price < $p->base_price)
                 ? round((($p->base_price - $p->final_price) / $p->base_price) * 100)
                 : 0;
-            $p->is_wishlisted = in_array($p->id, $wishlistedIds); // ✅
+            $p->is_wishlisted = in_array($p->id, $wishlistedIds);
+            $p->average_rating  = round((float) $p->reviews()->avg('rating'), 1);
+            $p->reviews_count   = $p->reviews()->count();
             return $p;
         });
 
-        // ✅ Apply pricing + wishlist state to popular products
+        // Apply pricing + wishlist state to popular products
         $popularProducts->transform(function ($p) use ($pricingService, $user, $wishlistedIds) {
             $p->base_price  = (float) $p->price;
             $p->final_price = (float) $pricingService->getCustomerPrice($p, $user);
             $p->discount_percentage_calc = ($p->base_price > 0 && $p->final_price < $p->base_price)
                 ? round((($p->base_price - $p->final_price) / $p->base_price) * 100)
                 : 0;
-            $p->is_wishlisted = in_array($p->id, $wishlistedIds); // ✅
+            $p->is_wishlisted = in_array($p->id, $wishlistedIds);
+            $p->average_rating  = round((float) $p->reviews()->avg('rating'), 1);
+            $p->reviews_count   = $p->reviews()->count();
             return $p;
         });
 

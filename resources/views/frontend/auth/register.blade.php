@@ -437,19 +437,216 @@
     .unique-link-green { color: var(--unique-green); font-weight: 600; text-decoration: none; }
     .unique-link-green:hover { text-decoration: underline; }
 
-    /* Responsive */
+    /* ===== REGISTER MOBILE RESPONSIVE ===== */
     @media (max-width: 991px) {
-        .unique-auth-container { grid-template-columns: 1fr; }
-        .unique-auth-left { display: none; }
-        .unique-auth-right { padding: 40px 30px; }
+        .unique-auth-container {
+            grid-template-columns: 1fr !important;
+            border-radius: 16px !important;
+            max-width: 480px !important;
+        }
+
+        .unique-auth-left {
+            display: none !important;
+        }
+
+        .unique-auth-right {
+            padding: 40px 36px !important;
+        }
     }
+
     @media (max-width: 767px) {
-        .unique-auth-wrapper { padding: 20px; }
-        .unique-auth-right { padding: 30px 20px; }
-        .unique-form-header h3 { font-size: 24px; }
-        .otp-box { width: 42px !important; height: 48px; font-size: 18px; }
-        .otp-input-group { gap: 7px; }
+
+        .unique-auth-wrapper {
+            padding: 16px !important;
+            padding-top: 24px !important;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+            align-items: flex-start !important;
+        }
+
+        .unique-auth-container {
+            border-radius: 16px !important;
+            max-width: 100% !important;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08) !important;
+        }
+
+        .unique-auth-right {
+            padding: 28px 20px !important;
+        }
+
+        /* Header */
+        .unique-form-header {
+            margin-bottom: 16px !important;
+            text-align: center !important;
+        }
+
+        .unique-form-header h3 {
+            font-size: 22px !important;
+            margin-bottom: 6px !important;
+        }
+
+        .unique-form-header p {
+            font-size: 13px !important;
+        }
+
+        /* Step indicator */
+        .step-indicator {
+            margin-bottom: 24px !important;
+        }
+
+        .step {
+            width: 30px !important;
+            height: 30px !important;
+            font-size: 12px !important;
+        }
+
+        .step-line {
+            margin: 0 5px !important;
+        }
+
+        /* Alerts */
+        .unique-alert {
+            padding: 12px 14px !important;
+            font-size: 13px !important;
+            border-radius: 10px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .unique-alert i {
+            font-size: 16px !important;
+        }
+
+        /* Google button */
+        .unique-btn-google {
+            padding: 12px 16px !important;
+            font-size: 14px !important;
+            border-radius: 10px !important;
+            margin-bottom: 16px !important;
+        }
+
+        /* Divider */
+        .unique-divider-text {
+            margin: 16px 0 !important;
+        }
+
+        .unique-divider-text span {
+            font-size: 12px !important;
+        }
+
+        /* Form inputs */
+        .unique-form-group {
+            margin-bottom: 14px !important;
+        }
+
+        .unique-label {
+            font-size: 13px !important;
+            margin-bottom: 6px !important;
+        }
+
+        .unique-input {
+            padding: 12px 14px !important;
+            font-size: 16px !important; /* prevents iOS zoom */
+            border-radius: 10px !important;
+        }
+
+        .unique-error-text {
+            font-size: 12px !important;
+        }
+
+        /* Submit button */
+        .unique-btn-submit {
+            padding: 14px 20px !important;
+            font-size: 15px !important;
+            border-radius: 10px !important;
+            min-height: 48px !important;
+        }
+
+        .unique-btn-submit:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Email pill */
+        .email-pill {
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            border-radius: 10px !important;
+            margin-bottom: 14px !important;
+            gap: 8px !important;
+        }
+
+        /* OTP hint */
+        .otp-hint {
+            font-size: 12px !important;
+            margin-bottom: 16px !important;
+        }
+
+        /* OTP boxes — fit 6 boxes in a row on all phones */
+        .otp-input-group {
+            gap: 6px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .otp-box {
+            width: 42px !important;
+            height: 48px !important;
+            font-size: 18px !important;
+            border-radius: 8px !important;
+        }
+
+        /* Resend */
+        .resend-wrapper {
+            font-size: 13px !important;
+            margin-bottom: 16px !important;
+        }
+
+        #resendBtn {
+            font-size: 13px !important;
+        }
+
+        /* Password strength */
+        .strength-label {
+            font-size: 11px !important;
+        }
+
+        /* Checkbox */
+        .label-text {
+            font-size: 13px !important;
+        }
+
+        /* Footer */
+        .unique-form-footer p {
+            font-size: 13px !important;
+        }
+
+        /* Verified badge */
+        .verified-badge {
+            font-size: 12px !important;
+        }
     }
+
+    @media (max-width: 360px) {
+
+        /* Very small phones — shrink OTP boxes further */
+        .otp-box {
+            width: 36px !important;
+            height: 42px !important;
+            font-size: 16px !important;
+            border-radius: 6px !important;
+        }
+
+        .otp-input-group {
+            gap: 4px !important;
+        }
+
+        .unique-auth-right {
+            padding: 24px 14px !important;
+        }
+
+        .unique-form-header h3 {
+            font-size: 19px !important;
+        }
+    }
+
 </style>
 @endpush
 

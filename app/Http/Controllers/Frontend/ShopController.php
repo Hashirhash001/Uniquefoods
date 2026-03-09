@@ -103,45 +103,37 @@ class ShopController extends Controller
             $wishlistedIds = array_keys($sessionWishlist);
         }
 
-
         $productsData = $products->map(function ($product) use ($pricingService, $user, $wishlistedIds) {
             $basePrice  = (float) $product->price;
-            $finalPrice = (float) $pricingService->getCustomerPrice($product, $user); // your service logic [file:8]
+            $finalPrice = (float) $pricingService->getCustomerPrice($product, $user);
 
-            // If you also want to show "You save" and % off:
             $discountPercentage = 0;
             if ($basePrice > 0 && $finalPrice < $basePrice) {
                 $discountPercentage = round((($basePrice - $finalPrice) / $basePrice) * 100);
             }
 
             return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'slug' => $product->slug,
-
-                // Keep both:
-                'base_price' => number_format($basePrice, 2, '.', ''),
-                'price'      => number_format($finalPrice, 2, '.', ''),
-
-                // Optional: if you already return mrp:
-                'mrp' => $product->mrp ? number_format((float)$product->mrp, 2, '.', '') : null,
-
-                // Make badge based on final vs base:
+                'id'                  => $product->id,
+                'name'                => $product->name,
+                'slug'                => $product->slug,
+                'base_price'          => number_format($basePrice, 2, '.', ''),
+                'price'               => number_format($finalPrice, 2, '.', ''),
+                'mrp'                 => $product->mrp ? number_format((float)$product->mrp, 2, '.', '') : null,
                 'discount_percentage' => $discountPercentage,
-
-                'unit' => $product->unit,
-                'stock' => $product->stock ?? 0,
-                'image_url' => $product->image_url,
+                'unit'                => $product->unit,
+                'stock'               => $product->stock ?? 0,
+                'image_url'           => $product->image_url,
+                'is_weight_based'     => (bool) $product->is_weight_based,
                 'is_wishlisted'       => in_array($product->id, $wishlistedIds),
-
+                'average_rating' => round((float) $product->reviews()->avg('rating'), 1),
+                'reviews_count'  => $product->reviews()->count(),
                 'category' => $product->category ? [
-                    'id' => $product->category->id,
+                    'id'   => $product->category->id,
                     'name' => $product->category->name,
                     'slug' => $product->category->slug,
                 ] : null,
-
                 'brand' => $product->brand ? [
-                    'id' => $product->brand->id,
+                    'id'   => $product->brand->id,
                     'name' => $product->brand->name,
                     'slug' => $product->brand->slug,
                 ] : null,
@@ -158,33 +150,6 @@ class ShopController extends Controller
             'last_page' => $products->lastPage(),
             'pagination' => $products->links('vendor.pagination.bootstrap-4')->render()
         ]);
-    }
-
-    /**
-     * Display products by category
-     */
-    public function category($slug)
-    {
-        $category = Category::where('slug', $slug)
-            ->with('activeChildren')
-            ->firstOrFail();
-
-        $categoryIds = [$category->id];
-
-        if ($category->activeChildren->count() > 0) {
-            $categoryIds = array_merge(
-                $categoryIds,
-                $category->activeChildren->pluck('id')->toArray()
-            );
-        }
-
-        $products = Product::with(['category', 'brand', 'primaryImage', 'images'])
-            ->where('is_active', 1)
-            ->whereIn('category_id', $categoryIds)
-            ->latest()
-            ->paginate(12);
-
-        return view('frontend.category', compact('category', 'products'));
     }
 
     /**
@@ -248,6 +213,9 @@ class ShopController extends Controller
                 ? round((($p->base_price - $p->final_price) / $p->base_price) * 100) : 0;
             return $p;
         });
+
+        $product->reviews_count   = $product->reviews()->count();
+        $product->average_rating  = round($product->reviews()->avg('rating'), 1) ?: 0;
 
         return view('frontend.show', compact('product', 'relatedProducts', 'offers', 'hasPurchased', 'hasReviewed'));
     }

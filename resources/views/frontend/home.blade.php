@@ -188,118 +188,19 @@
 
         <div class="row g-4 mt--20">
             @forelse($products as $product)
-                <div class="col-lg-20 col-md-4 col-sm-6 col-12">
-                    <div class="shop-product-card">
-                        {{-- Image Area --}}
-                        <div class="product-image-wrapper">
-                            <a href="{{ route('product.show', $product->slug) }}" class="product-image-link">
-                                @if($product->discount_percentage_calc > 0)
-                                    <div class="product-badge-discount">
-                                        <span>{{ $product->discount_percentage_calc }}% OFF</span>
-                                    </div>
-                                @endif
-
-                                @if($product->stock <= 5 && $product->stock > 0)
-                                    <div class="product-badge-stock">
-                                        <span>Only {{ $product->stock }} left</span>
-                                    </div>
-                                @endif
-
-                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-main-image">
-                            </a>
-
-                            {{-- Quick Actions --}}
-                            <div class="product-quick-actions">
-                                {{-- Wishlist (same as shop) --}}
-                                <button class="quick-action-btn wishlist-toggle-btn {{ $product->is_wishlisted ? 'active' : '' }}"
-                                        title="{{ $product->is_wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist' }}"
-                                        data-product-id="{{ $product->id }}">
-                                    <i class="fa-regular fa-heart"></i>
-                                </button>
-
-                                {{-- View Details (behaves like quick view link in shop) --}}
-                                <a href="{{ route('product.show', $product->slug) }}"
-                                class="quick-action-btn shop-quick-view-btn"
-                                title="View Details"
-                                data-id="{{ $product->id }}">
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        {{-- Product Info --}}
-                        <div class="product-info">
-                            {{-- Category & Brand --}}
-                            <div class="product-meta">
-                                <span class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</span>
-                                @if($product->brand)
-                                    <span class="meta-separator">•</span>
-                                    <span class="product-brand">{{ $product->brand->name }}</span>
-                                @endif
-                            </div>
-
-                            {{-- Product Name --}}
-                            <a href="{{ route('product.show', $product->slug) }}" class="product-name-link">
-                                <h4 class="product-name">{{ $product->name }}</h4>
-                            </a>
-
-                            {{-- Rating --}}
-                            <div class="product-rating">
-                                <div class="stars">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= 4)
-                                            <i class="fa-solid fa-star"></i>
-                                        @else
-                                            <i class="fa-regular fa-star"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                                <span class="rating-count">(4.0)</span>
-                            </div>
-
-                            {{-- Price --}}
-                            <div class="product-price">
-                                <span class="price-current">£{{ number_format($product->final_price, 2) }}</span>
-                                @if($product->base_price > $product->final_price)
-                                    <span class="price-original">£{{ number_format($product->base_price, 2) }}</span>
-                                    <span class="price-save">Save £{{ number_format($product->base_price - $product->final_price, 2) }}</span>
-                                @endif
-                            </div>
-
-                            {{-- Stock Status --}}
-                            @if($product->stock > 0)
-                                <div class="product-stock in-stock">
-                                    <i class="fa-solid fa-circle-check"></i>
-                                    <span>In Stock</span>
-                                </div>
-                            @else
-                                <div class="product-stock out-of-stock">
-                                    <i class="fa-solid fa-circle-xmark"></i>
-                                    <span>Out of Stock</span>
-                                </div>
-                            @endif
-
-                            {{-- Add to Cart Button --}}
-                            <button class="product-add-to-cart add-to-cart-btn {{ $product->stock === 0 ? 'disabled' : '' }}"
-                                    {{ $product->stock === 0 ? 'disabled' : '' }}
-                                    data-product-id="{{ $product->id }}">
-                                <i class="fa-regular fa-cart-shopping"></i>
-                                <span>{{ $product->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}</span>
-                            </button>
-                        </div>
-                    </div>
+                <div class="col-lg-20 col-md-4 col-sm-6 col-6">
+                    @include('frontend.partials.product-card', ['product' => $product])
                 </div>
             @empty
                 <div class="col-12">
                     <div class="rts-empty-state">
-                        <div class="empty-icon">
-                            <i class="fa-light fa-box-open"></i>
-                        </div>
+                        <div class="empty-icon"><i class="fa-light fa-box-open"></i></div>
                         <h3>No Products Available</h3>
                         <p>Please check back later for amazing deals!</p>
                     </div>
                 </div>
             @endforelse
+
         </div>
     </div>
 </div>
@@ -344,97 +245,8 @@
             <div class="tab-pane fade show active" id="all" role="tabpanel">
                 <div class="row g-4">
                     @foreach($popularProducts as $product)
-                        <div class="col-lg-20 col-md-4 col-sm-6 col-12">
-                            <div class="shop-product-card">
-                                <div class="product-image-wrapper">
-                                    <a href="{{ route('product.show', $product->slug) }}" class="product-image-link">
-                                        @if($product->discount_percentage > 0)
-                                            <div class="product-badge-discount">
-                                                <span>{{ $product->discount_percentage }}% OFF</span>
-                                            </div>
-                                        @endif
-
-                                        @if($product->stock <= 5 && $product->stock > 0)
-                                            <div class="product-badge-stock">
-                                                <span>Only {{ $product->stock }} left</span>
-                                            </div>
-                                        @endif
-
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-main-image">
-                                    </a>
-
-                                    <div class="product-quick-actions">
-                                        {{-- Wishlist (same as shop) --}}
-                                        <button class="quick-action-btn wishlist-toggle-btn {{ $product->is_wishlisted ? 'active' : '' }}"
-                                                title="{{ $product->is_wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist' }}"
-                                                data-product-id="{{ $product->id }}">
-                                            <i class="fa-regular fa-heart"></i>
-                                        </button>
-
-                                        {{-- View Details (behaves like quick view link in shop) --}}
-                                        <a href="{{ route('product.show', $product->slug) }}"
-                                        class="quick-action-btn shop-quick-view-btn"
-                                        title="View Details"
-                                        data-id="{{ $product->id }}">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div class="product-info">
-                                    <div class="product-meta">
-                                        <span class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</span>
-                                        @if($product->brand)
-                                            <span class="meta-separator">•</span>
-                                            <span class="product-brand">{{ $product->brand->name }}</span>
-                                        @endif
-                                    </div>
-
-                                    <a href="{{ route('product.show', $product->slug) }}" class="product-name-link">
-                                        <h4 class="product-name">{{ $product->name }}</h4>
-                                    </a>
-
-                                    <div class="product-rating">
-                                        <div class="stars">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= 4)
-                                                    <i class="fa-solid fa-star"></i>
-                                                @else
-                                                    <i class="fa-regular fa-star"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                        <span class="rating-count">(4.0)</span>
-                                    </div>
-
-                                    <div class="product-price">
-                                        <span class="price-current">£{{ number_format($product->final_price, 2) }}</span>
-                                        @if($product->base_price > $product->final_price)
-                                            <span class="price-original">£{{ number_format($product->base_price, 2) }}</span>
-                                            <span class="price-save">Save £{{ number_format($product->base_price - $product->final_price, 2) }}</span>
-                                        @endif
-                                    </div>
-
-                                    @if($product->stock > 0)
-                                        <div class="product-stock in-stock">
-                                            <i class="fa-solid fa-circle-check"></i>
-                                            <span>In Stock</span>
-                                        </div>
-                                    @else
-                                        <div class="product-stock out-of-stock">
-                                            <i class="fa-solid fa-circle-xmark"></i>
-                                            <span>Out of Stock</span>
-                                        </div>
-                                    @endif
-
-                                    <button class="product-add-to-cart add-to-cart-btn {{ $product->stock === 0 ? 'disabled' : '' }}"
-                                            {{ $product->stock === 0 ? 'disabled' : '' }}
-                                            data-product-id="{{ $product->id }}">
-                                        <i class="fa-regular fa-cart-shopping"></i>
-                                        <span>{{ $product->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}</span>
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="col-lg-20 col-md-4 col-sm-6 col-6">
+                            @include('frontend.partials.product-card', ['product' => $product])
                         </div>
                     @endforeach
                 </div>
@@ -445,90 +257,8 @@
                 <div class="tab-pane fade" id="cat-{{ $category->id }}" role="tabpanel">
                     <div class="row g-4">
                         @foreach($popularProducts->where('category_id', $category->id) as $product)
-                            <div class="col-lg-20 col-md-4 col-sm-6 col-12">
-                                <div class="shop-product-card">
-                                    <div class="product-image-wrapper">
-                                        <a href="{{ route('product.show', $product->slug) }}" class="product-image-link">
-                                            @if($product->discount_percentage > 0)
-                                                <div class="product-badge-discount">
-                                                    <span>{{ $product->discount_percentage }}% OFF</span>
-                                                </div>
-                                            @endif
-
-                                            @if($product->stock <= 5 && $product->stock > 0)
-                                                <div class="product-badge-stock">
-                                                    <span>Only {{ $product->stock }} left</span>
-                                                </div>
-                                            @endif
-
-                                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-main-image">
-                                        </a>
-
-                                        <div class="product-quick-actions">
-                                            <button class="quick-action-btn" title="Add to Wishlist">
-                                                <i class="fa-regular fa-heart"></i>
-                                            </button>
-                                            <button class="quick-action-btn" title="Quick View">
-                                                <i class="fa-regular fa-eye"></i>
-                                            </button>
-                                            <button class="quick-action-btn" title="Compare">
-                                                <i class="fa-regular fa-arrows-rotate"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="product-info">
-                                        <div class="product-meta">
-                                            <span class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</span>
-                                            @if($product->brand)
-                                                <span class="meta-separator">•</span>
-                                                <span class="product-brand">{{ $product->brand->name }}</span>
-                                            @endif
-                                        </div>
-
-                                        <a href="{{ route('product.show', $product->slug) }}" class="product-name-link">
-                                            <h4 class="product-name">{{ $product->name }}</h4>
-                                        </a>
-
-                                        <div class="product-rating">
-                                            <div class="stars">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= 4)
-                                                        <i class="fa-solid fa-star"></i>
-                                                    @else
-                                                        <i class="fa-regular fa-star"></i>
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                            <span class="rating-count">(4.0)</span>
-                                        </div>
-
-                                        <div class="product-price">
-                                            <span class="price-current">£{{ number_format($product->price, 2) }}</span>
-                                            @if($product->mrp && $product->mrp > $product->price)
-                                                <span class="price-original">£{{ number_format($product->mrp, 2) }}</span>
-                                                <span class="price-save">Save £{{ number_format($product->mrp - $product->price, 2) }}</span>
-                                            @endif
-                                        </div>
-
-                                        @if($product->stock > 0)
-                                            <div class="product-stock in-stock">
-                                                <i class="fa-solid fa-circle-check"></i>
-                                                <span>In Stock</span>
-                                            </div>
-                                        @else
-                                            <div class="product-stock out-of-stock">
-                                                <i class="fa-solid fa-circle-xmark"></i>
-                                                <span>Out of Stock</span>
-                                            </div>
-                                        @endif
-
-                                        <button class="product-add-to-cart" {{ $product->stock <= 0 ? 'disabled' : '' }}>
-                                            <i class="fa-regular fa-cart-shopping"></i>
-                                            <span>{{ $product->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}</span>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="col-lg-20 col-md-4 col-sm-6 col-6">
+                                @include('frontend.partials.product-card', ['product' => $product])
                             </div>
                         @endforeach
                     </div>
@@ -1250,6 +980,252 @@
         .price-current {
             font-size: 18px;
         }
+
+        /* Title + tabs stack vertically */
+        .title-area-between {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+        }
+
+        /* Make tabs scroll horizontally */
+        .filter-button-group {
+            width: 100% !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            -webkit-overflow-scrolling: touch !important;
+            scroll-snap-type: x mandatory !important;
+            padding-bottom: 6px !important;
+            gap: 8px !important;
+            /* Hide scrollbar visually */
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        .filter-button-group::-webkit-scrollbar {
+            display: none !important;
+        }
+
+        /* Each tab snaps into place */
+        .filter-button-group .nav-item {
+            flex-shrink: 0 !important;
+            scroll-snap-align: start !important;
+        }
+
+        /* Smaller tab pills */
+        .filter-button-group .nav-link {
+            padding: 7px 14px !important;
+            font-size: 12px !important;
+            border-radius: 20px !important;
+            white-space: nowrap !important;
+            transform: none !important; /* disable hover lift on mobile */
+        }
+
+        .filter-button-group .nav-link:hover {
+            transform: none !important;
+        }
+
+        /* Count badge */
+        .filter-button-group .tab-count {
+            font-size: 10px !important;
+            min-width: 18px !important;
+            height: 16px !important;
+            padding: 0 4px !important;
+        }
+
+        /* View all link stays inline with title */
+        .title-area-between .view-all-link {
+            align-self: flex-end !important;
+            margin-top: -8px !important;
+            font-size: 13px !important;
+        }
     }
+
+    .btn-select-weight {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 10px 16px;
+        background: var(--shop-primary);
+        color: white;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        margin-top: 10px;
+    }
+
+    .btn-select-weight:hover {
+        opacity: 0.9;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* ===== MOBILE PRODUCT CARD FIXES ===== */
+    @media (max-width: 575px) {
+
+        /* Tighter grid gap */
+        .row.g-4 {
+            --bs-gutter-x: 10px;
+            --bs-gutter-y: 10px;
+        }
+
+        /* Smaller card padding */
+        .product-info {
+            padding: 10px !important;
+            gap: 5px !important;
+        }
+
+        .filter-button-group .nav-link {
+            padding: 6px 12px !important;
+            font-size: 11px !important;
+        }
+
+        /* Fade edge hint — shows user tabs are scrollable */
+        .rts-popular-product-area .title-area-between {
+            position: relative !important;
+        }
+
+        .filter-button-group::after {
+            content: '' !important;
+            position: sticky !important;
+            right: 0 !important;
+            flex-shrink: 0 !important;
+            width: 32px !important;
+            background: linear-gradient(to right, transparent, #f7f7f7) !important;
+            pointer-events: none !important;
+        }
+
+        /* Smaller image */
+        .product-image-wrapper {
+            aspect-ratio: 1 !important;
+        }
+
+        /* Smaller product name */
+        .product-name {
+            font-size: 12px !important;
+            min-height: 34px !important;
+            -webkit-line-clamp: 2 !important;
+        }
+
+        /* Hide meta (category • brand) to save space */
+        .product-meta {
+            display: none !important;
+        }
+
+        /* Smaller price */
+        .price-current {
+            font-size: 14px !important;
+        }
+
+        .price-original {
+            font-size: 11px !important;
+        }
+
+        /* Hide save badge on tiny screens */
+        .price-save {
+            display: none !important;
+        }
+
+        /* Smaller add to cart button */
+        .product-add-to-cart,
+        .btn-select-weight {
+            height: 36px !important;
+            font-size: 12px !important;
+            padding: 0 8px !important;
+            margin-top: 6px !important;
+        }
+
+        .product-add-to-cart i,
+        .btn-select-weight i {
+            font-size: 13px !important;
+        }
+
+        /* Smaller discount badge */
+        .product-badge-discount,
+        .product-badge-stock {
+            font-size: 9px !important;
+            padding: 4px 7px !important;
+            border-radius: 4px !important;
+        }
+
+        /* Smaller rating */
+        .product-rating .stars i {
+            font-size: 10px !important;
+        }
+
+        .rating-count {
+            font-size: 10px !important;
+        }
+
+        /* Section titles */
+        .title-area-between .title-left {
+            font-size: 17px !important;
+        }
+
+        /* Popular tabs — scrollable, smaller */
+        .filter-button-group .nav-link {
+            padding: 7px 14px !important;
+            font-size: 12px !important;
+        }
+
+        /* Banner */
+        .rts-banner-area-three {
+            min-height: 300px !important;
+        }
+
+        .banner-inner-content-three .title {
+            font-size: 22px !important;
+        }
+
+        .banner-inner-content-three .dsicription {
+            font-size: 13px !important;
+            display: none !important;
+        }
+
+        .banner-inner-content-three .pre {
+            font-size: 11px !important;
+            padding: 6px 12px !important;
+        }
+
+        /* Hide banner nav arrows on very small screens */
+        .banner-button-next,
+        .banner-button-prev {
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 14px !important;
+        }
+
+        /* Category cards */
+        .single-category-one {
+            padding: 12px 8px !important;
+        }
+
+        .single-category-one img {
+            width: 52px !important;
+            height: 52px !important;
+            margin-bottom: 8px !important;
+        }
+
+        .single-category-one p {
+            font-size: 11px !important;
+        }
+
+        /* Section spacing */
+        .rts-section-gap,
+        .rts-section-gapTop {
+            padding-top: 28px !important;
+            padding-bottom: 28px !important;
+        }
+
+        .container {
+            padding: 0 !important;
+        }
+    }
+
 </style>
 @endpush

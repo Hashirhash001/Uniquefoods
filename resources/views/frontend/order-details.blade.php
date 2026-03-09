@@ -236,29 +236,199 @@
         margin-top: 15px !important;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
+
+        /* Wrapper */
+        .order-details-wrapper {
+            padding: 20px 0 calc(80px + env(safe-area-inset-bottom, 0px)) 0 !important;
+        }
+
+        .order-details-container {
+            padding: 0 14px !important;
+        }
+
+        /* Back button */
+        .back-button {
+            font-size: 13px !important;
+            margin-bottom: 16px !important;
+        }
+
+        /* Main card */
+        .order-details-card {
+            padding: 16px !important;
+            border-radius: 12px !important;
+        }
+
+        /* Order header — number left, status right */
+        .order-header {
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            gap: 10px !important;
+            margin-bottom: 20px !important;
+            padding-bottom: 16px !important;
+        }
+
+        .order-header h1 {
+            font-size: 16px !important;
+            margin-bottom: 5px !important;
+            word-break: break-all !important;
+        }
+
+        .order-date {
+            font-size: 12px !important;
+        }
+
+        .status-badge {
+            padding: 6px 12px !important;
+            font-size: 11px !important;
+            border-radius: 14px !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Info grid — single column */
         .order-info-grid {
             grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            margin-bottom: 20px !important;
         }
 
-        .order-header {
-            flex-direction: column !important;
-            gap: 20px !important;
+        .info-section {
+            padding: 16px !important;
+            border-radius: 10px !important;
         }
 
+        .info-section h3 {
+            font-size: 14px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .info-section h3 i {
+            font-size: 15px !important;
+        }
+
+        .info-section p {
+            font-size: 13px !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Order items section */
+        .order-items-section {
+            margin-bottom: 24px !important;
+        }
+
+        .order-items-section h3 {
+            font-size: 16px !important;
+            margin-bottom: 14px !important;
+        }
+
+        /* Each item — horizontal, compact */
         .order-item {
-            flex-direction: column !important;
+            flex-direction: row !important;
+            gap: 12px !important;
+            padding: 12px 0 !important;
+            align-items: flex-start !important;
         }
 
         .order-item-image {
-            width: 100% !important;
-            height: 200px !important;
+            width: 70px !important;
+            height: 70px !important;
+            border-radius: 8px !important;
+            flex-shrink: 0 !important;
         }
 
+        .order-item-info {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+
+        .order-item-name {
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            margin-bottom: 5px !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+        }
+
+        .order-item-meta {
+            font-size: 11px !important;
+        }
+
+        /* Price — right aligned, stacked */
         .order-item-price {
-            text-align: left !important;
+            text-align: right !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            justify-content: center !important;
+        }
+
+        .order-item-price .unit-price {
+            font-size: 11px !important;
+            margin-bottom: 3px !important;
+        }
+
+        .order-item-price .total-price {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+        }
+
+        /* Order summary */
+        .order-summary {
+            padding: 16px !important;
+            border-radius: 10px !important;
+        }
+
+        .order-summary h3 {
+            font-size: 16px !important;
+            margin-bottom: 14px !important;
+        }
+
+        .summary-row {
+            font-size: 13px !important;
+            padding: 9px 0 !important;
+        }
+
+        .summary-row.total {
+            font-size: 17px !important;
+            padding-top: 14px !important;
+            margin-top: 10px !important;
+        }
+
+        .payment-badge {
+            font-size: 12px !important;
+            padding: 7px 14px !important;
+            margin-top: 12px !important;
+            border-radius: 14px !important;
         }
     }
+
+    @media (max-width: 400px) {
+
+        /* Very small — order header stacks */
+        .order-header {
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+
+        .order-item-image {
+            width: 58px !important;
+            height: 58px !important;
+        }
+
+        .order-item-name {
+            font-size: 12px !important;
+        }
+
+        .order-item-price .total-price {
+            font-size: 13px !important;
+        }
+    }
+
 </style>
 @endpush
 

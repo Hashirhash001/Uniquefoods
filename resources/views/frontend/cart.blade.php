@@ -129,10 +129,10 @@
                             Proceed to Checkout
                         </button>
                         </a>
-                        <button class="btn-outline-secondary">
+                        {{-- <button class="btn-outline-secondary">
                             <i class="fa-regular fa-tag"></i>
                             Apply Coupon Code
-                        </button>
+                        </button> --}}
                     </div>
 
                     <div class="trust-badges">
@@ -152,13 +152,13 @@
                 </div>
 
                 <!-- Promo Banner -->
-                <div class="promo-banner">
+                {{-- <div class="promo-banner">
                     <i class="fa-solid fa-gift"></i>
                     <div class="promo-text">
                         <strong>Special Offer!</strong>
                         <span>Get 10% off on orders above £1000</span>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -169,57 +169,31 @@
 <script src="{{ asset('frontend/assets/js/global-loader.js') }}"></script>
 <script src="{{ asset('frontend/assets/js/cart-wishlist.js') }}"></script>
 <script>
+const serverCart = @json($cartData);
+
 $(document).ready(function() {
-    // Initial load
-    loadCart();
+    // Render immediately from server data — no AJAX needed
+    displayCart(serverCart);
+    updateAllCartCounts(serverCart);
 
-    // ==================== LOAD CART (AJAX) ====================
-    function loadCart() {
-        showLoader('Loading cart...');
-
-        $.ajax({
-            url: '{{ route("cart.get") }}',
-            type: 'GET',
-            success: function(response) {
-                hideLoader();
-                if (response.success) {
-                    displayCart(response.cart);
-                    updateAllCartCounts(response.cart);
-                }
-            },
-            error: function(xhr) {
-                hideLoader();
-                console.error('Failed to load cart:', xhr);
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to load cart. Please refresh the page.');
-                }
-            }
-        });
-    }
-
-    // ==================== DISPLAY CART (NO RELOAD) ====================
+    // ==================== DISPLAY CART ====================
     function displayCart(cart) {
         const container = $('#cartItemsList');
         container.empty();
 
-        // Empty state
         if (!cart.items || cart.items.length === 0) {
             $('#cartContentArea').hide();
             $('#emptyCartState').show();
             return;
         }
 
-        // Show cart content
         $('#cartContentArea').show();
         $('#emptyCartState').hide();
 
-        // Render each item
         cart.items.forEach(item => {
-            const itemHtml = createCartItemHtml(item);
-            container.append(itemHtml);
+            container.append(createCartItemHtml(item));
         });
 
-        // Update summary
         updateSummary(cart);
     }
 
@@ -227,44 +201,34 @@ $(document).ready(function() {
     function createCartItemHtml(item) {
         const isWeightBased = item.weight && parseFloat(item.weight) > 0;
 
-        // Quantity/weight control block
-        const quantityBlock = isWeightBased
-            ? `
-                <div class="item-quantity">
-                    <div class="weight-display-badge">
-                        <i class="fa-regular fa-weight-scale"></i>
-                        <span>${parseFloat(item.weight) % 1 === 0
-                            ? parseInt(item.weight)
-                            : parseFloat(item.weight)}kg</span>
-                    </div>
-                    <a href="/product/${item.slug}" class="weight-change-link">
-                        <i class="fa-regular fa-pen"></i> Change
-                    </a>
-                </div>
-            `
-            : `
-                <div class="item-quantity">
-                    <div class="modern-quantity-control">
-                        <button class="qty-btn qty-decrease" data-product-id="${item.id}" ${item.quantity <= 1 ? 'disabled' : ''}>
-                            <i class="fa-solid fa-minus"></i>
-                        </button>
-                        <input type="text" class="qty-value" value="${item.quantity}" readonly>
-                        <button class="qty-btn qty-increase" data-product-id="${item.id}" ${item.stock <= item.quantity ? 'disabled' : ''}>
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-
-        // Subtotal: weight × price or qty × price
+        // ── Declare these FIRST before anything else ──
         const subtotal = isWeightBased
-            ? (parseFloat(item.price) * parseFloat(item.weight)).toFixed(2)
+            ? parseFloat(item.price).toFixed(2)
             : (parseFloat(item.price) * item.quantity).toFixed(2);
 
-        // Price label: per kg or per item
         const priceLabel = isWeightBased
-            ? `£${parseFloat(item.price).toFixed(2)}<small>/kg</small>`
-            : `£${parseFloat(item.price).toFixed(2)}`;
+            ? '£' + parseFloat(item.price / item.weight).toFixed(2) + '<small>/kg</small>'
+            : '£' + parseFloat(item.price).toFixed(2);
+
+        // ── Now quantityBlock can safely reference subtotal ──
+        const quantityBlock = isWeightBased
+            ? '<div class="item-quantity" data-subtotal="£' + subtotal + '">' +
+            '<div class="weight-display-badge">' +
+            '<i class="fa-regular fa-weight-scale"></i>' +
+            '<span>' + (parseFloat(item.weight) % 1 === 0 ? parseInt(item.weight) : parseFloat(item.weight)) + 'kg</span>' +
+            '</div>' +
+            '<a href="/product/' + item.slug + '" class="weight-change-link">' +
+            '<i class="fa-regular fa-pen"></i> Change</a>' +
+            '</div>'
+            : '<div class="item-quantity" data-subtotal="£' + subtotal + '">' +
+            '<div class="modern-quantity-control">' +
+            '<button class="qty-btn qty-decrease" data-product-id="' + item.id + '"' + (item.quantity <= 1 ? ' disabled' : '') + '>' +
+            '<i class="fa-solid fa-minus"></i></button>' +
+            '<input type="text" class="qty-value" value="' + item.quantity + '" readonly>' +
+            '<button class="qty-btn qty-increase" data-product-id="' + item.id + '"' + (item.stock <= item.quantity ? ' disabled' : '') + '>' +
+            '<i class="fa-solid fa-plus"></i></button>' +
+            '</div>' +
+            '</div>';
 
         return `
             <div class="modern-cart-item" data-product-id="${item.id}">
@@ -273,7 +237,6 @@ $(document).ready(function() {
                         onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
                     ${item.stock <= 0 ? '<span class="stock-badge out-stock">Out of Stock</span>' : ''}
                 </div>
-
                 <div class="item-details">
                     <a href="/product/${item.slug}" class="item-name">${item.name}</a>
                     <div class="item-meta">
@@ -289,19 +252,15 @@ $(document).ready(function() {
                     </div>
                     <div class="item-price-mobile">${priceLabel}</div>
                 </div>
-
                 ${quantityBlock}
-
                 <div class="item-price">
                     <div class="price-label">${isWeightBased ? 'Per kg' : 'Price'}</div>
                     <div class="price-value">${priceLabel}</div>
                 </div>
-
                 <div class="item-subtotal">
                     <div class="subtotal-label">Subtotal</div>
                     <div class="subtotal-value">£${subtotal}</div>
                 </div>
-
                 <div class="item-remove">
                     <button class="btn-remove" data-product-id="${item.id}" title="Remove item">
                         <i class="fa-regular fa-trash-can"></i>
@@ -313,26 +272,13 @@ $(document).ready(function() {
 
     // ==================== UPDATE SUMMARY ====================
     function updateSummary(cart) {
-        const subtotal = cart.subtotal || 0;
-        // const tax = subtotal * 0.18;
-        // const shipping = subtotal >= 500 ? 0 : 50;
-        const total = subtotal;
-
-        // Animate number changes
-        animateValue('summarySubtotal', subtotal);
-        // animateValue('summaryTax', tax);
-        animateValue('summaryTotal', total);
-
-        // if (shipping === 0) {
-        //     $('#summaryShipping').html('<span class="free-badge">FREE</span>');
-        // } else {
-        //     $('#summaryShipping').html('£' + shipping.toFixed(2));
-        // }
+        animateValue('summarySubtotal', cart.subtotal || 0);
+        animateValue('summaryTotal', cart.total || 0);
     }
 
-    // ==================== ANIMATE NUMBER CHANGES ====================
     function animateValue(elementId, endValue) {
         const element = document.getElementById(elementId);
+        if (!element) return;
         const startValue = parseFloat(element.textContent) || 0;
         const duration = 300;
         const startTime = performance.now();
@@ -340,224 +286,155 @@ $(document).ready(function() {
         function update(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const currentValue = startValue + (endValue - startValue) * progress;
-            element.textContent = currentValue.toFixed(2);
-
-            if (progress < 1) {
-                requestAnimationFrame(update);
-            }
+            element.textContent = (startValue + (endValue - startValue) * progress).toFixed(2);
+            if (progress < 1) requestAnimationFrame(update);
         }
-
         requestAnimationFrame(update);
     }
 
-    // ==================== UPDATE ALL COUNTS ====================
     function updateAllCartCounts(cart) {
         const count = cart.items ? cart.items.length : 0;
-        const total = cart.total || 0;
-
-        // Update all count elements
         $('#cartCount, #mobileCartCount, #headerCartCount, #cartItemCount').text(count);
-        $('#cartTotal').text(total.toFixed(2));
+        $('#cartTotal').text((cart.total || 0).toFixed(2));
     }
 
-    // ==================== QUANTITY DECREASE (AJAX) ====================
+    // ==================== QUANTITY DECREASE ====================
     $(document).on('click', '.qty-decrease', function(e) {
         e.preventDefault();
         const productId = $(this).data('product-id');
         const button = $(this);
-
         if (button.prop('disabled')) return;
-
-        // Show mini loader on button
         const originalHtml = button.html();
         button.html('<i class="btn-loader"></i>').prop('disabled', true);
 
         $.ajax({
             url: '{{ route("cart.update") }}',
             type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId,
-                action: 'minus'
-            },
+            data: { _token: '{{ csrf_token() }}', product_id: productId, action: 'minus' },
             success: function(response) {
                 if (response.success) {
-                    // Update cart display without reload
                     displayCart(response.cart);
                     updateAllCartCounts(response.cart);
                 } else {
                     button.html(originalHtml).prop('disabled', false);
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message || 'Failed to update quantity');
-                    }
+                    if (typeof toastr !== 'undefined') toastr.error(response.message);
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 button.html(originalHtml).prop('disabled', false);
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to update cart. Please try again.');
-                }
+                if (typeof toastr !== 'undefined') toastr.error('Failed to update cart.');
             }
         });
     });
 
-    // ==================== QUANTITY INCREASE (AJAX) ====================
+    // ==================== QUANTITY INCREASE ====================
     $(document).on('click', '.qty-increase', function(e) {
         e.preventDefault();
         const productId = $(this).data('product-id');
         const button = $(this);
-
         if (button.prop('disabled')) return;
-
-        // Show mini loader on button
         const originalHtml = button.html();
         button.html('<i class="btn-loader"></i>').prop('disabled', true);
 
         $.ajax({
             url: '{{ route("cart.update") }}',
             type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId,
-                action: 'plus'
-            },
+            data: { _token: '{{ csrf_token() }}', product_id: productId, action: 'plus' },
             success: function(response) {
                 if (response.success) {
-                    // Update cart display without reload
                     displayCart(response.cart);
                     updateAllCartCounts(response.cart);
                 } else {
                     button.html(originalHtml).prop('disabled', false);
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message || 'Failed to update quantity');
-                    }
+                    if (typeof toastr !== 'undefined') toastr.error(response.message);
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 button.html(originalHtml).prop('disabled', false);
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to update cart. Please try again.');
-                }
+                if (typeof toastr !== 'undefined') toastr.error('Failed to update cart.');
             }
         });
     });
 
-    // ==================== REMOVE ITEM (AJAX) ====================
+    // ==================== REMOVE ITEM ====================
     $(document).on('click', '.btn-remove', function(e) {
         e.preventDefault();
         const productId = $(this).data('product-id');
         const cartItem = $(this).closest('.modern-cart-item');
-
-        // Add removing animation
         cartItem.css('opacity', '0.5');
 
         $.ajax({
             url: '{{ route("cart.remove") }}',
             type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId
-            },
+            data: { _token: '{{ csrf_token() }}', product_id: productId },
             success: function(response) {
                 if (response.success) {
-                    // Slide up animation then remove
                     cartItem.slideUp(300, function() {
                         $(this).remove();
-                        // Update cart display
                         displayCart(response.cart);
                         updateAllCartCounts(response.cart);
                     });
-
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success(response.message || 'Item removed from cart');
-                    }
+                    if (typeof toastr !== 'undefined') toastr.success(response.message);
                 } else {
                     cartItem.css('opacity', '1');
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message || 'Failed to remove item');
-                    }
+                    if (typeof toastr !== 'undefined') toastr.error(response.message);
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 cartItem.css('opacity', '1');
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to remove item. Please try again.');
-                }
+                if (typeof toastr !== 'undefined') toastr.error('Failed to remove item.');
             }
         });
     });
 
-    // ==================== CLEAR CART (AJAX WITH TOAST) ====================
+    // ==================== CLEAR CART ====================
     $('#clearCartBtn').on('click', function(e) {
         e.preventDefault();
 
         if (typeof toastr !== 'undefined') {
             toastr.warning(
-                '<div style="text-align: center;">' +
-                '<p style="margin-bottom: 15px; font-weight: 600;">Clear your entire cart?</p>' +
-                '<button type="button" class="btn btn-sm btn-danger me-2" id="confirmClearCart" style="padding: 8px 20px;">Yes, Clear</button>' +
-                '<button type="button" class="btn btn-sm btn-secondary" id="cancelClearCart" style="padding: 8px 20px;">Cancel</button>' +
+                '<div style="text-align:center;">' +
+                '<p style="margin-bottom:15px;font-weight:600;">Clear your entire cart?</p>' +
+                '<button type="button" class="btn btn-sm btn-danger me-2" id="confirmClearCart" style="padding:8px 20px;">Yes, Clear</button>' +
+                '<button type="button" class="btn btn-sm btn-secondary" id="cancelClearCart" style="padding:8px 20px;">Cancel</button>' +
                 '</div>',
-                '',
-                {
-                    closeButton: false,
-                    tapToDismiss: false,
-                    timeOut: 0,
-                    extendedTimeOut: 0,
-                    allowHtml: true,
+                '', {
+                    closeButton: false, tapToDismiss: false,
+                    timeOut: 0, extendedTimeOut: 0, allowHtml: true,
                     positionClass: 'toast-top-center',
                     onShown: function() {
                         $('#confirmClearCart').on('click', function() {
                             toastr.clear();
                             performClearCart();
                         });
-                        $('#cancelClearCart').on('click', function() {
-                            toastr.clear();
-                        });
+                        $('#cancelClearCart').on('click', function() { toastr.clear(); });
                     }
                 }
             );
         } else {
-            if (confirm('Clear your entire cart?')) {
-                performClearCart();
-            }
+            if (confirm('Clear your entire cart?')) performClearCart();
         }
     });
 
-    // ==================== PERFORM CLEAR CART ====================
     function performClearCart() {
         showLoader('Clearing cart...');
-
         $.ajax({
             url: '{{ route("cart.clear") }}',
             type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
+            data: { _token: '{{ csrf_token() }}' },
             success: function(response) {
                 hideLoader();
                 if (response.success) {
-                    // Fade out all items
-                    $('.modern-cart-item').fadeOut(300, function() {
-                        displayCart(response.cart);
-                        updateAllCartCounts(response.cart);
-                    });
-
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success(response.message || 'Cart cleared successfully');
-                    }
+                    displayCart(response.cart);
+                    updateAllCartCounts(response.cart);
+                    if (typeof toastr !== 'undefined') toastr.success(response.message);
                 } else {
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message || 'Failed to clear cart');
-                    }
+                    if (typeof toastr !== 'undefined') toastr.error(response.message);
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 hideLoader();
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to clear cart. Please try again.');
-                }
+                if (typeof toastr !== 'undefined') toastr.error('Failed to clear cart.');
             }
         });
     }

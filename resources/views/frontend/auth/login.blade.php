@@ -604,47 +604,167 @@
         text-decoration: underline;
     }
 
-    /* Responsive */
+    /* ===== LOGIN MOBILE RESPONSIVE ===== */
     @media (max-width: 991px) {
         .unique-auth-container {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr !important;
+            border-radius: 16px !important;
+            max-width: 480px !important;
         }
 
+        /* Hide left branding panel on tablet/mobile */
         .unique-auth-left {
-            display: none;
+            display: none !important;
         }
 
         .unique-auth-right {
-            padding: 40px 30px;
+            padding: 40px 36px !important;
         }
     }
 
     @media (max-width: 767px) {
+
         .unique-auth-wrapper {
-            padding: 20px;
+            padding: 16px !important;
+            padding-top: 24px !important;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+            align-items: flex-start !important;
+        }
+
+        .unique-auth-container {
+            border-radius: 16px !important;
+            max-width: 100% !important;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08) !important;
         }
 
         .unique-auth-right {
-            padding: 30px 20px;
+            padding: 28px 20px !important;
+        }
+
+        /* Header */
+        .unique-form-header {
+            margin-bottom: 24px !important;
+            text-align: center !important;
         }
 
         .unique-form-header h3 {
-            font-size: 24px;
+            font-size: 22px !important;
+            margin-bottom: 6px !important;
         }
 
+        .unique-form-header p {
+            font-size: 13px !important;
+        }
+
+        /* Alerts */
+        .unique-alert {
+            padding: 12px 14px !important;
+            font-size: 13px !important;
+            border-radius: 10px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .unique-alert i {
+            font-size: 16px !important;
+        }
+
+        /* Google button */
+        .unique-btn-google {
+            padding: 12px 16px !important;
+            font-size: 14px !important;
+            border-radius: 10px !important;
+            margin-bottom: 18px !important;
+        }
+
+        /* Divider */
+        .unique-divider-text {
+            margin: 18px 0 !important;
+        }
+
+        .unique-divider-text span {
+            font-size: 12px !important;
+        }
+
+        /* Form inputs */
+        .unique-form-group {
+            margin-bottom: 16px !important;
+        }
+
+        .unique-label {
+            font-size: 13px !important;
+            margin-bottom: 6px !important;
+        }
+
+        .unique-input {
+            padding: 12px 14px !important;
+            font-size: 14px !important;
+            border-radius: 10px !important;
+        }
+
+        .unique-error-text {
+            font-size: 12px !important;
+        }
+
+        /* Remember me + forgot password */
         .unique-form-options {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            margin-bottom: 20px !important;
+        }
+
+        .label-text {
+            font-size: 13px !important;
+        }
+
+        .unique-forgot-link {
+            font-size: 13px !important;
+        }
+
+        /* Submit button */
+        .unique-btn-submit {
+            padding: 14px 20px !important;
+            font-size: 15px !important;
+            border-radius: 10px !important;
+        }
+
+        .unique-btn-submit:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Footer */
+        .unique-form-footer {
+            margin-top: 20px !important;
+        }
+
+        .unique-form-footer p {
+            font-size: 13px !important;
         }
     }
 
+    @media (max-width: 375px) {
 
-    @media (max-width: 767px) {
-        .unique-sidebar-header {
-            display: none !important;
+        .unique-auth-right {
+            padding: 24px 16px !important;
+        }
+
+        .unique-form-header h3 {
+            font-size: 20px !important;
+        }
+
+        /* Stack remember + forgot on very small phones */
+        .unique-form-options {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+        }
+
+        .unique-input {
+            font-size: 16px !important; /* prevents iOS zoom on focus */
         }
     }
+
 
 </style>
 @endpush

@@ -206,9 +206,8 @@
     }
 
     .empty-orders i {
-        font-size: 80px !important;
+        font-size: 20px !important;
         color: #cbd5e1 !important;
-        margin-bottom: 24px !important;
     }
 
     .empty-orders h2 {
@@ -233,8 +232,12 @@
         font-size: 16px !important;
         font-weight: 700 !important;
         text-decoration: none !important;
-        display: inline-block !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
         transition: all 0.3s !important;
+        width: 30% !important;
     }
 
     .btn-shop-now:hover {
@@ -271,31 +274,208 @@
         border-color: #0f508d !important;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
+
+        /* Section spacing */
+        .orders-wrapper {
+            padding: 24px 0 calc(80px + env(safe-area-inset-bottom, 0px)) 0 !important;
+        }
+
+        .orders-container {
+            padding: 0 14px !important;
+        }
+
+        /* Header */
+        .orders-header {
+            margin-bottom: 24px !important;
+            text-align: left !important;
+        }
+
+        .orders-header h1 {
+            font-size: 22px !important;
+            margin-bottom: 6px !important;
+        }
+
+        .orders-header p {
+            font-size: 13px !important;
+        }
+
+        /* Order card */
         .order-card {
-            padding: 20px !important;
+            padding: 16px !important;
+            border-radius: 12px !important;
+            margin-bottom: 14px !important;
+        }
+
+        .order-card:hover {
+            transform: none !important;
+        }
+
+        /* Card header — order number left, status right */
+        .order-card-header {
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            gap: 10px !important;
+            margin-bottom: 16px !important;
+            padding-bottom: 14px !important;
+        }
+
+        .order-number {
+            font-size: 15px !important;
+            margin-bottom: 5px !important;
+            word-break: break-all !important;
+        }
+
+        .order-date {
+            font-size: 12px !important;
+        }
+
+        .order-status-badge {
+            padding: 5px 10px !important;
+            font-size: 11px !important;
+            border-radius: 12px !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Order items — horizontal layout preserved but smaller */
+        .order-item {
+            flex-direction: row !important;
+            gap: 12px !important;
+            padding: 12px 0 !important;
+            align-items: flex-start !important;
+        }
+
+        .order-item-image {
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 8px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .order-item-details {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+
+        .order-item-name {
+            font-size: 13px !important;
+            margin-bottom: 4px !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+        }
+
+        .order-item-meta {
+            font-size: 12px !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            gap: 4px !important;
+        }
+
+        .order-item-price {
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            flex-shrink: 0 !important;
+            align-self: center !important;
+        }
+
+        /* Card footer — total left, button right on mobile */
+        .order-card-footer {
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 10px !important;
+            padding-top: 14px !important;
+            text-align: left !important;
+        }
+
+        .order-total {
+            font-size: 13px !important;
+        }
+
+        .order-total strong {
+            font-size: 17px !important;
+            margin-left: 4px !important;
+            display: block !important;
+        }
+
+        .btn-view-order {
+            padding: 9px 16px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Pagination */
+        .pagination {
+            gap: 6px !important;
+            margin-top: 24px !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+        }
+
+        .pagination .page-link {
+            padding: 8px 13px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+            min-width: 38px !important;
+            text-align: center !important;
+        }
+
+        /* Empty state */
+        .empty-orders {
+            padding: 48px 20px !important;
+            border-radius: 12px !important;
+        }
+
+        .empty-orders i {
+            font-size: 52px !important;
+            margin-bottom: 16px !important;
+            display: block !important;
+        }
+
+        .empty-orders h2 {
+            font-size: 20px !important;
+            margin-bottom: 8px !important;
+        }
+
+        .empty-orders p {
+            font-size: 13px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .btn-shop-now {
+            width: 100% !important;
+            padding: 12px 20px !important;
+            font-size: 15px !important;
+            border-radius: 10px !important;
+        }
+    }
+
+    @media (max-width: 400px) {
+
+        /* Very small phones — simplify footer to stack */
+        .order-card-footer {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+        }
+
+        .btn-view-order {
+            width: 100% !important;
+            justify-content: center !important;
         }
 
         .order-card-header {
             flex-direction: column !important;
-            gap: 15px !important;
-        }
-
-        .order-card-footer {
-            flex-direction: column !important;
-            gap: 15px !important;
-            text-align: center !important;
-        }
-
-        .order-item {
-            flex-direction: column !important;
-        }
-
-        .order-item-image {
-            width: 100% !important;
-            height: 200px !important;
         }
     }
+
 </style>
 @endpush
 
@@ -412,9 +592,11 @@
                 <i class="fa-solid fa-box-open"></i>
                 <h2>No Orders Yet</h2>
                 <p>You haven't placed any orders yet. Start shopping now!</p>
-                <a href="{{ route('shop') }}" class="btn-shop-now">
-                    <i class="fa-solid fa-shopping-cart"></i> Start Shopping
-                </a>
+                <div class="d-flex justify-content-center">
+                    <a href="{{ route('shop') }}" class="btn-shop-now">
+                        <i class="fa-solid fa-shopping-cart"></i> Start Shopping
+                    </a>
+                </div>
             </div>
         @endif
     </div>

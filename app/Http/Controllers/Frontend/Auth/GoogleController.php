@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Frontend\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Cart;
+use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
-use Exception;
 
 class GoogleController extends Controller
 {
@@ -100,6 +101,16 @@ class GoogleController extends Controller
 
                 // Create cart
                 Cart::create(['user_id' => $user->id]);
+
+                // ✅ Send welcome email just like normal registration
+                try {
+                    Mail::to($user->email)->send(new \App\Mail\WelcomeMail($user));
+                } catch (\Exception $mailException) {
+                    Log::warning('Welcome email failed for Google user', [
+                        'user_id' => $user->id,
+                        'error'   => $mailException->getMessage()
+                    ]);
+                }
 
                 Log::info('New user created via Google', [
                     'user_id' => $user->id,

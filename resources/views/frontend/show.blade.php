@@ -31,9 +31,9 @@
     </div>
 </div>
 
-<div class="section-seperator bglight-1">
+{{-- <div class="section-seperator bglight-1">
     <div class="container"><hr class="section-seperator"></div>
-</div>
+</div> --}}
 
 <!-- Product Details Section -->
 <div class="rts-shop-details-area rts-section-gap bglight-1">
@@ -92,18 +92,18 @@
                                         @endif
                                     </div>
 
-                                    <div class="d-flex align-items-center justify-content-between mb--10">
+                                    <div class="d-flex align-items-center justify-content-between mb--10 w-100">
                                         <div class="rating-stars-group">
                                             <div class="rating-star">
                                                 @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= 4)
-                                                        <i class="fas fa-star"></i>
-                                                    @else
-                                                        <i class="fas fa-star-half-alt"></i>
-                                                    @endif
+                                                    <i class="fa-{{ $i <= round($product->average_rating) ? 'solid' : 'regular' }} fa-star {{ $product->average_rating > 0 ? 'text-warning' : '' }}"></i>
                                                 @endfor
                                             </div>
-                                            <span>(10 Reviews)</span>
+                                            @if($product->reviews_count > 0)
+                                                <span>{{ $product->reviews_count }} {{ Str::plural('Review', $product->reviews_count) }}</span>
+                                            @else
+                                                <span>No reviews yet</span>
+                                            @endif
                                         </div>
 
                                         <div class="product-top-actions">
@@ -289,7 +289,6 @@
                 <div class="product-description-tab-shop mt--50">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
 
-                        @if($product->description)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="details-tab"
                                     data-bs-toggle="tab" data-bs-target="#details-tab-pane"
@@ -297,25 +296,14 @@
                                 Product Details
                             </button>
                         </li>
-                        @endif
-
-                        @if($product->weight || $product->brand_id)
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ !$product->description ? 'active' : '' }}"
-                                    id="additional-tab" data-bs-toggle="tab"
-                                    data-bs-target="#additional-tab-pane" type="button" role="tab">
-                                Additional Information
-                            </button>
-                        </li>
-                        @endif
 
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ !$product->description && !$product->weight && !$product->brand_id ? 'active' : '' }}"
-                                    id="reviews-tab" data-bs-toggle="tab"
-                                    data-bs-target="#reviews-tab-pane" type="button" role="tab">
+                            <button class="nav-link" id="reviews-tab"
+                                    data-bs-toggle="tab" data-bs-target="#reviews-tab-pane"
+                                    type="button" role="tab">
                                 Reviews
-                                @if($product->reviews->count() > 0)
-                                    <span class="badge bg-primary ms-1">{{ $product->reviews->count() }}</span>
+                                @if($product->reviews_count > 0)
+                                    <span class="badge bg-primary ms-1">{{ $product->reviews_count }}</span>
                                 @endif
                             </button>
                         </li>
@@ -324,21 +312,15 @@
 
                     <div class="tab-content" id="myTabContent">
 
-                        {{-- Product Details --}}
-                        @if($product->description)
+                        {{-- Product Details (merged with Additional Info) --}}
                         <div class="tab-pane fade show active" id="details-tab-pane" role="tabpanel">
                             <div class="single-tab-content-shop-details">
-                                <p class="disc">{!! nl2br(e($product->description)) !!}</p>
-                            </div>
-                        </div>
-                        @endif
+                                @if($product->description)
+                                    <p class="disc">{!! nl2br(e($product->description)) !!}</p>
+                                @endif
 
-                        {{-- Additional Information --}}
-                        @if($product->weight || $product->brand_id)
-                        <div class="tab-pane fade {{ !$product->description ? 'show active' : '' }}"
-                            id="additional-tab-pane" role="tabpanel">
-                            <div class="single-tab-content-shop-details">
-                                <table class="table table-bordered">
+                                @if($product->weight || $product->brand_id || $product->unit)
+                                <table class="table table-bordered mt-3">
                                     <tbody>
                                         @if($product->weight)
                                         <tr><td><strong>Weight</strong></td><td>{{ $product->weight }}</td></tr>
@@ -351,99 +333,102 @@
                                         @endif
                                     </tbody>
                                 </table>
+                                @endif
+
+                                @if(!$product->description && !$product->weight && !$product->brand_id && !$product->unit)
+                                    <p class="text-muted">No product details available.</p>
+                                @endif
                             </div>
                         </div>
-                        @endif
 
                         {{-- Reviews Tab --}}
-                        <div class="tab-pane fade {{ !$product->description && !$product->weight && !$product->brand_id ? 'show active' : '' }}"
-                            id="reviews-tab-pane" role="tabpanel">
+                        <div class="tab-pane fade" id="reviews-tab-pane" role="tabpanel">
                             <div class="reviews-section">
 
                                 {{-- Rating Summary --}}
-                                @if($product->reviews->count() > 0)
-                                <div class="review-summary-bar">
-                                    <div class="review-avg-score">
-                                        <span class="avg-number">{{ $product->average_rating }}</span>
-                                        <div class="avg-stars">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <i class="fa-{{ $i <= round($product->average_rating) ? 'solid' : 'regular' }} fa-star"></i>
-                                            @endfor
-                                        </div>
-                                        <span class="avg-label">{{ $product->reviews->count() }} {{ Str::plural('review', $product->reviews->count()) }}</span>
-                                    </div>
-                                    <div class="review-bars">
-                                        @for($star = 5; $star >= 1; $star--)
-                                            @php $count = $product->reviews->where('rating', $star)->count(); @endphp
-                                            @php $pct = $product->reviews->count() > 0 ? round(($count / $product->reviews->count()) * 100) : 0; @endphp
-                                            <div class="rating-bar-row">
-                                                <span class="bar-label">{{ $star }} <i class="fa-solid fa-star"></i></span>
-                                                <div class="bar-track"><div class="bar-fill" style="width: {{ $pct }}%"></div></div>
-                                                <span class="bar-count">{{ $count }}</span>
+                                <div id="reviewSummaryBar">
+                                    @if($product->reviews_count > 0)
+                                    <div class="review-summary-bar">
+                                        <div class="review-avg-score">
+                                            <span class="avg-number">{{ $product->average_rating }}</span>
+                                            <div class="avg-stars">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="fa-{{ $i <= round($product->average_rating) ? 'solid' : 'regular' }} fa-star"></i>
+                                                @endfor
                                             </div>
-                                        @endfor
-                                    </div>
-                                </div>
-                                @endif
-
-                                {{-- Write Review --}}
-                                @auth
-                                    @if($hasPurchased && !$hasReviewed)
-                                    <div class="write-review-card">
-                                        <h5 class="review-form-title">
-                                            <i class="fa-solid fa-pen-to-square"></i> Write a Review
-                                        </h5>
-                                        <form id="reviewForm">
-                                            @csrf
-                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-
-                                            <div class="star-rating-input mb-3">
-                                                <label class="form-label">Your Rating <span class="text-danger">*</span></label>
-                                                <div class="star-input-group" id="starInput">
-                                                    @for($i = 1; $i <= 5; $i++)
-                                                        <i class="fa-regular fa-star star-pick" data-value="{{ $i }}"></i>
-                                                    @endfor
-                                                    <input type="hidden" name="rating" id="ratingValue" required>
+                                            <span class="avg-label">{{ $product->reviews_count }} {{ Str::plural('review', $product->reviews_count) }}</span>
+                                        </div>
+                                        <div class="review-bars">
+                                            @for($star = 5; $star >= 1; $star--)
+                                                @php
+                                                    $count = $product->reviews->where('rating', $star)->count();
+                                                    $pct   = $product->reviews_count > 0
+                                                                ? round(($count / $product->reviews_count) * 100)
+                                                                : 0;
+                                                @endphp
+                                                <div class="rating-bar-row">
+                                                    <span class="bar-label">{{ $star }} <i class="fa-solid fa-star"></i></span>
+                                                    <div class="bar-track"><div class="bar-fill" style="width: {{ $pct }}%"></div></div>
+                                                    <span class="bar-count">{{ $count }}</span>
                                                 </div>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label">Review Title</label>
-                                                <input type="text" name="title" class="form-control"
-                                                    placeholder="Sum up your experience in one line" maxlength="100">
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label">Your Review</label>
-                                                <textarea name="body" class="form-control" rows="4"
-                                                        placeholder="Share your honest experience with this product..."
-                                                        maxlength="1000"></textarea>
-                                            </div>
-
-                                            <button type="submit" class="btn-submit-review" id="submitReviewBtn">
-                                                <i class="fa-solid fa-paper-plane"></i> Submit Review
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    @elseif($hasReviewed)
-                                    <div class="review-notice reviewed">
-                                        <i class="fa-solid fa-circle-check"></i>
-                                        <div>
-                                            <strong>You've already reviewed this product.</strong>
-                                            <p>Thank you for sharing your feedback!</p>
-                                        </div>
-                                    </div>
-
-                                    @elseif(!$hasPurchased)
-                                    <div class="review-notice not-purchased">
-                                        <i class="fa-solid fa-lock"></i>
-                                        <div>
-                                            <strong>Purchase required to review</strong>
-                                            <p>Only customers who have purchased and received this product can leave a review.</p>
+                                            @endfor
                                         </div>
                                     </div>
                                     @endif
+                                </div>
+
+                                {{-- Write Review --}}
+                                @auth
+                                    {{-- Write form container - always rendered, content swapped by JS --}}
+                                    <div id="reviewFormArea">
+                                        @if($hasPurchased && !$hasReviewed)
+                                        <div class="write-review-card" id="writeReviewCard">
+                                            <h5 class="review-form-title">
+                                                <i class="fa-solid fa-pen-to-square"></i> Write a Review
+                                            </h5>
+                                            <form id="reviewForm">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <div class="star-rating-input mb-3">
+                                                    <label class="form-label">Your Rating <span class="text-danger">*</span></label>
+                                                    <div class="star-input-group" id="starInput">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            <i class="fa-regular fa-star star-pick" data-value="{{ $i }}"></i>
+                                                        @endfor
+                                                    </div>
+                                                    <input type="hidden" name="rating" id="ratingValue" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Your Review</label>
+                                                    <textarea name="body" class="form-control" rows="4"
+                                                            placeholder="Share your honest experience with this product..."
+                                                            maxlength="1000"></textarea>
+                                                </div>
+                                                <button type="submit" class="btn-submit-review" id="submitReviewBtn" style="width:unset;">
+                                                    <i class="fa-solid fa-paper-plane"></i> Submit Review
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        @elseif($hasReviewed)
+                                        <div class="review-notice reviewed" id="alreadyReviewedNotice">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            <div>
+                                                <strong>You've already reviewed this product.</strong>
+                                                <p>Thank you for sharing your feedback!</p>
+                                            </div>
+                                        </div>
+
+                                        @elseif(!$hasPurchased)
+                                        <div class="review-notice not-purchased">
+                                            <i class="fa-solid fa-lock"></i>
+                                            <div>
+                                                <strong>Purchase required to review</strong>
+                                                <p>Only customers who have purchased and received this product can leave a review.</p>
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
                                 @else
                                     <div class="review-notice login-required">
                                         <i class="fa-solid fa-user-circle"></i>
@@ -454,42 +439,58 @@
                                     </div>
                                 @endauth
 
-                                {{-- Existing Reviews List --}}
-                                @if($product->reviews->count() > 0)
-                                <div class="reviews-list mt-4">
-                                    @foreach($product->reviews->sortByDesc('created_at') as $review)
-                                    <div class="review-card">
-                                        <div class="review-card-header">
-                                            <img src="{{ $review->user->profile_picture }}"
-                                                alt="{{ $review->user->name }}" class="reviewer-avatar">
-                                            <div class="reviewer-info">
-                                                <span class="reviewer-name">{{ $review->user->name }}</span>
-                                                <span class="review-date">{{ $review->created_at->format('d M Y') }}</span>
+                                {{-- Reviews List --}}
+                                <div class="reviews-list mt-4" id="reviewsList">
+                                    @if($product->reviews->count() > 0)
+                                        @foreach($product->reviews->sortByDesc('created_at') as $review)
+                                        <div class="review-card" id="review-card-{{ $review->id }}">
+                                            <div class="review-card-header">
+                                                <img src="{{ $review->user->profile_picture }}" alt="{{ $review->user->name }}" class="reviewer-avatar">
+                                                <div class="reviewer-info">
+                                                    <span class="reviewer-name">{{ $review->user->name }}</span>
+                                                    <span class="review-date">{{ $review->created_at->format('d M Y') }}</span>
+                                                </div>
+                                                <div class="review-stars ms-auto">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="fa-{{ $i <= $review->rating ? 'solid' : 'regular' }} fa-star"></i>
+                                                    @endfor
+                                                </div>
+                                                @auth
+                                                    @if(Auth::id() === $review->user_id)
+                                                    <div class="review-actions ms-2 d-flex gap-2">
+                                                        <button class="btn-review-edit"
+                                                                data-review-id="{{ $review->id }}"
+                                                                data-rating="{{ $review->rating }}"
+                                                                data-body="{{ $review->body }}"
+                                                                title="Edit">
+                                                            <i class="fa-regular fa-pen"></i>
+                                                        </button>
+                                                        <button class="btn-review-delete"
+                                                                data-review-id="{{ $review->id }}"
+                                                                title="Delete">
+                                                            <i class="fa-regular fa-trash-can"></i>
+                                                        </button>
+                                                    </div>
+                                                    @endif
+                                                @endauth
                                             </div>
-                                            <div class="review-stars ms-auto">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    <i class="fa-{{ $i <= $review->rating ? 'solid' : 'regular' }} fa-star"></i>
-                                                @endfor
+                                            <div class="review-body-content">
+                                                @if($review->body)
+                                                    <p class="review-body">{{ $review->body }}</p>
+                                                @endif
                                             </div>
+                                            {{-- <span class="verified-badge">
+                                                <i class="fa-solid fa-circle-check"></i> Verified Purchase
+                                            </span> --}}
                                         </div>
-                                        @if($review->title)
-                                            <h6 class="review-title">{{ $review->title }}</h6>
-                                        @endif
-                                        @if($review->body)
-                                            <p class="review-body">{{ $review->body }}</p>
-                                        @endif
-                                        <span class="verified-badge">
-                                            <i class="fa-solid fa-circle-check"></i> Verified Purchase
-                                        </span>
-                                    </div>
-                                    @endforeach
+                                        @endforeach
+                                    @else
+                                        <div class="no-reviews-state" id="noReviewsState">
+                                            <i class="fa-regular fa-star"></i>
+                                            <p>No reviews yet. Be the first to review this product!</p>
+                                        </div>
+                                    @endif
                                 </div>
-                                @else
-                                <div class="no-reviews-state">
-                                    <i class="fa-regular fa-star"></i>
-                                    <p>No reviews yet. Be the first to review this product!</p>
-                                </div>
-                                @endif
 
                             </div>
                         </div>
@@ -684,6 +685,63 @@
 </div>
 @endif
 
+<!-- Review Edit Modal -->
+<div class="review-edit-overlay" id="reviewEditOverlay" style="display:none;">
+    <div class="review-edit-modal">
+        <div class="review-edit-header">
+            <h5><i class="fa-solid fa-pen-to-square"></i> Edit Your Review</h5>
+            <button id="closeReviewEdit" style="width: unset;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="editReviewForm">
+            @csrf
+            <input type="hidden" id="editReviewId">
+
+            <div class="star-rating-input mb-4">
+                <label class="form-label">Your Rating <span class="text-danger">*</span></label>
+                <div class="star-input-group" id="editStarInput">
+                    @for($i = 1; $i <= 5; $i++)
+                        <i class="fa-regular fa-star star-pick" data-value="{{ $i }}"></i>
+                    @endfor
+                </div>
+                <input type="hidden" id="editRatingValue" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Your Review</label>
+                <textarea id="editReviewBody" class="form-control" rows="5"
+                          placeholder="Share your experience..." maxlength="1000" style="font-size: 1.5rem;"></textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn-submit-review flex-grow-1" id="updateReviewBtn">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                </button>
+                <button type="button" class="btn-cancel-review" id="cancelReviewEdit">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Delete Review Modal -->
+<div class="delete-modal-overlay" id="deleteReviewOverlay" style="display:none;">
+    <div class="delete-modal">
+        <div class="delete-modal-icon">
+            <i class="fa-regular fa-trash-can"></i>
+        </div>
+        <h4 class="delete-modal-title">Delete Review?</h4>
+        <p class="delete-modal-desc">This action cannot be undone. Your review will be permanently removed.</p>
+        <div class="delete-modal-actions">
+            <button class="btn-delete-cancel" id="cancelDeleteModal">Keep Review</button>
+            <button class="btn-delete-confirm" id="confirmDeleteModal">
+                <i class="fa-regular fa-trash-can"></i> Yes, Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+
 <!-- Modern Share Modal -->
 <div class="share-modal-overlay" id="shareModalOverlay">
     <div class="share-modal">
@@ -842,10 +900,42 @@ $(document).ready(function() {
     // Cart & Wishlist
     $(document).on('click', '.add-to-cart-btn', function(e) {
         e.preventDefault();
-        const productId = $(this).data('product-id');
-        if (typeof window.Cart !== 'undefined') {
-            window.Cart.add(productId, 1);
-        }
+
+        const btn       = $(this);
+        const productId = btn.data('product-id');
+
+        if (btn.data('pending')) return;
+
+        btn.data('pending', true)
+        .prop('disabled', true)
+        .html(`<div class="btn-text">Adding...</div><div class="arrow-icon"><i class="fa-solid fa-spinner fa-spin"></i></div>`);
+
+        $.ajax({
+            url: '{{ route("cart.add") }}',
+            method: 'POST',
+            data: { _token: '{{ csrf_token() }}', product_id: productId, quantity: 1 },
+            success: function (res) {
+                if (res.success) {
+                    btn.html(`<div class="btn-text">Added!</div><div class="arrow-icon"><i class="fa-solid fa-circle-check"></i></div>`);
+                    $(document).trigger('cart:updated', [res.cart]);
+                    Toast.success(res.message);
+                    setTimeout(() => {
+                        btn.prop('disabled', false)
+                        .data('pending', false)
+                        .html(`<div class="btn-text">Add To Cart</div><div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>`);
+                    }, 1500);
+                } else {
+                    Toast.error(res.message);
+                    btn.prop('disabled', false).data('pending', false)
+                    .html(`<div class="btn-text">Add To Cart</div><div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>`);
+                }
+            },
+            error: function (xhr) {
+                Toast.error(xhr.responseJSON?.message || 'Failed to add to cart.');
+                btn.prop('disabled', false).data('pending', false)
+                .html(`<div class="btn-text">Add To Cart</div><div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>`);
+            }
+        });
     });
 
     if (typeof window.initializeWishlistStates === 'function') {
@@ -879,31 +969,30 @@ $(document).ready(function() {
         }
     });
 
-    // ── Star Rating Picker ──────────────────────────
-    $(document).on('mouseover', '.star-pick', function () {
+    // ── Star Rating Picker (Write form) ──────────────────
+    $(document).on('mouseover', '#starInput .star-pick', function () {
         const val = $(this).data('value');
-        $('.star-pick').each(function () {
-            $(this).toggleClass('hovered fa-solid', $(this).data('value') <= val)
+        $('#starInput .star-pick').each(function () {
+            $(this).toggleClass('fa-solid hovered', $(this).data('value') <= val)
                 .toggleClass('fa-regular', $(this).data('value') > val);
         });
     }).on('mouseleave', '#starInput', function () {
         const selected = parseInt($('#ratingValue').val()) || 0;
-        $('.star-pick').each(function () {
-            $(this).toggleClass('selected fa-solid', $(this).data('value') <= selected)
+        $('#starInput .star-pick').each(function () {
+            $(this).toggleClass('fa-solid selected', $(this).data('value') <= selected)
                 .toggleClass('fa-regular', $(this).data('value') > selected);
         });
-    }).on('click', '.star-pick', function () {
+    }).on('click', '#starInput .star-pick', function () {
         const val = $(this).data('value');
         $('#ratingValue').val(val);
-        $('.star-pick').each(function () {
-            $(this).addClass('selected')
-                .toggleClass('fa-solid', $(this).data('value') <= val)
+        $('#starInput .star-pick').each(function () {
+            $(this).toggleClass('fa-solid selected', $(this).data('value') <= val)
                 .toggleClass('fa-regular', $(this).data('value') > val);
         });
     });
 
-    // ── Submit Review ───────────────────────────────
-    $('#reviewForm').on('submit', function (e) {
+    // ── Submit Review ───────────────────────
+    $(document).on('submit', '#reviewForm', function (e) {
         e.preventDefault();
 
         if (!$('#ratingValue').val()) {
@@ -921,7 +1010,14 @@ $(document).ready(function() {
             success: function (res) {
                 if (res.success) {
                     Toast.success(res.message);
-                    $('#reviewForm').closest('.write-review-card').html(`
+
+                    // Build and prepend the new review card
+                    const newCard = buildReviewCard(res.review);
+                    $('#noReviewsState').remove();
+                    $('#reviewsList').prepend(newCard);
+
+                    // Hide the write form, show reviewed notice
+                    $('#writeReviewCard').html(`
                         <div class="review-notice reviewed">
                             <i class="fa-solid fa-circle-check"></i>
                             <div>
@@ -930,18 +1026,252 @@ $(document).ready(function() {
                             </div>
                         </div>
                     `);
-                    setTimeout(() => location.reload(), 2000);
                 } else {
                     Toast.error(res.message);
                     btn.prop('disabled', false).html('<i class="fa-solid fa-paper-plane"></i> Submit Review');
                 }
             },
             error: function (xhr) {
-                const msg = xhr.responseJSON?.message || 'Failed to submit review.';
-                Toast.error(msg);
+                Toast.error(xhr.responseJSON?.message || 'Failed to submit review.');
                 btn.prop('disabled', false).html('<i class="fa-solid fa-paper-plane"></i> Submit Review');
             }
         });
+    });
+
+    // Build a review card HTML from data
+    function buildReviewCard(review) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            stars += `<i class="fa-${i <= review.rating ? 'solid' : 'regular'} fa-star"></i>`;
+        }
+        return `
+            <div class="review-card" id="review-card-${review.id}">
+                <div class="review-card-header">
+                    <img src="${review.avatar}" alt="${review.name}" class="reviewer-avatar">
+                    <div class="reviewer-info">
+                        <span class="reviewer-name">${review.name}</span>
+                        <span class="review-date">${review.date}</span>
+                    </div>
+                    <div class="review-stars ms-auto">${stars}</div>
+                    <div class="review-actions ms-2 d-flex gap-2">
+                        <button class="btn-review-edit"
+                                data-review-id="${review.id}"
+                                data-rating="${review.rating}"
+                                data-body="${review.body || ''}"
+                                title="Edit">
+                            <i class="fa-regular fa-pen"></i>
+                        </button>
+                        <button class="btn-review-delete"
+                                data-review-id="${review.id}"
+                                title="Delete">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="review-body-content">
+                    ${review.body ? `<p class="review-body">${review.body}</p>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    // ── Edit Review ─────────────────────────────────────
+    $(document).on('click', '.btn-review-edit', function () {
+        const id     = $(this).data('review-id');
+        const rating = $(this).data('rating');
+        const body   = $(this).data('body') || '';
+
+        $('#editReviewId').val(id);
+        $('#editReviewBody').val(body);
+        $('#editRatingValue').val(rating);
+
+        $('#editStarInput .star-pick').each(function () {
+            const v = parseInt($(this).data('value'));
+            $(this).toggleClass('fa-solid selected', v <= rating)
+                .toggleClass('fa-regular', v > rating);
+        });
+
+        $('#reviewEditOverlay').fadeIn(200);
+        $('body').css('overflow', 'hidden');
+    });
+
+    $('#closeReviewEdit, #cancelReviewEdit').on('click', function () {
+        $('#reviewEditOverlay').fadeOut(200);
+        $('body').css('overflow', 'auto');
+    });
+
+    $('#reviewEditOverlay').on('click', function (e) {
+        if ($(e.target).is('#reviewEditOverlay')) {
+            $(this).fadeOut(200);
+            $('body').css('overflow', 'auto');
+        }
+    });
+
+    // Edit modal stars
+    $(document).on('mouseover', '#editStarInput .star-pick', function () {
+        const val = $(this).data('value');
+        $('#editStarInput .star-pick').each(function () {
+            $(this).toggleClass('fa-solid hovered', $(this).data('value') <= val)
+                .toggleClass('fa-regular', $(this).data('value') > val);
+        });
+    }).on('mouseleave', '#editStarInput', function () {
+        const selected = parseInt($('#editRatingValue').val()) || 0;
+        $('#editStarInput .star-pick').each(function () {
+            $(this).toggleClass('fa-solid selected', $(this).data('value') <= selected)
+                .toggleClass('fa-regular', $(this).data('value') > selected);
+        });
+    }).on('click', '#editStarInput .star-pick', function () {
+        const val = $(this).data('value');
+        $('#editRatingValue').val(val);
+        $('#editStarInput .star-pick').each(function () {
+            $(this).toggleClass('fa-solid selected', $(this).data('value') <= val)
+                .toggleClass('fa-regular', $(this).data('value') > val);
+        });
+    });
+
+    // Submit edit
+    $('#editReviewForm').on('submit', function (e) {
+        e.preventDefault();
+        const id  = $('#editReviewId').val();
+        const btn = $('#updateReviewBtn');
+
+        if (!$('#editRatingValue').val()) {
+            Toast.warning('Please select a rating.');
+            return;
+        }
+
+        btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Saving...');
+
+        $.ajax({
+            url: `/reviews/${id}`,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                _method: 'PUT',
+                rating: $('#editRatingValue').val(),
+                body:   $('#editReviewBody').val(),
+            },
+            success: function (res) {
+                if (res.success) {
+                    const card = $(`#review-card-${id}`);
+                    let stars = '';
+                    for (let i = 1; i <= 5; i++) {
+                        stars += `<i class="fa-${i <= res.review.rating ? 'solid' : 'regular'} fa-star"></i>`;
+                    }
+                    card.find('.review-stars').html(stars);
+                    card.find('.review-body').text(res.review.body || '').toggle(!!res.review.body);
+                    card.find('.btn-review-edit')
+                        .data('rating', res.review.rating)
+                        .data('body', res.review.body);
+
+                    $('#reviewEditOverlay').fadeOut(200);
+                    $('body').css('overflow', 'auto');
+                    Toast.success(res.message);
+                } else {
+                    Toast.error(res.message);
+                }
+                btn.prop('disabled', false).html('<i class="fa-solid fa-floppy-disk"></i> Save Changes');
+            },
+            error: function (xhr) {
+                Toast.error(xhr.responseJSON?.message || 'Failed to update review.');
+                btn.prop('disabled', false).html('<i class="fa-solid fa-floppy-disk"></i> Save Changes');
+            }
+        });
+    });
+
+    // ── Delete Review ─────────────────────────────────
+    let pendingDeleteId = null;
+
+    $(document).on('click', '.btn-review-delete', function () {
+        pendingDeleteId = $(this).data('review-id');
+        $('#deleteReviewOverlay').fadeIn(200);
+        $('body').css('overflow', 'hidden');
+    });
+
+    $('#cancelDeleteModal').on('click', function () {
+        $('#deleteReviewOverlay').fadeOut(200);
+        $('body').css('overflow', 'auto');
+        pendingDeleteId = null;
+    });
+
+    $('#deleteReviewOverlay').on('click', function (e) {
+        if ($(e.target).is('#deleteReviewOverlay')) {
+            $(this).fadeOut(200);
+            $('body').css('overflow', 'auto');
+            pendingDeleteId = null;
+        }
+    });
+
+    $('#confirmDeleteModal').on('click', function () {
+        if (!pendingDeleteId) return;
+
+        const id   = pendingDeleteId;
+        const card = $(`#review-card-${id}`);
+        const btn  = $(this);
+
+        btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Deleting...');
+
+        $.ajax({
+            url: `/reviews/${id}`,
+            type: 'POST',
+            data: { _token: '{{ csrf_token() }}', _method: 'DELETE' },
+            success: function (res) {
+                if (res.success) {
+                    $('#deleteReviewOverlay').fadeOut(200);
+                    $('body').css('overflow', 'auto');
+
+                    card.slideUp(300, function () { $(this).remove(); });
+
+                    // ✅ Replace "already reviewed" notice with write form
+                    $('#reviewFormArea').html(`
+                        <div class="write-review-card" id="writeReviewCard">
+                            <h5 class="review-form-title">
+                                <i class="fa-solid fa-pen-to-square"></i> Write a Review
+                            </h5>
+                            <form id="reviewForm">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <div class="star-rating-input mb-3">
+                                    <label class="form-label">Your Rating <span class="text-danger">*</span></label>
+                                    <div class="star-input-group" id="starInput">
+                                        <i class="fa-regular fa-star star-pick" data-value="1"></i>
+                                        <i class="fa-regular fa-star star-pick" data-value="2"></i>
+                                        <i class="fa-regular fa-star star-pick" data-value="3"></i>
+                                        <i class="fa-regular fa-star star-pick" data-value="4"></i>
+                                        <i class="fa-regular fa-star star-pick" data-value="5"></i>
+                                    </div>
+                                    <input type="hidden" name="rating" id="ratingValue" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Your Review</label>
+                                    <textarea name="body" class="form-control" rows="4"
+                                            placeholder="Share your honest experience with this product..."
+                                            maxlength="1000"></textarea>
+                                </div>
+                                <button type="submit" class="btn-submit-review" id="submitReviewBtn" style="width:unset;">
+                                    <i class="fa-solid fa-paper-plane"></i> Submit Review
+                                </button>
+                            </form>
+                        </div>
+                    `);
+
+                    Toast.success(res.message);
+                    pendingDeleteId = null;
+                } else {
+                    Toast.error(res.message);
+                }
+                btn.prop('disabled', false).html('<i class="fa-regular fa-trash-can"></i> Yes, Delete');
+            },
+            error: function () {
+                Toast.error('Failed to delete review.');
+                btn.prop('disabled', false).html('<i class="fa-regular fa-trash-can"></i> Yes, Delete');
+            }
+        });
+    });
+
+    // ── Listen for cart:updated from product detail page ──
+    $(document).on('cart:updated', function (e, cart) {
+        Cart.updateUI(cart);
     });
 
 });
@@ -1017,18 +1347,78 @@ $(document).ready(function() {
         updateUI(w);
     });
 
+    let weightCartPending = false;
+
     $addToCartBtn.on('click', function () {
-        const w = getCurrentWeight();
+        if (weightCartPending) return;
+
+        const btn = $(this);
+        const w   = getCurrentWeight();
 
         if (w < minWeight) {
             Toast.warning(`Minimum order is ${minWeight}kg.`);
             return;
         }
 
-        if (typeof window.Cart !== 'undefined') {
-            window.Cart.add('{{ $product->id }}', 1, w);
-        }
+        weightCartPending = true;
+        btn.prop('disabled', true).html(`
+            <div class="btn-text">Adding...</div>
+            <div class="arrow-icon"><i class="fa-solid fa-spinner fa-spin"></i></div>
+        `);
+
+        $.ajax({
+            url: '{{ route("cart.add") }}',
+            method: 'POST',
+            data: {
+                _token:     '{{ csrf_token() }}',
+                product_id: '{{ $product->id }}',
+                quantity:   1,
+                weight:     w,
+            },
+            success: function (res) {
+                if (res.success) {
+                    btn.html(`
+                        <div class="btn-text">Added!</div>
+                        <div class="arrow-icon"><i class="fa-solid fa-circle-check"></i></div>
+                    `);
+
+                    // Update cart count/UI if your cart-wishlist.js exposes this
+                    if (typeof window.Cart !== 'undefined' && window.Cart.updateUI) {
+                        window.Cart.updateUI(res.cart);
+                    }
+
+                    // Also trigger the global cart count update
+                    $(document).trigger('cart:updated', [res.cart]);
+
+                    Toast.success(res.message);
+
+                    setTimeout(() => {
+                        btn.prop('disabled', false).html(`
+                            <div class="btn-text">Add To Cart</div>
+                            <div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>
+                        `);
+                        weightCartPending = false;
+                    }, 1500);
+                } else {
+                    Toast.error(res.message);
+                    btn.prop('disabled', false).html(`
+                        <div class="btn-text">Add To Cart</div>
+                        <div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>
+                    `);
+                    weightCartPending = false;
+                }
+            },
+            error: function (xhr) {
+                Toast.error(xhr.responseJSON?.message || 'Failed to add to cart.');
+                btn.prop('disabled', false).html(`
+                    <div class="btn-text">Add To Cart</div>
+                    <div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>
+                `);
+                weightCartPending = false;
+            }
+        });
     });
+
 })();
 @endif
 

@@ -510,101 +510,276 @@ textarea.unique-form-control {
     background: #0f508d !important;
 }
 
-/* ===== MOBILE RESPONSIVE ===== */
+/* ===== CHECKOUT MOBILE RESPONSIVE ===== */
 @media (max-width: 992px) {
     .unique-checkout-container {
         grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        padding: 0 16px !important;
     }
 
+    /* REMOVE order: -1 — let summary stay below the form */
     .unique-order-summary {
         position: static !important;
-        order: -1 !important;
+        order: unset !important;  /* ← was -1, now flows naturally after form */
+        padding: 24px !important;
     }
 
     .unique-checkout-form-section {
-        padding: 25px !important;
+        padding: 24px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .unique-checkout-form-section:hover {
+        transform: none !important;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
+
     .unique-checkout-wrapper {
-        padding: 50px 0 !important;
-    }
-
-    .unique-form-row {
-        grid-template-columns: 1fr !important;
-        gap: 0 !important;
-    }
-
-    .unique-checkout-form-section {
-        padding: 22px 18px !important;
-        margin-bottom: 18px !important;
-    }
-
-    .unique-checkout-form-section h3 {
-        font-size: 19px !important;
-    }
-
-    .unique-payment-methods {
-        grid-template-columns: 1fr !important;
-    }
-
-    .unique-order-summary {
-        padding: 25px !important;
-    }
-
-    .unique-order-item {
-        gap: 12px !important;
-    }
-
-    .unique-order-item-image {
-        width: 60px !important;
-        height: 60px !important;
-    }
-
-    .swal2-popup {
-        padding: 30px 20px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .unique-checkout-wrapper {
-        padding: 40px 0 !important;
+        padding: 20px 0 calc(80px + env(safe-area-inset-bottom, 0px)) 0 !important;
     }
 
     .unique-checkout-container {
         padding: 0 12px !important;
+        gap: 14px !important;
+    }
+
+    /* ── Form sections ── */
+    .unique-checkout-form-section {
+        padding: 16px !important;
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .unique-checkout-form-section h3 {
+        font-size: 15px !important;
+        margin-bottom: 16px !important;
+        padding-bottom: 12px !important;
+        gap: 8px !important;
+    }
+
+    .unique-checkout-form-section h3 i {
+        font-size: 16px !important;
+        padding: 8px !important;
+        border-radius: 8px !important;
+    }
+
+    /* ── Form inputs ── */
+    .unique-form-group {
+        margin-bottom: 14px !important;
+    }
+
+    .unique-form-group label {
+        font-size: 13px !important;
+        margin-bottom: 7px !important;
     }
 
     .unique-form-control {
         padding: 12px 14px !important;
         font-size: 14px !important;
+        border-radius: 10px !important;
     }
 
-    .unique-btn-place-order {
+    /* Two fields side by side → stack */
+    .unique-form-row {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+    }
+
+    /* ── Payment methods ── */
+    .unique-payment-methods {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-top: 12px !important;
+    }
+
+    .unique-payment-method-card {
+        padding: 16px 12px !important;
+        border-radius: 10px !important;
+    }
+
+    .unique-payment-method-card:hover:not(.disabled) {
+        transform: none !important;
+    }
+
+    .unique-payment-method-card i {
+        font-size: 28px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .unique-payment-method-card span {
+        font-size: 12px !important;
+    }
+
+    .unique-coming-soon-badge {
+        top: 7px !important;
+        right: 7px !important;
+        padding: 3px 7px !important;
+        font-size: 9px !important;
+    }
+
+    /* ── COD info box ── */
+    .unique-cod-info {
+        padding: 12px 14px !important;
+        gap: 10px !important;
+        margin-top: 14px !important;
+        border-radius: 10px !important;
+    }
+
+    .unique-cod-info i {
+        font-size: 18px !important;
+    }
+
+    .unique-cod-info-text strong {
+        font-size: 13px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .unique-cod-info-text p {
+        font-size: 12px !important;
+    }
+
+    /* ── Order summary card ── */
+    .unique-order-summary {
         padding: 16px !important;
-        font-size: 15px !important;
-        min-height: 54px !important;
+        border-radius: 12px !important;
+    }
+
+    .unique-order-summary h3 {
+        font-size: 16px !important;
+        margin-bottom: 14px !important;
+        padding-bottom: 12px !important;
+    }
+
+    /* Scrollable items list */
+    .unique-order-items {
+        max-height: 260px !important;
+        padding-right: 4px !important;
+        margin-bottom: 16px !important;
+    }
+
+    /* Each item row */
+    .unique-order-item {
+        gap: 10px !important;
+        padding: 12px 0 !important;
+    }
+
+    .unique-order-item:hover {
+        margin: 0 !important;
+        padding: 12px 0 !important;
+        background: none !important;
+    }
+
+    .unique-order-item-image {
+        width: 52px !important;
+        height: 52px !important;
+        border-radius: 8px !important;
+    }
+
+    .unique-order-item-name {
+        font-size: 12px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .unique-order-item-qty {
+        font-size: 11px !important;
+        padding: 3px 8px !important;
+    }
+
+    .unique-order-item-price {
+        font-size: 14px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Totals block */
+    .unique-order-totals {
+        padding: 14px !important;
+        border-radius: 10px !important;
+        margin-top: 14px !important;
+    }
+
+    .unique-order-total-row {
+        font-size: 13px !important;
+        padding: 7px 0 !important;
+    }
+
+    .unique-order-total-row.final {
+        font-size: 17px !important;
+        padding: 14px !important;
+        margin: 10px -14px -14px -14px !important;
+        border-radius: 0 0 10px 10px !important;
+    }
+
+    .unique-free-shipping-badge {
+        font-size: 12px !important;
+        padding: 7px 12px !important;
+        margin-top: 8px !important;
+    }
+
+    /* Place order button */
+    .unique-btn-place-order {
+        padding: 14px !important;
+        font-size: 14px !important;
+        min-height: 50px !important;
+        border-radius: 10px !important;
+        margin-top: 16px !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    .unique-secure-badge {
+        font-size: 12px !important;
+        margin-top: 12px !important;
+    }
+
+    /* SweetAlert */
+    .swal2-popup {
+        width: calc(100vw - 32px) !important;
+        padding: 24px 16px !important;
+        border-radius: 14px !important;
+    }
+
+    .swal2-title {
+        font-size: 18px !important;
+    }
+
+    .swal2-html-container {
+        font-size: 14px !important;
+    }
+
+    .swal2-confirm {
+        padding: 10px 24px !important;
+        font-size: 14px !important;
     }
 }
 
-/* .unique-order-items::-webkit-scrollbar {
-    width: 8px !important;
-}
+@media (max-width: 400px) {
 
-.unique-order-items::-webkit-scrollbar-track {
-    background: #f1f5f9 !important;
-    border-radius: 10px !important;
-}
+    /* Stack payment options vertically on very small phones */
+    .unique-payment-methods {
+        grid-template-columns: 1fr !important;
+    }
 
-.unique-order-items::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #0f508d 0%, #08437b 100%) !important;
-    border-radius: 10px !important;
-}
+    .unique-payment-method-card {
+        display: flex !important;
+        align-items: center !important;
+        flex-direction: row !important;
+        gap: 12px !important;
+        padding: 14px !important;
+        text-align: left !important;
+    }
 
-.unique-order-items::-webkit-scrollbar-thumb:hover {
-    background: #08437b !important;
-} */
+    .unique-payment-method-card i {
+        font-size: 24px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .unique-order-item-image {
+        width: 44px !important;
+        height: 44px !important;
+    }
+}
 
 @keyframes pulse {
     0%, 100% { opacity: 1; }

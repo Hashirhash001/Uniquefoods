@@ -2278,3 +2278,342 @@
     background: #ef4444;
     color: #ffffff;
 }
+
+/* Review action buttons */
+.btn-review-edit,
+.btn-review-delete {
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+    color: #64748b;
+}
+
+.btn-review-edit:hover  { background: #f0f9ff; color: #08437b; border-color: #08437b; }
+.btn-review-delete:hover { background: #fff5f5; color: #ef4444; border-color: #ef4444; }
+
+/* Edit modal overlay */
+.review-edit-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-edit-modal {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    width: 100%;
+    max-width: 500px;
+    margin: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.review-edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.review-edit-header h5 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#closeReviewEdit {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+#closeReviewEdit:hover { color: #ef4444; }
+/* ===== WRITE A REVIEW CARD ===== */
+.write-review-card {
+    background: #fff;
+    border: 1px solid #e8edf3;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.review-form-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.review-form-title i {
+    color: #08437b;
+    font-size: 16px;
+}
+
+/* Stars */
+.star-input-group {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.star-input-group .star-pick {
+    font-size: 28px;
+    color: #f59e0b;
+    cursor: pointer;
+    transition: transform 0.15s ease, color 0.15s;
+}
+
+.star-input-group .star-pick:hover,
+.star-input-group .star-pick.hovered,
+.star-input-group .star-pick.selected {
+    transform: scale(1.15);
+    color: #f59e0b;
+}
+
+.star-input-group .star-pick.fa-regular {
+    color: #d1d5db;
+}
+
+/* Inputs */
+.write-review-card .form-control {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: #334155;
+    background: #f8fafc;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.write-review-card .form-control:focus {
+    border-color: #08437b;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(8, 67, 123, 0.08);
+    outline: none;
+}
+
+.write-review-card .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+/* Submit button */
+.btn-submit-review {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(8, 67, 123, 0.2);
+}
+
+.btn-submit-review:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(8, 67, 123, 0.3);
+}
+
+.btn-submit-review:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Review notices (login/already reviewed/not purchased) */
+.review-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-top: 16px;
+}
+
+.review-notice i {
+    font-size: 22px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.review-notice.reviewed {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #065f46;
+}
+
+.review-notice.reviewed i { color: #10b981; }
+
+.review-notice.not-purchased {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: #78350f;
+}
+
+.review-notice.not-purchased i { color: #f59e0b; }
+
+.review-notice.login-required {
+    background: rgba(8, 67, 123, 0.06);
+    border: 1px solid rgba(8, 67, 123, 0.15);
+    color: #1e3a5f;
+}
+
+.review-notice.login-required i { color: #08437b; }
+
+.review-notice a {
+    color: #08437b;
+    font-weight: 600;
+    text-decoration: underline;
+}
+.btn-cancel-review {
+    padding: 12px 20px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-cancel-review:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+/* ===== CUSTOM DELETE MODAL ===== */
+.delete-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.delete-modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
+    animation: deleteModalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes deleteModalIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.delete-modal-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(239, 68, 68, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.delete-modal-icon i {
+    font-size: 28px;
+    color: #ef4444;
+}
+
+.delete-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.delete-modal-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-delete-cancel {
+    flex: 1;
+    padding: 12px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-delete-cancel:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.btn-delete-confirm {
+    flex: 1;
+    padding: 12px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-delete-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+
+.btn-delete-confirm:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
