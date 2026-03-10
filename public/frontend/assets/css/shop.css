@@ -41,7 +41,7 @@
 /* Product Image */
 .product-image-wrapper {
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; */
     background: var(--shop-bg-alt);
     aspect-ratio: 1;
 }
@@ -276,7 +276,7 @@
     justify-content: center;
     gap: 8px;
     cursor: pointer;
-    margin-top: auto;
+    /* margin-top: auto; */
     transition: all 0.3s ease;
 }
 
@@ -1158,6 +1158,35 @@ input[type=checkbox]~label, input[type=radio]~label{
 
 @media (max-width: 991px) {
     .shop-mobile-sort-sheet { display: block; }
+
+    .product-category {
+        display: none;
+    }
+
+    .meta-separator {
+        display: none;
+    }
+
+    .product-brand {
+        display: none;
+    }
+
+    .product-info {
+        padding: 6px;
+        gap: 2px;
+        justify-content: space-around;
+        gap: 2px
+    }
+
+    .btn-select-weight {
+        padding: 9px 6px;
+    }
+
+    .product-add-to-cart {
+        height: unset;
+        padding: 9px 6px;
+        margin-top: 10px;
+    }
 }
 
 .shop-sort-sheet-handle {

@@ -12,14 +12,13 @@
                                  alt="Unique Foods" class="logo" style="max-width: 150px;">
                         </a>
                         <p class="disc">
-                            Fresh groceries delivered to your doorstep. Subscribe for exclusive deals and offers.
+                            Fresh groceries delivered to your doorstep.
                         </p>
                         <div class="social-style-dash">
                             <ul>
-                                <li><a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a></li>
+                                <li><a href="https://wa.me/+447939699530?text=Hello" target="_blank" aria-label="YouTube"><i class="fa-brands fa-whatsapp"></i></a></li>
                                 <li><a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
-                                <li><a href="#" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a></li>
-                                <li><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a></li>
+                                <li><a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a></li>
                             </ul>
                         </div>
                     </div>
@@ -123,7 +122,7 @@
 </div>
 
 {{-- Copyright --}}
-<div class="rts-copyright-area-two">
+{{-- <div class="rts-copyright-area-two">
     <div class="container-2">
         <div class="row">
             <div class="col-lg-12">
@@ -136,7 +135,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 {{-- Search popup --}}
 <div class="search-input-area">
@@ -303,7 +302,7 @@
 
     /* Add bottom padding so content clears the mobile bottom nav */
     .rts-footer-area-two {
-        padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
+        padding: 0;
     }
 }
 </style>

@@ -765,6 +765,11 @@ $(document).ready(function() {
                 }
                 starsHtml = '<div class="product-rating"><div class="stars">' + starsHtml + '</div>' +
                             '<span class="rating-count">(' + parseFloat(product.average_rating||0).toFixed(1) + ')</span></div>';
+            } else {
+                starsHtml = '<div class="product-rating"><div class="stars"><i class="fa-regular fa-star"></i>' +
+                            '<i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>' +
+                            '<i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div>' +
+                            '<span class="rating-count">(0.0)</span></div>';
             }
 
             var actionBtn = '';

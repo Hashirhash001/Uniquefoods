@@ -44,7 +44,7 @@
             <h4 class="product-name">{{ $product->name }}</h4>
         </a>
 
-        {{-- ✅ Real rating --}}
+        {{-- Real rating --}}
         @if($reviewsCnt > 0)
             <div class="product-rating">
                 <div class="stars">
@@ -53,6 +53,17 @@
                     @endfor
                 </div>
                 <span class="rating-count">({{ number_format($avgRating, 1) }})</span>
+            </div>
+        @else
+            <div class="product-rating">
+                <div class="stars">
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                </div>
+                <span class="rating-count">(0.0)</span>
             </div>
         @endif
 
