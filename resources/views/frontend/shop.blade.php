@@ -366,6 +366,8 @@ $(document).ready(function() {
         img.src = '/frontend/assets/images/grocery/01.jpg';
     }
 
+    window.handleImgError = handleImgError;
+
     // Mobile sort option click
     $(document).on('click', '.shop-sort-option', function() {
         var value = $(this).data('value');
@@ -839,6 +841,8 @@ $(document).ready(function() {
     function clearAllShopFilters() {
         document.getElementById('shopClearAllFilters').click();
     }
+
+    window.clearAllShopFilters = clearAllShopFilters;
 
     function updateProductCount(total, from, to) {
         $('#shopResultCount').text('Showing ' + from + '-' + to + ' of ' + total + ' products');

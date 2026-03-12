@@ -14,10 +14,11 @@ class Order extends Model
     protected $fillable = [
         'order_number', 'user_id', 'customer_name', 'customer_email', 'customer_phone',
         'shipping_address', 'shipping_city', 'shipping_postcode', 'shipping_country',
+        'restaurant_store',
         'billing_address', 'billing_city', 'billing_postcode', 'billing_country',
         'subtotal', 'shipping_cost', 'tax', 'discount', 'total',
         'payment_method', 'payment_status', 'stripe_payment_intent_id', 'paid_at',
-        'status', 'customer_notes', 'admin_notes'
+        'status', 'customer_notes', 'admin_notes',
     ];
 
     protected $casts = [
