@@ -1,6 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Home')
+@section('title', 'Unique Foods')
+@section('meta_description', 'Order fresh groceries and unique foods online. Fast delivery to your door.')
+@section('og_type',          'website')
+@section('og_url',           route('home'))
 
 @section('content')
 

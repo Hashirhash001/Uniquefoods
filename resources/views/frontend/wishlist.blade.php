@@ -17,30 +17,25 @@
 @endpush
 
 @section('content')
-<!-- Breadcrumb -->
-<div class="rts-navigation-area-breadcrumb">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="navigator-breadcrumb-wrapper">
-                    <a href="{{ route('home') }}">Home</a>
-                    <i class="fa-regular fa-chevron-right"></i>
-                    <a class="current" href="{{ route('wishlist.index') }}">Wishlist</a>
+<!-- Wishlist Section -->
+<div class="modern-wishlist-section rts-section-gap">
+    <!-- Breadcrumb -->
+    <div class="rts-navigation-area-breadcrumb">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="navigator-breadcrumb-wrapper">
+                        <a href="{{ route('home') }}">Home</a>
+                        <i class="fa-regular fa-chevron-right"></i>
+                        <a class="current" href="{{ route('wishlist.index') }}">Wishlist</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<div class="section-seperator">
-    <div class="container"><hr class="section-seperator"></div>
-</div>
-
-<!-- Wishlist Section -->
-<div class="modern-wishlist-section rts-section-gap">
     <div class="container">
         <!-- Header -->
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-lg-12">
                 <div class="modern-wishlist-header">
                     <div class="header-left d-flex align-items-center gap-3">
@@ -63,7 +58,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Empty Wishlist State -->
         <div class="row" id="emptyWishlistState" style="display: none;">
@@ -122,7 +117,9 @@ $(document).ready(function() {
             const card = `
                 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div class="modern-wishlist-card">
-                        <button class="wishlist-heart active wishlist-toggle-btn" data-product-id="${product.id}" title="Remove from wishlist">
+                        <button class="wishlist-heart active wishlist-toggle-btn wishlist-page-btn"
+                                data-product-id="${product.id}"
+                                title="Remove from wishlist">
                             <i class="fa-solid fa-heart"></i>
                         </button>
 
@@ -195,18 +192,19 @@ $(document).ready(function() {
     }
 
     // Remove from wishlist
-    $(document).on('click', '.wishlist-heart.wishlist-toggle-btn', function(e) {
+    $(document).on('click', '.wishlist-heart.wishlist-page-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation(); // belt-and-suspenders guard
 
-        const button = $(this);
+        const button  = $(this);
         const productId = button.data('product-id');
-        const card = button.closest('[class*="col-"]');
+        const card    = button.closest('[class*="col-"]');
 
         card.css('opacity', '0.5');
 
         $.ajax({
-            url: '{{ route("wishlist.toggle") }}',
+            url: '{{ route("wishlist.remove") }}',  // hard remove, not toggle
             type: 'POST',
             data: { _token: '{{ csrf_token() }}', product_id: productId },
             success: function(response) {
@@ -219,7 +217,7 @@ $(document).ready(function() {
                         const remaining = $('#wishlistItemsGrid > [class*="col-"]').length;
                         remaining === 0 ? showEmptyState() : $('#wishlistItemCount').text(remaining);
                     });
-                    if (typeof toastr !== 'undefined') toastr.success(response.message);
+                    if (typeof toastr !== 'undefined') toastr.success('Removed from wishlist');
                 } else {
                     card.css('opacity', '1');
                     if (typeof toastr !== 'undefined') toastr.error(response.message);
@@ -231,6 +229,7 @@ $(document).ready(function() {
             }
         });
     });
+
 });
 </script>
 @endpush

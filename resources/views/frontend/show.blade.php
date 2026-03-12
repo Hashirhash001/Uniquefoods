@@ -1,6 +1,20 @@
 @extends('frontend.layouts.app')
 
-@section('title', $product->name)
+@section('title', $product->name . ' - Unique Foods')
+
+@section('meta_description', Str::limit(strip_tags($product->description ?? $product->short_description), 155))
+@section('meta_keywords',    $product->category?->name . ', ' . $product->name . ', buy online')
+@section('meta_canonical',   route('product.show', $product->slug))
+
+@section('og_type',          'product')
+@section('og_title',         $product->name)
+@section('og_description',   Str::limit(strip_tags($product->description ?? ''), 155))
+@section('og_url',           route('product.show', $product->slug))
+@section('og_image',         $product->image_url)
+
+@section('twitter_title',       $product->name)
+@section('twitter_description', Str::limit(strip_tags($product->description ?? ''), 155))
+@section('twitter_image',       $product->image_url)
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/product-details.css') }}">

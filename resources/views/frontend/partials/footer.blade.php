@@ -27,7 +27,7 @@
                     <div class="single-footer-wized mid footer-accordion-section">
                         <h3 class="footer-title footer-accordion-toggle">
                             Quick Links
-                            <i class="fa-solid fa-chevron-down footer-accordion-icon ms-3"></i>
+                            <i class="fa-solid fa-chevron-down footer-accordion-icon"></i>
                         </h3>
                         <div class="footer-nav footer-accordion-body">
                             <ul>
@@ -35,11 +35,11 @@
                                 <li><a href="{{ route('shop') }}">Shop</a></li>
                                 <li><a href="{{ route('cart.index') }}">Cart</a></li>
                                 <li><a href="{{ route('wishlist.index') }}">Wishlist</a></li>
-                                @auth
+                                {{-- @auth
                                     <li><a href="#">My Account</a></li>
                                 @else
                                     <li><a href="{{ route('login') }}">Login</a></li>
-                                @endauth
+                                @endauth --}}
                             </ul>
                         </div>
                     </div>
@@ -52,11 +52,11 @@
                         </h3>
                         <div class="footer-nav footer-accordion-body">
                             <ul>
-                                <li><a href="#">About Us</a></li>
+                                {{-- <li><a href="#">About Us</a></li> --}}
                                 <li><a href="#">Delivery Information</a></li>
                                 <li><a href="#">Privacy Policy</a></li>
                                 <li><a href="#">Terms &amp; Conditions</a></li>
-                                <li><a href="#">Contact Us</a></li>
+                                {{-- <li><a href="#">Contact Us</a></li> --}}
                             </ul>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
     display: none;
     font-size: 13px;
     transition: transform 0.3s ease;
-    margin-left: auto;
+    /* margin-left: auto; */
 }
 
 @media (max-width: 991px) {
@@ -198,7 +198,7 @@
 
     /* Accordion sections */
     .footer-accordion-section {
-        border-top: 1px solid rgba(255,255,255,0.1) !important;
+        /* border-top: 1px solid rgba(255,255,255,0.1) !important; */
         padding: 0 !important;
     }
 
@@ -206,8 +206,9 @@
     .footer-accordion-toggle {
         display: flex !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: flex-start !important;
         padding: 16px 20px !important;
+        gap: 12px !important;
         margin: 0 !important;
         cursor: pointer !important;
         user-select: none !important;

@@ -1,137 +1,136 @@
-/**
- * ================================================
- * AUTO-HIDE HEADER - FINAL FIX (No Bounce Issues)
- * ================================================
- */
-
-(function() {
+(function () {
     'use strict';
 
     const AutoHideHeader = {
         lastScrollTop: 0,
-        scrollThreshold: 100,
-        delta: 10, // ✅ Increased from 5 to reduce sensitivity
-        header: null,
-        headerHeight: 0,
-        isScrolling: false,
+        scrollThreshold: 80,
+        delta: 8,
+        desktopHeader: null,
+        mobileHeader: null,
+        bottomNav: null,
         scrollTimeout: null,
-        lastDirection: null, // ✅ Track last direction to prevent flickering
+        ticking: false,
 
         init() {
-            this.header = document.querySelector('.unique-modern-header') ||
-                         document.querySelector('.unique-mobile-header');
+            this.desktopHeader = document.querySelector('.unique-modern-header');
+            this.mobileHeader  = document.querySelector('.unique-mobile-header');
+            this.bottomNav     = document.querySelector('.unique-mobile-bottom-nav');
 
-            if (!this.header) return;
+            if (!this.desktopHeader && !this.mobileHeader) return;
 
-            this.calculateHeaderHeight();
-            this.bindEvents();
+            // Start everything visible
+            this._show(this.desktopHeader);
+            this._show(this.mobileHeader);
+            this._showNav();
 
-            window.addEventListener('resize', () => {
-                this.calculateHeaderHeight();
-            });
-        },
+            this.lastScrollTop = Math.max(0, window.pageYOffset || 0);
 
-        calculateHeaderHeight() {
-            this.headerHeight = this.header.offsetHeight;
-        },
-
-        bindEvents() {
             window.addEventListener('scroll', () => {
-                if (this.isScrolling) return;
+                if (this.ticking) return;
+                this.ticking = true;
 
                 clearTimeout(this.scrollTimeout);
-
                 this.scrollTimeout = setTimeout(() => {
-                    this.handleScroll();
-                }, 50); // ✅ Increased debounce from 10ms to 50ms
-
+                    this._handleScroll();
+                    this.ticking = false;
+                }, 16);
             }, { passive: true });
         },
 
-        handleScroll() {
-            const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        _handleScroll() {
+            const st = Math.max(0, window.pageYOffset || document.documentElement.scrollTop);
 
-            // ✅ Prevent negative scroll (mobile bounce)
-            if (currentScrollTop < 0) {
+            // ── Close sort sheet on any scroll so it never gets caught mid-transition ──
+            const sortSheet   = document.querySelector('.shop-mobile-sort-sheet');
+            const sortOverlay = document.querySelector('.shop-sort-overlay');
+            if (sortSheet?.classList.contains('open')) {
+                sortSheet.classList.remove('open');
+                sortOverlay?.classList.remove('show');
+                document.querySelector('.shop-mobile-sort-trigger')?.classList.remove('active');
+            }
+
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+            // Near page bottom — show everything
+            if (st >= maxScroll - 60) {
+                this._showAll();
+                this.lastScrollTop = st;
                 return;
             }
 
-            // ✅ Calculate max scroll to prevent bottom bounce issues
-            const maxScroll = Math.max(
-                document.body.scrollHeight,
-                document.body.offsetHeight,
-                document.documentElement.clientHeight,
-                document.documentElement.scrollHeight,
-                document.documentElement.offsetHeight
-            ) - window.innerHeight;
-
-            // ✅ Near bottom of page - show header (prevents flickering)
-            if (currentScrollTop >= maxScroll - 50) {
-                this.showHeader();
-                document.body.classList.remove('header-is-hidden');
-                this.lastScrollTop = currentScrollTop;
+            // At very top — show everything, remove compact
+            if (st <= 10) {
+                this._showAll();
+                this._removeCompact();
+                document.body.classList.remove('header-is-hidden', 'bottom-nav-hidden');
+                this.lastScrollTop = st;
                 return;
             }
 
-            // Check if scroll is significant enough
-            if (Math.abs(this.lastScrollTop - currentScrollTop) <= this.delta) {
-                return;
+            const diff = st - this.lastScrollTop;
+
+            // Ignore tiny jitter
+            if (Math.abs(diff) <= this.delta) return;
+
+            const scrollingDown = diff > 0;
+
+            if (scrollingDown && st > this.scrollThreshold) {
+                // ── Scrolling DOWN: hide header & bottom nav ──
+                this._hide(this.desktopHeader);
+                this._hide(this.mobileHeader);
+                this._hideNav();
+                document.body.classList.add('header-is-hidden', 'bottom-nav-hidden');
+            } else if (!scrollingDown) {
+                // ── Scrolling UP: show header & bottom nav ──
+                this._showAll();
+                document.body.classList.remove('header-is-hidden', 'bottom-nav-hidden');
             }
 
-            // At top - show header
-            if (currentScrollTop <= 0) {
-                this.showHeader();
-                this.header.classList.remove('header-compact');
-                document.body.classList.remove('header-is-hidden');
-                this.lastScrollTop = currentScrollTop;
-                this.lastDirection = null;
-                return;
-            }
-
-            // ✅ Determine scroll direction
-            const isScrollingDown = currentScrollTop > this.lastScrollTop;
-
-            // ✅ Only change header state if direction changed (prevents flickering)
-            if (this.lastDirection !== null && this.lastDirection === isScrollingDown) {
-                this.lastScrollTop = currentScrollTop;
-                return;
-            }
-
-            // Scrolling down - hide header
-            if (isScrollingDown && currentScrollTop > this.scrollThreshold) {
-                this.hideHeader();
-                document.body.classList.add('header-is-hidden');
-                this.lastDirection = true;
-            }
-            // Scrolling up - show header
-            else if (!isScrollingDown) {
-                this.showHeader();
-                document.body.classList.remove('header-is-hidden');
-                this.lastDirection = false;
-            }
-
-            // Compact mode
-            if (currentScrollTop > this.scrollThreshold) {
-                this.header.classList.add('header-compact');
+            // Compact mode (desktop header only)
+            if (st > this.scrollThreshold) {
+                this.desktopHeader?.classList.add('header-compact');
             } else {
-                this.header.classList.remove('header-compact');
+                this._removeCompact();
             }
 
-            this.lastScrollTop = currentScrollTop;
+            this.lastScrollTop = st;
         },
 
-        hideHeader() {
-            this.header.classList.add('header-hidden');
-            this.header.classList.remove('header-visible');
+        _show(el) {
+            if (!el) return;
+            el.classList.remove('header-hidden');
+            el.classList.add('header-visible');
         },
 
-        showHeader() {
-            this.header.classList.remove('header-hidden');
-            this.header.classList.add('header-visible');
+        _hide(el) {
+            if (!el) return;
+            el.classList.add('header-hidden');
+            el.classList.remove('header-visible');
+        },
+
+        _showNav() {
+            if (!this.bottomNav) return;
+            this.bottomNav.classList.remove('nav-hidden');
+            this.bottomNav.classList.add('nav-visible');
+        },
+
+        _hideNav() {
+            if (!this.bottomNav) return;
+            this.bottomNav.classList.add('nav-hidden');
+            this.bottomNav.classList.remove('nav-visible');
+        },
+
+        _showAll() {
+            this._show(this.desktopHeader);
+            this._show(this.mobileHeader);
+            this._showNav();
+        },
+
+        _removeCompact() {
+            this.desktopHeader?.classList.remove('header-compact');
         }
     };
 
-    // Initialize
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => AutoHideHeader.init());
     } else {

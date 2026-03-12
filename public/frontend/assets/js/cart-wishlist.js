@@ -579,6 +579,10 @@
             e.preventDefault();
             e.stopPropagation();
 
+            // ── Skip if this button is marked as a page-level remove action ──
+            // Wishlist page handles its own removal — don't double-toggle
+            if ($(this).hasClass('wishlist-page-btn')) return false;
+
             const productId = $(this).data('product-id') || $(this).data('id');
             if (productId && !Wishlist.processingProducts.has(productId)) {
                 Wishlist.toggle(productId, $(this));

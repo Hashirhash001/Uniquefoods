@@ -340,7 +340,9 @@
 
 .btn-add-cart:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(98, 157, 35, 0.4);
+    /* box-shadow: 0 8px 20px rgba(98, 157, 35, 0.4); */
+    color: #fff;
+    opacity: 0.9;
 }
 
 .btn-add-cart.disabled {
@@ -555,7 +557,7 @@
 
     /* Section spacing */
     .modern-wishlist-section {
-        padding: 20px !important;
+        padding: 0px !important;
         padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
     }
 

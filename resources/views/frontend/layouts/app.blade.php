@@ -7,6 +7,31 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Home')</title>
 
+    <meta name="description"    content="@yield('meta_description', 'Shop fresh groceries and unique foods online.')">
+    <meta name="keywords"       content="@yield('meta_keywords', 'grocery, fresh food, online shop')">
+    <meta name="robots"         content="@yield('meta_robots', 'index, follow')">
+    <link rel="canonical"       href="@yield('meta_canonical', request()->url())">
+
+    {{-- =============================================
+         SEO: Open Graph (Facebook, WhatsApp, LinkedIn)
+         ============================================= --}}
+    <meta property="og:type"        content="@yield('og_type', 'website')">
+    <meta property="og:title"       content="@yield('og_title', config('app.name', 'Unique Foods'))">
+    <meta property="og:description" content="@yield('og_description', 'Shop fresh groceries and unique foods online.')">
+    <meta property="og:url"         content="@yield('og_url', request()->url())">
+    <meta property="og:image"       content="@yield('og_image', asset('admin/assets/images/logo/favicon.png'))">
+    <meta property="og:site_name"   content="{{ config('app.name', 'Unique Foods') }}">
+    <meta property="og:locale"      content="en_GB">
+
+    {{-- =============================================
+         SEO: Twitter Cards
+         ============================================= --}}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="@yield('twitter_title', config('app.name', 'Unique Foods'))">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Shop fresh groceries and unique foods online.')">
+    <meta name="twitter:image"       content="@yield('twitter_image', asset('admin/assets/images/logo/favicon.png'))">
+    {{-- <meta name="twitter:site" content="@YourHandle"> --}}
+
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin/assets/images/logo/favicon.png') }}">
 
     {{-- template css --}}

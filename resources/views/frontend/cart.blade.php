@@ -9,7 +9,7 @@
 
 @section('content')
 <!-- Breadcrumb -->
-<div class="rts-navigation-area-breadcrumb">
+{{-- <div class="rts-navigation-area-breadcrumb">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -21,17 +21,13 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="section-seperator">
-    <div class="container"><hr class="section-seperator"></div>
-</div>
+</div> --}}
 
 <!-- Cart Section -->
 <div class="modern-cart-section rts-section-gap">
     <div class="container">
         <!-- Header -->
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-lg-12">
                 <div class="modern-cart-header">
                     <div class="header-left">
@@ -52,7 +48,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Empty Cart State -->
         <div class="row" id="emptyCartState" style="display: none;">

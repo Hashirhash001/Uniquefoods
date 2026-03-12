@@ -273,7 +273,7 @@
     ============================================ */
     :root {
         --shop-primary: #08437b;
-        --shop-primary-dark: #518219;
+        --shop-primary-dark: #08437b;
         --shop-success: #10b981;
         --shop-danger: #ef4444;
         --shop-text: #111827;
@@ -545,8 +545,9 @@
 
     .product-add-to-cart:hover:not(:disabled) {
         background: var(--shop-primary-dark);
+        opacity: 0.9;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(98, 157, 35, 0.4);
+        /* box-shadow: 0 6px 20px rgba(98, 157, 35, 0.4); */
     }
 
     .product-add-to-cart:disabled {

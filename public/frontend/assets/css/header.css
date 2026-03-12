@@ -28,6 +28,10 @@ body.header-is-hidden { padding-top: 0 !important; }
     .unique-modern-header, .unique-mobile-header, body { transition: none !important; }
 }
 
+.rts-footer-area-two {
+    padding: 30px 0 10px 0;
+}
+
 /* ===== STICKY HEADER ===== */
 .unique-modern-header {
     position: fixed !important;
@@ -773,6 +777,14 @@ body.header-is-hidden { padding-top: 0 !important; }
     .progress-wrap {
         display: none !important;
     }
+
+    .single-contact-information-area p.disc a{
+        font-size: 18px !important;
+    }
+
+    .footer-two-main-wrapper .contact-information {
+        gap: 0px;
+    }
 }
 
 @media (min-width: 992px) {
@@ -780,4 +792,54 @@ body.header-is-hidden { padding-top: 0 !important; }
     div.unique-account-sheet {
         display: none !important;
     }
+}
+
+/* ── Mobile header: show state (was missing) ── */
+.unique-mobile-header.header-visible {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10) !important;
+}
+
+/* ── Prevent layout jump: never kill padding entirely.
+       Instead keep a minimum so content doesn't lurch up. ── */
+body.header-is-hidden {
+    /* Do NOT set padding-top: 0 — causes huge layout jump */
+    /* Header slides off-screen via transform; padding is irrelevant */
+    padding-top: 0 !important;
+}
+
+/* ── Desktop header-visible (ensure box-shadow restores) ── */
+.unique-modern-header.header-visible {
+    transform: translateY(0) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ── Smooth transition for body padding on scroll ── */
+body {
+    transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+/* ── Bottom Nav: smart scroll hide/show ── */
+.unique-mobile-bottom-nav {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    will-change: transform !important;
+}
+
+.unique-mobile-bottom-nav.nav-hidden {
+    transform: translateY(100%) !important;
+}
+
+.unique-mobile-bottom-nav.nav-visible {
+    transform: translateY(0) !important;
+}
+
+/* Keep account sheet above bottom nav when open, and shift up when nav hides */
+.unique-account-sheet.open {
+    bottom: 50px !important; /* above nav when visible */
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.unique-mobile-bottom-nav.nav-hidden ~ .unique-account-sheet.open,
+body.bottom-nav-hidden .unique-account-sheet.open {
+    bottom: 0 !important; /* drop to screen edge when nav is hidden */
 }

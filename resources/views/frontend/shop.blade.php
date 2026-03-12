@@ -1,6 +1,10 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Shop - All Products')
+@section('title', 'Shop - All Products - Unique Foods')
+@section('meta_description', 'Browse our full range of fresh groceries, produce, and specialty foods.')
+@section('meta_canonical',   route('shop'))
+@section('og_title',         'Shop — ' . config('app.name'))
+@section('og_url',           route('shop'))
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
@@ -679,10 +683,24 @@ $(document).ready(function() {
                 window.InfiniteScroll.currentPage = 1;
             }
             $(document).trigger('shopFiltersChanged');
+
+            // ✅ Skeleton cards instead of spinner
+            var skeletonCard =
+                '<div class="col-lg-3 col-md-4 col-sm-6 col-6 skeleton-col">' +
+                    '<div class="shop-product-card skeleton-card">' +
+                        '<div class="skeleton skeleton-image"></div>' +
+                        '<div class="product-info" style="padding: 12px">' +
+                            '<div class="skeleton skeleton-text short"></div>' +
+                            '<div class="skeleton skeleton-text"></div>' +
+                            '<div class="skeleton skeleton-text medium"></div>' +
+                            '<div class="skeleton skeleton-price"></div>' +
+                            '<div class="skeleton skeleton-btn"></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+
             $('#shopProductsContainer').html(
-                '<div class="col-12 text-center py-5">' +
-                '<div class="spinner-border text-primary" role="status"></div>' +
-                '<p class="mt-3">Loading products...</p></div>'
+                skeletonCard.repeat(8)
             );
         }
 
