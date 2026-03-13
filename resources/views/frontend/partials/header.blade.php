@@ -216,6 +216,7 @@
                         @if(isset($categories) && $categories->count())
                             @foreach($categories as $cat)
                                 <div class="unique-category-item">
+                                    @php $hasChildren = $cat->activeChildren->isNotEmpty(); @endphp
                                     <a href="{{ route('shop') }}?categories[]={{ $cat->id }}" class="unique-category-link"
                                        onclick="event.preventDefault(); window.location.href='{{ route('shop') }}?categories[]={{ $cat->id }}';">
                                         @if($cat->image)
@@ -224,11 +225,11 @@
                                             <i class="fa-regular fa-box unique-cat-icon"></i>
                                         @endif
                                         <span class="unique-cat-name">{{ $cat->name }}</span>
-                                        @if($cat->activeChildren->count() > 0)
+                                        @if($hasChildren)
                                             <i class="fa-regular fa-chevron-right unique-cat-arrow"></i>
                                         @endif
                                     </a>
-                                    @if($cat->activeChildren->count() > 0)
+                                    @if($hasChildren)
                                         <div class="unique-category-submenu">
                                             <div class="unique-submenu-title">{{ $cat->name }}</div>
                                             <div class="unique-submenu-items">
@@ -520,8 +521,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (typeof window.updateCartUI === 'function')     window.updateCartUI();
-    if (typeof window.updateWishlistUI === 'function') window.updateWishlistUI();
 });
 </script>
 
@@ -538,6 +537,13 @@ $(document).ready(function() {
     searchInput.on('input', function() {
         const query = $(this).val().trim();
         clearTimeout(searchTimeout);
+
+        if (query.length === 0) {
+            searchDropdown.removeClass('show');
+            searchResults.html('');
+            return;
+        }
+
         if (query.length < 2) { searchDropdown.removeClass('show'); return; }
         searchTimeout = setTimeout(() => performSearch(query), 300);
     });
@@ -620,6 +626,13 @@ $(document).ready(function() {
     mobileSearchInput.on('input', function() {
         const query = $(this).val().trim();
         clearTimeout(mobileSearchTimeout);
+
+        if (query.length === 0) {
+            mobileSearchDropdown.removeClass('show');
+            mobileSearchResults.html(''); // ✅ clear stale results
+            return;
+        }
+
         if (query.length < 2) { mobileSearchDropdown.removeClass('show'); return; }
         mobileSearchTimeout = setTimeout(() => performMobileSearch(query), 300);
     });

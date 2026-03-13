@@ -140,7 +140,7 @@ class Product extends Model
 
     public function getDiscountPercentageAttribute()
     {
-        if ($this->mrp && $this->mrp > $this->price) {
+        if ($this->mrp && $this->price && $this->mrp > $this->price) {
             return round((($this->mrp - $this->price) / $this->mrp) * 100);
         }
         return 0;
@@ -183,6 +183,9 @@ class Product extends Model
 
     public function getAverageRatingAttribute()
     {
+        if ($this->relationLoaded('reviews')) {
+            return round($this->reviews->avg('rating'), 1);
+        }
         return round($this->reviews()->avg('rating'), 1);
     }
 

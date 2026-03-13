@@ -807,3 +807,94 @@ textarea.unique-form-control {
 .unique-order-item-qty.weight-qty i {
     font-size: 11px;
 }
+
+/* ── Push delete button away from the selected tick ── */
+.saved-address-card .saved-addr-top {
+    padding-right: 24px; /* make room for the ::after tick */
+}
+
+.saved-addr-delete {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: color 0.2s;
+    width: auto !important;
+    font-size: 13px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Inline address delete confirm box ── */
+.addr-delete-confirm {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 10;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
+    padding: 16px;
+    text-align: center;
+}
+
+.addr-delete-confirm.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.addr-delete-confirm p {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.addr-delete-confirm p i {
+    color: #f59e0b;
+    margin-right: 6px;
+}
+
+.addr-confirm-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.addr-confirm-yes {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: auto !important;
+    transition: background 0.2s;
+}
+
+.addr-confirm-yes:hover { background: #dc2626; }
+
+.addr-confirm-no {
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: auto !important;
+    transition: background 0.2s;
+}
+
+.addr-confirm-no:hover { background: #e5e7eb; }

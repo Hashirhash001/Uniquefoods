@@ -9,6 +9,9 @@ use App\Models\GroupProductOffer;
 
 class PricingService
 {
+    // Add this property
+    private array $groupCache = [];
+
     /**
      * Get the price for a product based on customer's group memberships
      */
@@ -18,7 +21,14 @@ class PricingService
             return $product->price;
         }
 
-        $customerGroups = $customer->groups()->where('is_active', 1)->get();
+        // ✅ Cache groups per user for this request
+        if (!isset($this->groupCache[$customer->id])) {
+            $this->groupCache[$customer->id] = $customer->groups()
+                ->where('is_active', 1)
+                ->get();
+        }
+
+        $customerGroups = $this->groupCache[$customer->id];
 
         if ($customerGroups->isEmpty()) {
             return $product->price;

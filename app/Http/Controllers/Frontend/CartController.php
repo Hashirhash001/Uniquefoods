@@ -2,94 +2,142 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Models\Cart;
-use App\Models\Product;
 use App\Models\CartItem;
+use App\Models\Product;
+use App\Services\PricingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
-use App\Services\PricingService;
 
 class CartController extends Controller
 {
-    protected $pricingService;
+    protected PricingService $pricingService;
 
     public function __construct(PricingService $pricingService)
     {
         $this->pricingService = $pricingService;
     }
 
-    /**
-     * Get cart (session or database based on auth)
-     */
-    private function getCart()
+    // =====================================================================
+    //  PRIVATE HELPERS
+    // =====================================================================
+
+    private function getCart(): array
     {
+        if (!Auth::check()) {
+            return array_values(session()->get('cart', []));
+        }
+
         $user = Auth::user();
 
-        if (Auth::check()) {
-            // Get or create cart for authenticated user
-            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+        // ✅ Use where() not firstOrCreate() — don't create on reads
+        $cart = Cart::where('user_id', Auth::id())->first();
 
-            // Load items with product details
-            $items = $cart->items()
-                ->with(['product.primaryImage', 'product.category', 'product.brand'])
-                ->get()
-                ->map(function ($item) use ($user) {
-                    // Apply group pricing
-                    $finalPrice = (float) $this->pricingService->getCustomerPrice($item->product, $user);
-
-                    return [
-                        'id'              => $item->product_id,
-                        'cart_item_id'    => $item->id,
-                        'name'            => $item->product->name,
-                        'slug'            => $item->product->slug,
-                        'price'           => $item->product->is_weight_based
-                                                ? (float) $item->price
-                                                : $finalPrice,
-                        'base_price'      => (float) $item->product->price,
-                        'image'           => $item->product->image_url,
-                        'quantity'        => $item->quantity,
-                        'weight'          => $item->weight,
-                        'is_weight_based' => $item->product->is_weight_based,
-                        'stock'           => $item->product->stock,
-                        'subtotal'        => $item->product->is_weight_based
-                                                ? (float) $item->price
-                                                : $finalPrice * $item->quantity,
-                    ];
-                })
-                ->toArray();
-
-            return $items;
-        } else {
-            // Get from session for guests (no group pricing)
-            return session()->get('cart', []);
+        if (!$cart) {
+            return [];
         }
+
+        return $cart->items()
+            ->with(['product.primaryImage', 'product.category', 'product.brand'])
+            ->get()
+            ->filter(fn ($item) => $item->product && $item->product->is_active)
+            ->map(function ($item) use ($user) {
+                $product    = $item->product;
+                $unitPrice  = (float) $this->pricingService->getCustomerPrice($product, $user);
+                $isWeight   = (bool) $product->is_weight_based;
+
+                // Weight-based: stored price IS the line total (unit × weight)
+                // Qty-based:    line total = unit price × quantity
+                $price    = $isWeight ? (float) $item->price : $unitPrice;
+                $subtotal = $isWeight ? (float) $item->price : $unitPrice * $item->quantity;
+
+                return [
+                    'id'              => $item->product_id,
+                    'cart_item_id'    => $item->id,
+                    'name'            => $product->name,
+                    'slug'            => $product->slug,
+                    'price'           => $price,
+                    'base_price'      => (float) $product->price,
+                    'image'           => $product->image_url,
+                    'quantity'        => (int) $item->quantity,
+                    'weight'          => $item->weight,
+                    'is_weight_based' => $isWeight,
+                    'stock'           => (int) $product->stock,
+                    'subtotal'        => round($subtotal, 2),
+                ];
+            })
+            ->values()
+            ->toArray();
     }
 
-    /**
-     * Add product to cart
-     */
+    private function getCartData(): array
+    {
+        $items    = $this->getCart();
+        $subtotal = round(array_sum(array_column($items, 'subtotal')), 2);
+
+        return [
+            'items'    => $items,
+            'subtotal' => $subtotal,
+            'tax'      => 0,
+            'shipping' => 0,
+            'total'    => $subtotal,
+        ];
+    }
+
+    private function makeLinePrice(bool $isWeightBased, float $unitPrice, ?float $weight): float
+    {
+        return $isWeightBased
+            ? round($unitPrice * (float) $weight, 2)
+            : round($unitPrice, 2);
+    }
+
+    // =====================================================================
+    //  PUBLIC ACTIONS
+    // =====================================================================
+
+    public function index()
+    {
+        $cartData = $this->getCartData();
+        return view('frontend.cart', compact('cartData'));
+    }
+
+    public function get()
+    {
+        return response()->json(['success' => true, 'cart' => $this->getCartData()]);
+    }
+
+    public function count()
+    {
+        $items = $this->getCart();
+        $subtotal = round(array_sum(array_column($items, 'subtotal')), 2);
+
+        return response()->json([
+            'success' => true,
+            'count'   => count($items),
+            'total'   => $subtotal,
+        ]);
+    }
+
     public function add(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity'   => 'nullable|integer|min:1',
-            'weight'     => 'nullable|numeric|min:0.001'
+            'weight'     => 'nullable|numeric|min:0.001',
         ]);
 
-        $productId = $request->product_id;
-        $quantity  = $request->quantity ?? 1;
-        $weight    = $request->weight ? (float) $request->weight : null;
-
-        $product = Product::with('category', 'brand')->find($productId);
+        $product = Product::with('category', 'brand')->find($request->product_id);
 
         if (!$product || !$product->is_active) {
             return response()->json(['success' => false, 'message' => 'Product not available'], 404);
         }
 
-        // Weight-based validation
+        $quantity = max(1, (int) ($request->quantity ?? 1));
+        $weight   = $request->filled('weight') ? (float) $request->weight : null;
+
         if ($product->is_weight_based) {
             if (!$weight) {
                 return response()->json(['success' => false, 'message' => 'Please select a weight.'], 422);
@@ -100,56 +148,218 @@ class CartController extends Controller
             if ($product->max_weight && $weight > (float) $product->max_weight) {
                 return response()->json(['success' => false, 'message' => "Maximum order is {$product->max_weight}kg."], 422);
             }
+        } else {
+            if ($product->stock < $quantity) {
+                return response()->json(['success' => false, 'message' => "Only {$product->stock} items available."], 400);
+            }
         }
 
-        // Stock validation for non-weight based only
-        if (!$product->is_weight_based && $product->stock < $quantity) {
-            return response()->json(['success' => false, 'message' => "Insufficient stock. Only {$product->stock} items available."], 400);
-        }
+        $unitPrice = (float) $this->pricingService->getCustomerPrice($product, Auth::user());
 
-        $user  = Auth::user();
-        $price = (float) $this->pricingService->getCustomerPrice($product, $user);
-
-        if (Auth::check()) {
-            return $this->addToDatabase($product, $quantity, $weight, $price);
-        }
-        return $this->addToSession($product, $quantity, $weight, $price);
+        return Auth::check()
+            ? $this->addToDatabase($product, $quantity, $weight, $unitPrice)
+            : $this->addToSession($product, $quantity, $weight, $unitPrice);
     }
 
-    /**
-     * Add to database (authenticated)
-     */
-    private function addToDatabase($product, $quantity, $weight, $price)
+    public function remove(Request $request)
+    {
+        $productId = (int) $request->product_id;
+
+        if (Auth::check()) {
+            $cart = Cart::where('user_id', Auth::id())->first();
+
+            if ($cart) {
+                $item = CartItem::with('product')
+                    ->where('cart_id', $cart->id)
+                    ->where('product_id', $productId)
+                    ->first();
+
+                if ($item) {
+                    $name = $item->product->name ?? 'Item';
+                    $item->delete();
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => "{$name} removed from cart",
+                        'cart'    => $this->getCartData(),
+                    ]);
+                }
+            }
+        } else {
+            $cart = session()->get('cart', []);
+
+            if (isset($cart[$productId])) {
+                $name = $cart[$productId]['name'] ?? 'Item';
+                unset($cart[$productId]);
+                session()->put('cart', $cart);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "{$name} removed from cart",
+                    'cart'    => $this->getCartData(),
+                ]);
+            }
+        }
+
+        return response()->json(['success' => false, 'message' => 'Product not found in cart'], 404);
+    }
+
+    public function update(Request $request)
+    {
+        $productId = (int) $request->product_id;
+        $action    = $request->action;
+        $quantity  = $request->filled('quantity') ? (int) $request->quantity : null;
+
+        if (Auth::check()) {
+            $cart = Cart::where('user_id', Auth::id())->first();
+
+            if (!$cart) {
+                return response()->json(['success' => false, 'message' => 'Cart not found'], 404);
+            }
+
+            $item = CartItem::with('product')
+                ->where('cart_id', $cart->id)
+                ->where('product_id', $productId)
+                ->first();
+
+            if (!$item || !$item->product) {
+                return response()->json(['success' => false, 'message' => 'Item not found'], 404);
+            }
+
+            // ✅ Weight-based items can't be qty-updated here
+            if ($item->product->is_weight_based) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Change weight from the product page.',
+                ], 422);
+            }
+
+            $newQty = $this->resolveQty((int) $item->quantity, $quantity, $action);
+
+            if ($newQty > $item->product->stock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Only {$item->product->stock} items available.",
+                ], 422);
+            }
+
+            if ($newQty <= 0) {
+                $item->delete();
+            } else {
+                $item->quantity = $newQty;
+                // ✅ For qty-based items, price = unit price (not line total)
+                $item->price = (float) $this->pricingService->getCustomerPrice(
+                    $item->product, Auth::user()
+                );
+                $item->save();
+            }
+
+            return response()->json(['success' => true, 'cart' => $this->getCartData()]);
+        }
+
+        // Guest
+        $cart = session()->get('cart', []);
+
+        if (!isset($cart[$productId])) {
+            return response()->json(['success' => false, 'message' => 'Item not found'], 404);
+        }
+
+        if (!empty($cart[$productId]['is_weight_based'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Change weight from the product page.',
+            ], 422);
+        }
+
+        $product = Product::find($productId);
+
+        if (!$product || !$product->is_active) {
+            unset($cart[$productId]);
+            session()->put('cart', $cart);
+            return response()->json(['success' => false, 'message' => 'Product no longer available.'], 404);
+        }
+
+        $newQty = $this->resolveQty((int) ($cart[$productId]['quantity'] ?? 1), $quantity, $action);
+
+        if ($newQty > $product->stock) {
+            return response()->json(['success' => false, 'message' => "Only {$product->stock} items available."], 422);
+        }
+
+        if ($newQty <= 0) {
+            unset($cart[$productId]);
+        } else {
+            $cart[$productId]['quantity'] = $newQty;
+            $cart[$productId]['stock']    = (int) $product->stock;
+            $cart[$productId]['subtotal'] = $cart[$productId]['price'] * $newQty;
+        }
+
+        session()->put('cart', $cart);
+
+        return response()->json(['success' => true, 'cart' => $this->getCartData()]);
+    }
+
+    public function clear()
+    {
+        if (Auth::check()) {
+            Cart::where('user_id', Auth::id())->first()?->items()->delete();
+        } else {
+            session()->forget('cart');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cart cleared',
+            'cart'    => $this->getCartData(),
+        ]);
+    }
+
+    // =====================================================================
+    //  PRIVATE STORE HELPERS
+    // =====================================================================
+
+    private function addToDatabase(Product $product, int $quantity, ?float $weight, float $unitPrice)
     {
         DB::beginTransaction();
         try {
             $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
 
-            $existingItem = CartItem::where('cart_id', $cart->id)
+            $item = CartItem::where('cart_id', $cart->id)
                 ->where('product_id', $product->id)
                 ->first();
 
-            if ($existingItem) {
+            $linePrice = $this->makeLinePrice($product->is_weight_based, $unitPrice, $weight);
+
+            if ($item) {
                 if ($product->is_weight_based) {
-                    // ✅ REPLACE weight, don't accumulate
-                    $existingItem->weight    = $weight;
-                    $existingItem->quantity  = 1;
-                    // ✅ Recalculate line price = price_per_kg × weight
-                    $existingItem->price     = round($price * $weight, 2);
+                    $item->quantity = 1;
+                    $item->weight   = $weight;
+                    $item->price    = $linePrice;
                 } else {
-                    $existingItem->quantity += $quantity;
-                    $existingItem->price     = $price;
+                    $newQty = $item->quantity + $quantity;
+
+                    // ✅ Stock check on accumulation
+                    if ($newQty > $product->stock) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Only {$product->stock} items available.",
+                        ], 400);
+                    }
+
+                    $item->quantity = $newQty;
+                    $item->price    = $unitPrice;
                 }
-                $existingItem->save();
+
+                $item->price_per_kg = $product->price_per_kg ?? null;
+                $item->save();
             } else {
                 CartItem::create([
-                    'cart_id'     => $cart->id,
-                    'product_id'  => $product->id,
-                    'quantity'    => $product->is_weight_based ? 1 : $quantity,
-                    'weight'      => $weight,
-                    // ✅ For weight-based: store total line price (price_per_kg × weight)
-                    'price'       => $product->is_weight_based ? round($price * $weight, 2) : $price,
-                    'price_per_kg'=> $product->price_per_kg,
+                    'cart_id'      => $cart->id,
+                    'product_id'   => $product->id,
+                    'quantity'     => $product->is_weight_based ? 1 : $quantity,
+                    'weight'       => $weight,
+                    'price'        => $linePrice,
+                    'price_per_kg' => $product->price_per_kg ?? null,
                 ]);
             }
 
@@ -158,44 +368,54 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "{$product->name} added to cart",
-                'cart'    => $this->getCartData()
+                'cart'    => $this->getCartData(),
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Cart add (DB) failed: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to add to cart'], 500);
         }
     }
 
-    /**
-     * Add to session (guest)
-     */
-    private function addToSession($product, $quantity, $weight, $price)
+    private function addToSession(Product $product, int $quantity, ?float $weight, float $unitPrice)
     {
-        $cart = session()->get('cart', []);
-
-        // ✅ Calculate line price correctly for weight-based
-        $linePrice = $product->is_weight_based ? round($price * $weight, 2) : $price;
+        $cart      = session()->get('cart', []);
+        $linePrice = $this->makeLinePrice($product->is_weight_based, $unitPrice, $weight);
 
         if (isset($cart[$product->id])) {
             if ($product->is_weight_based) {
-                // ✅ REPLACE weight, recalculate price
-                $cart[$product->id]['weight'] = $weight;
-                $cart[$product->id]['price']  = $linePrice;
+                $cart[$product->id]['weight']   = $weight;
+                $cart[$product->id]['quantity'] = 1;
+                $cart[$product->id]['price']    = $linePrice;
+                $cart[$product->id]['subtotal'] = $linePrice;
             } else {
-                $cart[$product->id]['quantity'] += $quantity;
-                $cart[$product->id]['price']     = $price;
+                $newQty = (int) $cart[$product->id]['quantity'] + $quantity;
+
+                if ($newQty > $product->stock) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Only {$product->stock} items available.",
+                    ], 400);
+                }
+
+                $cart[$product->id]['quantity'] = $newQty;
+                $cart[$product->id]['price']    = $unitPrice;
+                $cart[$product->id]['subtotal'] = round($unitPrice * $newQty, 2);
             }
         } else {
+            $subtotal = $product->is_weight_based ? $linePrice : round($unitPrice * $quantity, 2);
+
             $cart[$product->id] = [
                 'id'              => $product->id,
                 'name'            => $product->name,
                 'slug'            => $product->slug,
-                'price'           => $linePrice, // ✅ Total line price
+                'price'           => $linePrice,
                 'image'           => $product->image_url,
                 'quantity'        => $product->is_weight_based ? 1 : $quantity,
                 'weight'          => $weight,
-                'is_weight_based' => $product->is_weight_based,
-                'stock'           => $product->stock,
+                'is_weight_based' => (bool) $product->is_weight_based,
+                'stock'           => (int) $product->stock,
+                'subtotal'        => $subtotal,
             ];
         }
 
@@ -204,223 +424,23 @@ class CartController extends Controller
         return response()->json([
             'success' => true,
             'message' => "{$product->name} added to cart",
-            'cart'    => $this->getCartData()
+            'cart'    => $this->getCartData(),
         ]);
     }
 
-    /**
-     * Remove product from cart
-     */
-    public function remove(Request $request)
+    private function resolveQty(int $current, ?int $direct, ?string $action): int
     {
-        $productId = $request->product_id;
-
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-            if ($cart) {
-                $cartItem = CartItem::where('cart_id', $cart->id)
-                    ->where('product_id', $productId)
-                    ->first();
-
-                if ($cartItem) {
-                    $productName = $cartItem->product->name;
-                    $cartItem->delete();
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => "{$productName} removed from cart",
-                        'cart' => $this->getCartData()
-                    ]);
-                }
-            }
-        } else {
-            $cart = session()->get('cart', []);
-            if (isset($cart[$productId])) {
-                $productName = $cart[$productId]['name'];
-                unset($cart[$productId]);
-                session()->put('cart', $cart);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => "{$productName} removed from cart",
-                    'cart' => $this->getCartData()
-                ]);
-            }
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Product not found in cart'
-        ], 404);
+        if (!is_null($direct)) return $direct;
+        if ($action === 'plus')  return $current + 1;
+        if ($action === 'minus') return $current - 1;
+        return $current;
     }
 
-    /**
-     * Update cart quantity
-     */
-    public function update(Request $request)
-    {
-        $productId = $request->product_id;
-        $action = $request->action; // 'plus' or 'minus'
-        $quantity = $request->quantity; // direct quantity update
+    // =====================================================================
+    //  STATIC: MERGE SESSION CART ON LOGIN
+    // =====================================================================
 
-        $user = Auth::user();
-
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-            if ($cart) {
-                $cartItem = CartItem::where('cart_id', $cart->id)
-                    ->where('product_id', $productId)
-                    ->first();
-
-                if ($cartItem) {
-                    if ($quantity) {
-                        $cartItem->quantity = $quantity;
-                    } elseif ($action === 'plus') {
-                        $cartItem->quantity++;
-                    } elseif ($action === 'minus') {
-                        $cartItem->quantity--;
-                    }
-
-                    if ($cartItem->quantity <= 0) {
-                        $cartItem->delete();
-                    } else {
-                        // ✅ Refresh price on quantity update
-                        $product = $cartItem->product;
-                        $cartItem->price = (float) $this->pricingService->getCustomerPrice($product, $user);
-                        $cartItem->save();
-                    }
-
-                    return response()->json([
-                        'success' => true,
-                        'cart' => $this->getCartData()
-                    ]);
-                }
-            }
-        } else {
-            $cart = session()->get('cart', []);
-            if (isset($cart[$productId])) {
-                if ($quantity) {
-                    $cart[$productId]['quantity'] = $quantity;
-                } elseif ($action === 'plus') {
-                    $cart[$productId]['quantity']++;
-                } elseif ($action === 'minus') {
-                    $cart[$productId]['quantity']--;
-                }
-
-                if ($cart[$productId]['quantity'] <= 0) {
-                    unset($cart[$productId]);
-                }
-
-                session()->put('cart', $cart);
-
-                return response()->json([
-                    'success' => true,
-                    'cart' => $this->getCartData()
-                ]);
-            }
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to update cart'
-        ], 400);
-    }
-
-    /**
-     * Clear cart
-     */
-    public function clear()
-    {
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-            if ($cart) {
-                $cart->items()->delete();
-            }
-        } else {
-            session()->forget('cart');
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Cart cleared',
-            'cart' => $this->getCartData()
-        ]);
-    }
-
-    /**
-     * Get cart count
-     */
-    public function count()
-    {
-        $cart = $this->getCart();
-        $count = count($cart);
-        $total = $this->calculateTotal($cart);
-
-        return response()->json([
-            'success' => true,
-            'count' => $count,
-            'total' => $total
-        ]);
-    }
-
-    /**
-     * Get full cart data
-     */
-    public function get()
-    {
-        return response()->json([
-            'success' => true,
-            'cart' => $this->getCartData()
-        ]);
-    }
-
-    /**
-     * Cart index page
-     */
-    public function index()
-    {
-        $cartData = $this->getCartData();
-        return view('frontend.cart', compact('cartData'));
-    }
-
-    /**
-     * Get formatted cart data
-     */
-    private function getCartData()
-    {
-        $cart = $this->getCart();
-        $items = array_values($cart);
-        $subtotal = $this->calculateTotal($cart);
-
-        return [
-            'items' => $items,
-            'subtotal' => $subtotal,
-            'tax' => 0,
-            'shipping' => 0,
-            'total' => $subtotal
-        ];
-    }
-
-    /**
-     * Calculate total
-     */
-    private function calculateTotal($cart)
-    {
-        $total = 0;
-        foreach ($cart as $item) {
-            if (isset($item['subtotal'])) {
-                $total += $item['subtotal'];
-            } else {
-                $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
-            }
-        }
-        return round($total, 2);
-    }
-
-    /**
-     * Merge session cart to database (called after login)
-     */
-    public static function mergeSessionCartToDatabase($userId)
+    public static function mergeSessionCartToDatabase(int $userId): void
     {
         $sessionCart = session()->get('cart', []);
 
@@ -430,47 +450,61 @@ class CartController extends Controller
 
         DB::beginTransaction();
         try {
-            $cart = Cart::firstOrCreate(['user_id' => $userId]);
-            $user = \App\Models\User::find($userId);
-
-            // ✅ Create PricingService instance
-            $pricingService = app(\App\Services\PricingService::class);
+            $cart           = Cart::firstOrCreate(['user_id' => $userId]);
+            $user           = \App\Models\User::find($userId);
+            $pricingService = app(PricingService::class);
 
             foreach ($sessionCart as $productId => $item) {
                 $product = Product::find($productId);
-                if ($product) {
-                    // ✅ Apply group pricing on merge
-                    $finalPrice = (float) $pricingService->getCustomerPrice($product, $user);
 
-                    $existingItem = CartItem::where('cart_id', $cart->id)
-                        ->where('product_id', $productId)
-                        ->first();
+                if (!$product || !$product->is_active) {
+                    continue;
+                }
 
-                    if ($existingItem) {
-                        $existingItem->quantity += ($item['quantity'] ?? 1);
-                        $existingItem->price = $finalPrice;
-                        $existingItem->save();
+                $unitPrice    = (float) $pricingService->getCustomerPrice($product, $user);
+                $isWeightBased = (bool) $product->is_weight_based;
+                $weight       = isset($item['weight']) ? (float) $item['weight'] : null;
+
+                // ✅ Weight-based: line price = unitPrice × weight
+                $linePrice = $isWeightBased
+                    ? round($unitPrice * (float) $weight, 2)
+                    : $unitPrice;
+
+                $existing = CartItem::where('cart_id', $cart->id)
+                    ->where('product_id', $productId)
+                    ->first();
+
+                if ($existing) {
+                    if ($isWeightBased) {
+                        // Replace weight-based item
+                        $existing->quantity = 1;
+                        $existing->weight   = $weight;
+                        $existing->price    = $linePrice;
                     } else {
-                        CartItem::create([
-                            'cart_id' => $cart->id,
-                            'product_id' => $productId,
-                            'quantity' => $item['quantity'] ?? 1,
-                            'weight' => $item['weight'] ?? null,
-                            'price' => $finalPrice,
-                            'price_per_kg' => $product->price_per_kg,
-                        ]);
+                        // Accumulate qty, cap at stock
+                        $newQty = $existing->quantity + (int) ($item['quantity'] ?? 1);
+                        $existing->quantity = min($newQty, (int) $product->stock);
+                        $existing->price    = $unitPrice;
                     }
+                    $existing->price_per_kg = $product->price_per_kg ?? null;
+                    $existing->save();
+                } else {
+                    CartItem::create([
+                        'cart_id'      => $cart->id,
+                        'product_id'   => $productId,
+                        'quantity'     => $isWeightBased ? 1 : min((int) ($item['quantity'] ?? 1), (int) $product->stock),
+                        'weight'       => $weight,
+                        'price'        => $linePrice,
+                        'price_per_kg' => $product->price_per_kg ?? null,
+                    ]);
                 }
             }
 
-            // Clear session cart
             session()->forget('cart');
-
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Cart merge failed: ' . $e->getMessage());
         }
     }
-
 }

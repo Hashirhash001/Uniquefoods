@@ -10,38 +10,38 @@ use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use App\Services\PricingService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
     public function index(PricingService $pricingService)
     {
-        $banners = Banner::active()
-            ->orderBy('sort_order')
-            ->get();
+        $banners = Cache::remember('active_banners', 1800, function () {
+            return Banner::active()->orderBy('sort_order')->get();
+        });
 
-        $featuredCategories = Category::where('is_active', 1)
-            ->whereNotNull('image')
-            ->orderBy('sort_order')
-            ->limit(10)
-            ->get();
+        $featuredCategories = Cache::remember('featured_categories', 3600, function () {
+            return Category::where('is_active', 1)
+                ->whereNotNull('image')
+                ->orderBy('sort_order')
+                ->limit(10)
+                ->get();
+        });
 
-        // Featured Products
-        $products = Product::with(['category', 'brand', 'primaryImage', 'images'])
+        $products = Product::with(['category', 'brand', 'primaryImage', 'images', 'reviews'])
             ->where('is_active', 1)
             ->where('is_featured', 1)
             ->latest()
             ->take(10)
             ->get();
 
-        // Popular Products
-        $popularProducts = Product::with(['category', 'brand', 'primaryImage', 'images'])
+        $popularProducts = Product::with(['category', 'brand', 'primaryImage', 'images', 'reviews'])
             ->where('is_active', 1)
             ->where('is_popular', 1)
             ->latest()
             ->take(20)
             ->get();
 
-        // Popular Categories for tabs
         $popularCategories = Category::whereIn('id', $popularProducts->pluck('category_id')->unique())
             ->where('is_active', 1)
             ->take(4)
@@ -49,7 +49,6 @@ class HomeController extends Controller
 
         $user = Auth::user();
 
-        // ✅ Fetch wishlisted product IDs ONCE for both collections
         $wishlistedIds = [];
         if ($user) {
             $wishlist = Wishlist::where('user_id', $user->id)->first();
@@ -59,36 +58,24 @@ class HomeController extends Controller
                     ->toArray();
             }
         } else {
-            // Guest — session based
-            $sessionWishlist = session()->get('wishlist', []);
-            $wishlistedIds = array_keys($sessionWishlist);
+            $wishlistedIds = array_keys(session()->get('wishlist', []));
         }
 
-        // Apply pricing + wishlist state to featured products
-        $products->transform(function ($p) use ($pricingService, $user, $wishlistedIds) {
+        // ✅ Single shared transform — no duplication
+        $applyPricing = function ($p) use ($pricingService, $user, $wishlistedIds) {
             $p->base_price  = (float) $p->price;
             $p->final_price = (float) $pricingService->getCustomerPrice($p, $user);
             $p->discount_percentage_calc = ($p->base_price > 0 && $p->final_price < $p->base_price)
                 ? round((($p->base_price - $p->final_price) / $p->base_price) * 100)
                 : 0;
-            $p->is_wishlisted = in_array($p->id, $wishlistedIds);
-            $p->average_rating  = round((float) $p->reviews()->avg('rating'), 1);
-            $p->reviews_count   = $p->reviews()->count();
+            $p->is_wishlisted  = in_array($p->id, $wishlistedIds);
+            $p->average_rating = round((float) $p->reviews->avg('rating'), 1); // ✅ no query
+            $p->reviews_count  = $p->reviews->count();                          // ✅ no query
             return $p;
-        });
+        };
 
-        // Apply pricing + wishlist state to popular products
-        $popularProducts->transform(function ($p) use ($pricingService, $user, $wishlistedIds) {
-            $p->base_price  = (float) $p->price;
-            $p->final_price = (float) $pricingService->getCustomerPrice($p, $user);
-            $p->discount_percentage_calc = ($p->base_price > 0 && $p->final_price < $p->base_price)
-                ? round((($p->base_price - $p->final_price) / $p->base_price) * 100)
-                : 0;
-            $p->is_wishlisted = in_array($p->id, $wishlistedIds);
-            $p->average_rating  = round((float) $p->reviews()->avg('rating'), 1);
-            $p->reviews_count   = $p->reviews()->count();
-            return $p;
-        });
+        $products->transform($applyPricing);
+        $popularProducts->transform($applyPricing);
 
         return view('frontend.home', compact(
             'banners',

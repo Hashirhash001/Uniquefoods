@@ -88,15 +88,7 @@
                                 <i class="fa-solid fa-chevron-down"></i>
                             </div>
                             <div class="shop-filter-options" id="shopCategoryFilter">
-                                @php
-                                    $parentCategories = App\Models\Category::where('is_active', 1)
-                                        ->whereNull('parent_id')
-                                        ->with(['children' => function($query) {
-                                            $query->where('is_active', 1)->orderBy('name');
-                                        }])
-                                        ->orderBy('name')
-                                        ->get();
-                                @endphp
+                                @php $parentCategories = $categories; @endphp
                                 @foreach($parentCategories as $parent)
                                     <div class="shop-filter-option shop-parent-category">
                                         <input type="checkbox"
@@ -141,9 +133,6 @@
                                 <i class="fa-solid fa-chevron-down"></i>
                             </div>
                             <div class="shop-filter-options" id="shopBrandFilter">
-                                @php
-                                    $brands = App\Models\Brand::where('is_active', 1)->orderBy('name')->get();
-                                @endphp
                                 @foreach($brands as $brand)
                                     <div class="shop-filter-option">
                                         <input type="checkbox"

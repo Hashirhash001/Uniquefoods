@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -25,8 +24,8 @@ class ShopController extends Controller
      */
     public function filter(Request $request, PricingService $pricingService)
     {
-        $query = Product::with(['category', 'brand', 'primaryImage', 'images'])
-            ->where('is_active', 1);
+        $query = Product::with(['category', 'brand', 'primaryImage', 'images', 'reviews'])
+                ->where('is_active', 1);
 
         // Price filter
         if ($request->filled('min_price')) {
@@ -125,8 +124,8 @@ class ShopController extends Controller
                 'image_url'           => $product->image_url,
                 'is_weight_based'     => (bool) $product->is_weight_based,
                 'is_wishlisted'       => in_array($product->id, $wishlistedIds),
-                'average_rating' => round((float) $product->reviews()->avg('rating'), 1),
-                'reviews_count'  => $product->reviews()->count(),
+                'average_rating' => round((float) $product->reviews->avg('rating'), 1),
+                'reviews_count'  => $product->reviews->count(),
                 'category' => $product->category ? [
                     'id'   => $product->category->id,
                     'name' => $product->category->name,
@@ -200,11 +199,12 @@ class ShopController extends Controller
                 ->exists();
         }
 
-        $relatedProducts = Product::with(['category', 'brand', 'primaryImage'])
+        $relatedProducts = Product::with(['category', 'brand', 'primaryImage', 'reviews'])
             ->where('is_active', 1)
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->limit(8)->get();
+            ->limit(8)
+            ->get();
 
         $relatedProducts->transform(function ($p) use ($pricingService, $user) {
             $p->base_price = (float) $p->price;
@@ -214,8 +214,8 @@ class ShopController extends Controller
             return $p;
         });
 
-        $product->reviews_count   = $product->reviews()->count();
-        $product->average_rating  = round($product->reviews()->avg('rating'), 1) ?: 0;
+        $product->reviews_count  = $product->reviews->count();
+        $product->average_rating = round($product->reviews->avg('rating'), 1) ?: 0;
 
         return view('frontend.show', compact('product', 'relatedProducts', 'offers', 'hasPurchased', 'hasReviewed'));
     }

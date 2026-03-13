@@ -222,20 +222,19 @@
                 @endif
                 @endauth
 
-                <!-- ── CUSTOMER INFORMATION ── -->
-                <div class="unique-checkout-form-section">
+                {{-- ── CUSTOMER INFORMATION ── --}}
+                <div class="unique-checkout-form-section"
+                    id="customerInfoSection"
+                    @auth @if(isset($savedAddresses) && $savedAddresses->isNotEmpty()) style="display:none;" @endif @endauth>
                     <h3><i class="fa-solid fa-user"></i> Customer Information</h3>
 
                     <div class="unique-form-group">
                         <label for="customer_name">
                             <i class="fa-solid fa-asterisk"></i> Full Name
                         </label>
-                        <input type="text"
-                               id="customer_name"
-                               class="unique-form-control"
-                               value="{{ Auth::user()->name ?? '' }}"
-                               placeholder="Enter your full name"
-                               required>
+                        <input type="text" id="customer_name" class="unique-form-control"
+                            value="{{ Auth::user()->name ?? '' }}"
+                            placeholder="Enter your full name" required>
                         <div class="error-message" id="customer_name_error"></div>
                     </div>
 
@@ -244,12 +243,9 @@
                             <label for="customer_email">
                                 <i class="fa-solid fa-asterisk"></i> Email Address
                             </label>
-                            <input type="email"
-                                   id="customer_email"
-                                   class="unique-form-control"
-                                   value="{{ Auth::user()->email ?? '' }}"
-                                   placeholder="your@email.com"
-                                   required>
+                            <input type="email" id="customer_email" class="unique-form-control"
+                                value="{{ Auth::user()->email ?? '' }}"
+                                placeholder="your@email.com" required>
                             <div class="error-message" id="customer_email_error"></div>
                         </div>
 
@@ -257,31 +253,27 @@
                             <label for="customer_phone">
                                 <i class="fa-solid fa-asterisk"></i> Phone Number
                             </label>
-                            <input type="tel"
-                                   id="customer_phone"
-                                   class="unique-form-control"
-                                   value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->phone : '' }}"
-                                   placeholder="+44 7XXX XXXXXX"
-                                   required>
+                            <input type="tel" id="customer_phone" class="unique-form-control"
+                                value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->phone : '' }}"
+                                placeholder="+44 7XXX XXXXXX" required>
                             <div class="error-message" id="customer_phone_error"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ── DELIVERY ADDRESS ── -->
-                <div class="unique-checkout-form-section">
+                {{-- ── DELIVERY ADDRESS ── --}}
+                <div class="unique-checkout-form-section"
+                    id="newAddressFormSection"
+                    @auth @if(isset($savedAddresses) && $savedAddresses->isNotEmpty()) style="display:none;" @endif @endauth>
                     <h3><i class="fa-solid fa-location-dot"></i> Delivery Address</h3>
 
                     <div class="unique-form-group">
                         <label for="address_line1">
                             <i class="fa-solid fa-asterisk"></i> Address Line 1
                         </label>
-                        <input type="text"
-                               id="address_line1"
-                               class="unique-form-control"
-                               value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->address_line1 : '' }}"
-                               placeholder="House number and street name"
-                               required>
+                        <input type="text" id="address_line1" class="unique-form-control"
+                            value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->address_line1 : '' }}"
+                            placeholder="House number and street name" required>
                         <div class="error-message" id="address_line1_error"></div>
                     </div>
 
@@ -290,25 +282,19 @@
                             Address Line 2
                             <span style="color:#94a3b8;font-size:13px;font-weight:400">(Optional)</span>
                         </label>
-                        <input type="text"
-                               id="address_line2"
-                               class="unique-form-control"
-                               value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->address_line2 : '' }}"
-                               placeholder="Flat number, floor, etc.">
+                        <input type="text" id="address_line2" class="unique-form-control"
+                            value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->address_line2 : '' }}"
+                            placeholder="Flat number, floor, etc.">
                     </div>
 
-                    {{-- ── Restaurant / Store field ── --}}
                     <div class="unique-form-group">
                         <label for="restaurant_store">
-                            <i class="fa-regular fa-store"></i>
-                            Restaurant / Store Name
+                            <i class="fa-regular fa-store"></i> Restaurant / Store Name
                             <span style="color:#94a3b8;font-size:13px;font-weight:400">(Optional)</span>
                         </label>
-                        <input type="text"
-                               id="restaurant_store"
-                               class="unique-form-control"
-                               value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->restaurant_store : '' }}"
-                               placeholder="e.g. The Spice Garden, Corner Convenience">
+                        <input type="text" id="restaurant_store" class="unique-form-control"
+                            value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->restaurant_store : '' }}"
+                            placeholder="e.g. The Spice Garden, Corner Convenience">
                     </div>
 
                     <div class="unique-form-row">
@@ -316,12 +302,9 @@
                             <label for="city">
                                 <i class="fa-solid fa-asterisk"></i> Town/City
                             </label>
-                            <input type="text"
-                                   id="city"
-                                   class="unique-form-control"
-                                   value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->city : '' }}"
-                                   placeholder="e.g. London"
-                                   required>
+                            <input type="text" id="city" class="unique-form-control"
+                                value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->city : '' }}"
+                                placeholder="e.g. London" required>
                             <div class="error-message" id="city_error"></div>
                         </div>
 
@@ -330,11 +313,9 @@
                                 County
                                 <span style="color:#94a3b8;font-size:13px;font-weight:400">(Optional)</span>
                             </label>
-                            <input type="text"
-                                   id="county"
-                                   class="unique-form-control"
-                                   value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->county : '' }}"
-                                   placeholder="e.g. Greater London">
+                            <input type="text" id="county" class="unique-form-control"
+                                value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->county : '' }}"
+                                placeholder="e.g. Greater London">
                         </div>
                     </div>
 
@@ -342,45 +323,32 @@
                         <label for="postcode">
                             <i class="fa-solid fa-asterisk"></i> Postcode
                         </label>
-                        <input type="text"
-                               id="postcode"
-                               class="unique-form-control"
-                               value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->postcode : '' }}"
-                               placeholder="e.g. SW1A 1AA"
-                               maxlength="8"
-                               style="text-transform: uppercase;"
-                               required>
+                        <input type="text" id="postcode" class="unique-form-control"
+                            value="{{ isset($lastAddress) && $lastAddress ? $lastAddress->postcode : '' }}"
+                            placeholder="e.g. SW1A 1AA" maxlength="8"
+                            style="text-transform: uppercase;" required>
                         <div class="error-message" id="postcode_error"></div>
                     </div>
 
-                    {{-- ── Save Address Toggle (only for logged-in, shown when entering new address) ── --}}
                     @auth
-                    <div class="unique-form-group"
-                         id="saveAddressToggle"
-                         style="{{ (isset($savedAddresses) && $savedAddresses->isNotEmpty()) ? 'display:none' : '' }}">
-
+                    <div class="unique-form-group" id="saveAddressToggle"
+                        style="{{ (isset($savedAddresses) && $savedAddresses->isNotEmpty()) ? 'display:none' : '' }}">
                         <label class="save-address-label">
                             <input type="checkbox" id="save_address">
                             Save this address for future orders
                         </label>
-
                         <div id="saveAddressOptions"
-                             style="display:none;margin-top:12px;padding:14px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">
+                            style="display:none;margin-top:12px;padding:14px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">
                             <div class="unique-form-row" style="margin-bottom:0;gap:12px;">
                                 <div class="unique-form-group" style="margin-bottom:0;">
                                     <label for="address_label">
-                                        Label
-                                        <span style="color:#94a3b8;font-size:12px">(e.g. Home, Work)</span>
+                                        Label <span style="color:#94a3b8;font-size:12px">(e.g. Home, Work)</span>
                                     </label>
-                                    <input type="text"
-                                           id="address_label"
-                                           class="unique-form-control"
-                                           placeholder="e.g. Home">
+                                    <input type="text" id="address_label" class="unique-form-control" placeholder="e.g. Home">
                                 </div>
                                 <div class="unique-form-group" style="margin-bottom:0;display:flex;align-items:flex-end;padding-bottom:4px;">
                                     <label class="save-address-label">
-                                        <input type="checkbox" id="set_as_default">
-                                        Set as default
+                                        <input type="checkbox" id="set_as_default"> Set as default
                                     </label>
                                 </div>
                             </div>
@@ -524,53 +492,35 @@ $(document).ready(function () {
 
     let isProcessing = false;
 
-    // ── Clear field errors on input ──────────────────────────────
     $('.unique-form-control').on('input', function () {
         $(this).removeClass('error');
         $('#' + $(this).attr('id') + '_error').removeClass('show').text('');
     });
 
-    // ── Payment method selection ─────────────────────────────────
     $('.unique-payment-method-card:not(.disabled)').on('click', function () {
         $('.unique-payment-method-card').removeClass('active');
         $(this).addClass('active');
         $(this).find('input[type="radio"]').prop('checked', true);
     });
 
-    // ── Save address checkbox toggle ─────────────────────────────
     $('#save_address').on('change', function () {
         $('#saveAddressOptions').slideToggle(200);
     });
 
-    // ── Prevent Enter key submit ─────────────────────────────────
     $('input, textarea').on('keypress', function (e) {
         if (e.which === 13) e.preventDefault();
     });
 
-    // ── Page leave warning ───────────────────────────────────────
     let formModified = false;
     $('input, textarea').on('change input', function () { formModified = true; });
     $(window).on('beforeunload', function () {
         if (formModified && !isProcessing) return 'Are you sure you want to leave?';
     });
 
-    // ── Auto-fill last address on load ───────────────────────────
-    @if(isset($lastAddress) && $lastAddress)
-    (function () {
-        const addr = @json($lastAddress);
-        // Phone pre-filled via value attribute already
-        // Address fields are pre-filled via value attributes already
-        // Nothing extra needed — all done server-side
-    })();
-    @endif
-
-    // ── Place Order ──────────────────────────────────────────────
     $('#place-order-btn').on('click', async function () {
         if (isProcessing) return;
 
         const btn = $(this);
-
-        // Clear previous errors
         $('.unique-form-control').removeClass('error');
         $('.error-message').removeClass('show').text('');
 
@@ -621,65 +571,65 @@ $(document).ready(function () {
             }
 
         } catch (error) {
-            console.error('Order error:', error);
             isProcessing = false;
             btn.prop('disabled', false).html('<i class="fa-solid fa-shield-check"></i> <span>Place Order</span>');
 
             if (error.status === 422 && error.responseJSON?.errors) {
                 const errors = error.responseJSON.errors;
+
+                // ✅ Auto-reveal hidden sections if they have errors
+                const infoFields    = ['customer_name','customer_email','customer_phone'];
+                const addressFields = ['address_line1','city','postcode'];
+                if (infoFields.some(f => errors[f]))    $('#customerInfoSection').slideDown(250);
+                if (addressFields.some(f => errors[f])) $('#newAddressFormSection').slideDown(250);
+
                 Object.keys(errors).forEach(field => {
                     $('#' + field).addClass('error');
                     $('#' + field + '_error').addClass('show').text(errors[field][0]);
                 });
             } else {
-                let errorMessage = 'Failed to place order. Please try again.';
-                if      (error.status === 429)              errorMessage = error.responseJSON?.message || 'Too many attempts. Please wait.';
-                else if (error.responseJSON?.message)       errorMessage = error.responseJSON.message;
-                else if (error.message)                     errorMessage = error.message;
-
-                Swal.fire({ icon: 'error', title: 'Order Failed', text: errorMessage });
+                let msg = 'Failed to place order. Please try again.';
+                if      (error.status === 429)        msg = error.responseJSON?.message || 'Too many attempts. Please wait.';
+                else if (error.responseJSON?.message) msg = error.responseJSON.message;
+                else if (error.message)               msg = error.message;
+                Swal.fire({ icon: 'error', title: 'Order Failed', text: msg });
             }
         }
     });
-
 });
 
-// ── Saved address helpers (outside ready — called via onclick) ──
+// ── Saved address helpers ──
 
 window.fillAddressForm = function (addr) {
-    $('#customer_phone').val(addr.phone        || '');
-    $('#address_line1').val(addr.address_line1  || '');
-    $('#address_line2').val(addr.address_line2  || '');
+    $('#customer_phone').val(addr.phone             || '');
+    $('#address_line1').val(addr.address_line1       || '');
+    $('#address_line2').val(addr.address_line2       || '');
     $('#restaurant_store').val(addr.restaurant_store || '');
-    $('#city').val(addr.city                    || '');
-    $('#county').val(addr.county                || '');
-    $('#postcode').val(addr.postcode            || '');
-
-    // Clear any field errors
+    $('#city').val(addr.city                         || '');
+    $('#county').val(addr.county                     || '');
+    $('#postcode').val(addr.postcode                 || '');
     $('.unique-form-control').removeClass('error');
     $('.error-message').removeClass('show').text('');
-
-    // Hide save toggle — address is already saved
     $('#saveAddressToggle').hide();
 };
 
 window.selectSavedAddress = function (el) {
     $('.saved-address-card').removeClass('selected');
     $(el).addClass('selected');
-    const raw  = el.getAttribute('data-address');
-    const addr = JSON.parse(raw);
-    window.fillAddressForm(addr);
+    window.fillAddressForm(JSON.parse(el.getAttribute('data-address')));
+    // ✅ Hide both forms when a saved address is selected
+    $('#customerInfoSection').slideUp(250);
+    $('#newAddressFormSection').slideUp(250);
 };
 
 window.selectNewAddress = function (el) {
     $('.saved-address-card').removeClass('selected');
     $(el).addClass('selected');
-
-    // Clear address fields only (keep name/email)
+    // ✅ Show both forms
+    $('#customerInfoSection').slideDown(250);
+    $('#newAddressFormSection').slideDown(250);
     ['customer_phone','address_line1','address_line2','restaurant_store','city','county','postcode']
         .forEach(function (id) { $('#' + id).val(''); });
-
-    // Show save toggle for new address
     $('#saveAddressToggle').show();
     $('#saveAddressOptions').hide();
     $('#save_address').prop('checked', false);
@@ -687,43 +637,74 @@ window.selectNewAddress = function (el) {
 
 window.deleteSavedAddress = function (e, id, btn) {
     e.stopPropagation();
-    if (!confirm('Remove this saved address?')) return;
 
-    $.ajax({
-        url:    '/account/addresses/' + id,
-        method: 'DELETE',
-        data:   { _token: '{{ csrf_token() }}' },
-        success: function () {
-            const card = $(btn).closest('.saved-address-card');
-            const wasSelected = card.hasClass('selected');
+    // ✅ Custom inline confirm toast
+    const card = $(btn).closest('.saved-address-card');
 
-            card.fadeOut(300, function () {
-                $(this).remove();
+    // Remove any existing confirm box first
+    $('.addr-delete-confirm').remove();
 
-                const remaining = $('.saved-address-card:not(.new-address-card)').length;
+    const confirmBox = $(`
+        <div class="addr-delete-confirm">
+            <p><i class="fa-solid fa-triangle-exclamation"></i> Remove this address?</p>
+            <div class="addr-confirm-actions">
+                <button class="addr-confirm-yes" type="button">Yes, Remove</button>
+                <button class="addr-confirm-no" type="button">Cancel</button>
+            </div>
+        </div>
+    `);
 
-                // If no more saved addresses, hide the whole section
-                if (remaining === 0) {
-                    $('#savedAddressSection').fadeOut(200);
-                    $('#saveAddressToggle').show();
-                }
+    card.append(confirmBox);
+    setTimeout(() => confirmBox.addClass('show'), 10);
 
-                // If deleted card was selected, select first available or new-address
-                if (wasSelected) {
-                    const first = $('.saved-address-card:not(.new-address-card)').first();
-                    if (first.length) {
-                        first.addClass('selected');
-                        window.fillAddressForm(JSON.parse(first.attr('data-address')));
-                    } else {
-                        $('.new-address-card').addClass('selected');
-                        window.selectNewAddress($('.new-address-card')[0]);
+    // Cancel
+    confirmBox.find('.addr-confirm-no').on('click', function (ev) {
+        ev.stopPropagation();
+        confirmBox.removeClass('show');
+        setTimeout(() => confirmBox.remove(), 250);
+    });
+
+    // Confirm
+    confirmBox.find('.addr-confirm-yes').on('click', function (ev) {
+        ev.stopPropagation();
+        confirmBox.remove();
+
+        $.ajax({
+            url:    '/account/addresses/' + id,
+            method: 'DELETE',
+            data:   { _token: '{{ csrf_token() }}' },
+            success: function () {
+                const wasSelected = card.hasClass('selected');
+
+                card.fadeOut(300, function () {
+                    $(this).remove();
+                    const remaining = $('.saved-address-card:not(.new-address-card)').length;
+
+                    if (remaining === 0) {
+                        $('#savedAddressSection').fadeOut(200);
+                        $('#saveAddressToggle').show();
+                        $('#customerInfoSection').slideDown(250);
+                        $('#newAddressFormSection').slideDown(250);
                     }
-                }
-            });
-        },
-        error: function () {
-            alert('Failed to remove address. Please try again.');
-        }
+
+                    if (wasSelected) {
+                        const first = $('.saved-address-card:not(.new-address-card)').first();
+                        if (first.length) {
+                            first.addClass('selected');
+                            window.fillAddressForm(JSON.parse(first.attr('data-address')));
+                        } else {
+                            $('.new-address-card').addClass('selected');
+                            window.selectNewAddress($('.new-address-card')[0]);
+                        }
+                    }
+                });
+
+                Toast.success('Address removed successfully');
+            },
+            error: function () {
+                Toast.error('Could not remove address. Please try again.');
+            }
+        });
     });
 };
 </script>

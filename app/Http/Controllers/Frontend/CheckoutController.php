@@ -32,16 +32,16 @@ class CheckoutController extends Controller
         $tax          = $this->calculateTax($subtotal);
         $total        = $subtotal + $shippingCost + $tax;
 
-        // Load saved addresses for authenticated users
-        $savedAddresses = [];
+        $savedAddresses = collect();
         $lastAddress    = null;
+
         if (Auth::check()) {
+            // ✅ Single query — ordered so default is first
             $savedAddresses = UserAddress::where('user_id', Auth::id())
                 ->orderByDesc('is_default')
                 ->orderByDesc('updated_at')
                 ->get();
 
-            // Auto-fill: default address, else most recently used
             $lastAddress = $savedAddresses->firstWhere('is_default', true)
                 ?? $savedAddresses->first();
         }
@@ -57,10 +57,9 @@ class CheckoutController extends Controller
         $key = 'checkout:' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
-            $seconds = RateLimiter::availableIn($key);
             return response()->json([
                 'success' => false,
-                'message' => "Too many order attempts. Please try again in {$seconds} seconds."
+                'message' => 'Too many order attempts. Please try again in ' . RateLimiter::availableIn($key) . ' seconds.'
             ], 429);
         }
 
@@ -101,17 +100,17 @@ class CheckoutController extends Controller
             ], 422);
         }
 
-        // Sanitize
+        // ── Sanitize ───────────────────────────────────────────────
         $validated['customer_name']    = strip_tags($validated['customer_name']);
         $validated['customer_email']   = filter_var($validated['customer_email'], FILTER_SANITIZE_EMAIL);
         $validated['customer_phone']   = strip_tags($validated['customer_phone']);
         $validated['address_line1']    = strip_tags($validated['address_line1']);
-        $validated['address_line2']    = $validated['address_line2'] ? strip_tags($validated['address_line2']) : null;
-        $validated['restaurant_store'] = $validated['restaurant_store'] ? strip_tags($validated['restaurant_store']) : null;
+        $validated['address_line2']    = isset($validated['address_line2'])    ? strip_tags($validated['address_line2'])    : null;
+        $validated['restaurant_store'] = isset($validated['restaurant_store']) ? strip_tags($validated['restaurant_store']) : null;
         $validated['city']             = strip_tags($validated['city']);
-        $validated['county']           = $validated['county'] ? strip_tags($validated['county']) : null;
+        $validated['county']           = isset($validated['county'])           ? strip_tags($validated['county'])           : null;
         $validated['postcode']         = strtoupper(strip_tags($validated['postcode']));
-        $validated['customer_notes']   = $validated['customer_notes'] ? strip_tags($validated['customer_notes']) : null;
+        $validated['customer_notes']   = isset($validated['customer_notes'])   ? strip_tags($validated['customer_notes'])   : null;
 
         DB::beginTransaction();
         try {
@@ -121,20 +120,30 @@ class CheckoutController extends Controller
                 throw new \Exception('Your cart is empty. Please add items before checkout.');
             }
 
+            // ✅ Load ALL products in ONE query instead of Product::find() per item
+            $productIds = array_column($cart, 'id');
+            $products   = Product::whereIn('id', $productIds)
+                ->get()
+                ->keyBy('id'); // keyed by ID for O(1) lookup
+
+            // ── Validate stock ─────────────────────────────────────
             foreach ($cart as $item) {
-                $product = Product::find($item['id']);
-                if (!$product)           throw new \Exception("Product '{$item['name']}' is no longer available.");
+                $product = $products->get($item['id']);
+
+                if (!$product)            throw new \Exception("Product '{$item['name']}' is no longer available.");
                 if (!$product->is_active) throw new \Exception("Product '{$item['name']}' is currently unavailable.");
-                if (!$product->is_weight_based && $product->stock < $item['quantity'])
-                    throw new \Exception("Insufficient stock for '{$item['name']}'. Only {$product->stock} available.");
 
                 if ($product->is_weight_based) {
                     $weight = floatval($item['weight'] ?? 0);
-                    if ($weight <= 0) throw new \Exception("Please select a valid weight for '{$item['name']}'.");
+                    if ($weight <= 0)
+                        throw new \Exception("Please select a valid weight for '{$item['name']}'.");
                     if ($product->min_weight && $weight < $product->min_weight)
                         throw new \Exception("Minimum order weight for '{$item['name']}' is {$product->min_weight}kg.");
                     if ($product->max_weight && $weight > $product->max_weight)
                         throw new \Exception("Maximum order weight for '{$item['name']}' is {$product->max_weight}kg.");
+                } else {
+                    if ($product->stock < $item['quantity'])
+                        throw new \Exception("Insufficient stock for '{$item['name']}'. Only {$product->stock} available.");
                 }
             }
 
@@ -143,12 +152,13 @@ class CheckoutController extends Controller
             $tax          = $this->calculateTax($subtotal);
             $total        = $subtotal + $shippingCost + $tax;
 
+            // ── Duplicate order guard ──────────────────────────────
             if (Auth::check()) {
                 $recentOrder = Order::where('user_id', Auth::id())
                     ->where('customer_email', $validated['customer_email'])
                     ->where('total', $total)
                     ->where('created_at', '>=', now()->subMinutes(5))
-                    ->first();
+                    ->exists(); // ✅ exists() instead of first() — no row hydration needed
                 if ($recentOrder) throw new \Exception('A similar order was recently placed. Please check your orders.');
             }
 
@@ -177,17 +187,22 @@ class CheckoutController extends Controller
                 'paid_at'                  => null,
                 'status'                   => 'pending',
                 'customer_notes'           => $validated['customer_notes'],
-                'restaurant_store'      => $validated['restaurant_store'],
+                'restaurant_store'         => $validated['restaurant_store'],
             ]);
 
+            // ✅ Build all order items and batch insert — 1 query instead of N
+            $orderItems  = [];
+            $stockUpdates = []; // [product_id => qty_to_decrement]
+            $now         = now();
+
             foreach ($cart as $item) {
-                $product       = Product::find($item['id']);
+                $product       = $products->get($item['id']);
                 $isWeightBased = !empty($item['weight']) && floatval($item['weight']) > 0;
                 $itemSubtotal  = $isWeightBased
                     ? $item['price'] * floatval($item['weight'])
                     : $item['price'] * $item['quantity'];
 
-                OrderItem::create([
+                $orderItems[] = [
                     'order_id'     => $order->id,
                     'product_id'   => $item['id'],
                     'product_name' => $item['name'],
@@ -195,22 +210,29 @@ class CheckoutController extends Controller
                     'quantity'     => $isWeightBased ? null : $item['quantity'],
                     'weight'       => $isWeightBased ? floatval($item['weight']) : null,
                     'subtotal'     => round($itemSubtotal, 2),
-                ]);
+                    'created_at'   => $now,
+                    'updated_at'   => $now,
+                ];
 
                 if (!$product->is_weight_based) {
-                    $product->decrement('stock', $item['quantity']);
+                    $stockUpdates[$item['id']] = $item['quantity'];
                 }
+            }
+
+            OrderItem::insert($orderItems); // ✅ single INSERT for all items
+
+            // ✅ Decrement stock per product — one query each but only for qty-based
+            foreach ($stockUpdates as $productId => $qty) {
+                Product::where('id', $productId)->decrement('stock', $qty);
             }
 
             // ── Save address if requested ──────────────────────────
             if (Auth::check() && !empty($validated['save_address'])) {
-                // If saving as default, demote existing default
                 if ($request->boolean('set_as_default')) {
                     UserAddress::where('user_id', Auth::id())
                         ->update(['is_default' => false]);
                 }
 
-                // Check if identical address already exists — update instead of duplicate
                 $existing = UserAddress::where('user_id', Auth::id())
                     ->where('address_line1', $validated['address_line1'])
                     ->where('postcode', $validated['postcode'])
@@ -234,13 +256,13 @@ class CheckoutController extends Controller
                 if ($existing) {
                     $existing->update($addressData);
                 } else {
-                    // Keep max 5 addresses per user — drop oldest if at limit
+                    // ✅ Single query to enforce 5-address limit
                     $count = UserAddress::where('user_id', Auth::id())->count();
                     if ($count >= 5) {
                         UserAddress::where('user_id', Auth::id())
                             ->orderBy('updated_at')
-                            ->first()
-                            ?->delete();
+                            ->limit(1)
+                            ->delete(); // ✅ one DELETE instead of find + delete
                     }
                     UserAddress::create($addressData);
                 }
@@ -256,7 +278,7 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            // ── Send confirmation email ────────────────────────────
+            // ── Send confirmation email (queued — never blocks response) ──
             try {
                 $order->load('items');
                 Mail::to($validated['customer_email'])
@@ -266,7 +288,6 @@ class CheckoutController extends Controller
                     'order_number' => $order->order_number,
                     'error'        => $mailEx->getMessage(),
                 ]);
-                // Do NOT fail the order if mail fails
             }
 
             Log::info('Order placed successfully', [
@@ -299,26 +320,16 @@ class CheckoutController extends Controller
         }
     }
 
-    // ── Private helpers (unchanged) ───────────────────────────────
-    private function calculateSubtotal(array $cart): float
-    {
-        $subtotal = 0;
-        foreach ($cart as $item) {
-            $isWeightBased = !empty($item['weight']) && floatval($item['weight']) > 0;
-            $subtotal += $isWeightBased
-                ? $item['price'] * floatval($item['weight'])
-                : $item['price'] * $item['quantity'];
-        }
-        return round($subtotal, 2);
-    }
+    // ── Private helpers ───────────────────────────────────────────
 
-    private function getCart()
+    private function getCart(): array
     {
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
             if (!$cart) return [];
+
             return $cart->items()
-                ->with(['product.primaryImage'])
+                ->with(['product']) // ✅ removed primaryImage — not needed for checkout logic
                 ->get()
                 ->map(function ($item) {
                     if (!$item->product || !$item->product->is_active) return null;
@@ -337,7 +348,18 @@ class CheckoutController extends Controller
                 })
                 ->filter()->values()->toArray();
         }
+
         return session()->get('cart', []);
+    }
+
+    private function calculateSubtotal(array $cart): float
+    {
+        return round(array_reduce($cart, function ($carry, $item) {
+            $isWeightBased = !empty($item['weight']) && floatval($item['weight']) > 0;
+            return $carry + ($isWeightBased
+                ? $item['price'] * floatval($item['weight'])
+                : $item['price'] * $item['quantity']);
+        }, 0), 2);
     }
 
     private function calculateShipping(float $subtotal): float { return $subtotal >= 500 ? 0 : 5.99; }
@@ -346,35 +368,44 @@ class CheckoutController extends Controller
     public function orders()
     {
         if (!Auth::check()) return redirect()->route('login');
+
         $orders = Order::where('user_id', Auth::id())
             ->with(['items.product.primaryImage'])
-            ->orderByDesc('created_at')->paginate(10);
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
         return view('frontend.orders', compact('orders'));
     }
 
     public function orderDetails($orderNumber)
     {
         if (!Auth::check()) return redirect()->route('login');
+
         $order = Order::where('order_number', $orderNumber)
             ->where('user_id', Auth::id())
             ->with(['items.product.primaryImage'])
             ->firstOrFail();
+
         return view('frontend.order-details', compact('order'));
     }
 
-    // ── Saved Addresses API ───────────────────────────────────────
     public function getSavedAddresses()
     {
         if (!Auth::check()) return response()->json(['addresses' => []]);
+
         $addresses = UserAddress::where('user_id', Auth::id())
-            ->orderByDesc('is_default')->orderByDesc('updated_at')->get();
+            ->orderByDesc('is_default')
+            ->orderByDesc('updated_at')
+            ->get();
+
         return response()->json(['success' => true, 'addresses' => $addresses]);
     }
 
     public function deleteAddress(Request $request, $id)
     {
         $address = UserAddress::where('id', $id)
-            ->where('user_id', Auth::id())->firstOrFail();
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
         $address->delete();
         return response()->json(['success' => true]);
     }
