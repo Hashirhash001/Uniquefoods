@@ -1443,7 +1443,7 @@ input[type=checkbox]~label, input[type=radio]~label{
 
     /* Sort sheet: base anchored above filter bar */
     .shop-mobile-sort-sheet {
-        bottom: calc(56px + 53px + env(safe-area-inset-bottom, 0px)) !important;
+        bottom: calc(0px + 53px + env(safe-area-inset-bottom, 0px)) !important;
         /* 56px = sort sheet offset + 53px = filter bar height */
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                     bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -1460,12 +1460,17 @@ input[type=checkbox]~label, input[type=radio]~label{
 
     /* When bottom nav hides — sort sheet re-anchors above the filter bar at bottom:0 */
     body.bottom-nav-hidden .shop-mobile-sort-sheet {
-        bottom: calc(53px + env(safe-area-inset-bottom, 0px)) !important;
+        bottom: calc(0px + env(safe-area-inset-bottom, 0px)) !important;
     }
 
     /* Ensure sort sheet stays hidden when not open, regardless of nav state */
     .shop-mobile-sort-sheet:not(.open) {
         transform: translateY(150%) !important;
         pointer-events: none !important;
+    }
+
+    .product-badge-discount, .product-badge-stock {
+        font-size: 10px !important;
+        padding: 4px 7px;
     }
 }

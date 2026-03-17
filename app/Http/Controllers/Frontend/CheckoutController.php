@@ -409,4 +409,167 @@ class CheckoutController extends Controller
         $address->delete();
         return response()->json(['success' => true]);
     }
+
+    public function cancelOrder(Request $request, string $orderNumber)
+    {
+        $order = Order::where('order_number', $orderNumber)
+            ->where('user_id', Auth::id())
+            ->with('items.product')
+            ->firstOrFail();
+
+        if ($order->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only pending orders can be cancelled.',
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Restore stock for qty-based items
+            foreach ($order->items as $item) {
+                if ($item->product && !$item->product->is_weight_based && $item->quantity) {
+                    Product::where('id', $item->product_id)
+                        ->increment('stock', $item->quantity);
+                }
+            }
+
+            $order->update([
+                'status'      => 'cancelled',
+                'admin_notes' => 'Cancelled by customer at ' . now()->toDateTimeString(),
+            ]);
+
+            DB::commit();
+
+            Log::info('Order cancelled by customer', [
+                'order_number' => $order->order_number,
+                'user_id'      => Auth::id(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Order #{$order->order_number} has been cancelled.",
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Order cancellation failed', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to cancel the order. Please try again.',
+            ], 500);
+        }
+    }
+
+    public function addressBook()
+    {
+        $addresses = UserAddress::where('user_id', Auth::id())
+            ->orderByDesc('is_default')
+            ->orderByDesc('updated_at')
+            ->get();
+
+        return view('frontend.account.addresses', compact('addresses'));
+    }
+
+    public function storeAddress(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'label'            => 'nullable|string|max:50',
+                'recipient_name'   => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+                'phone'            => 'required|string|min:10|max:20|regex:/^[0-9+\s\-()]+$/',
+                'address_line1'    => 'required|string|max:255',
+                'address_line2'    => 'nullable|string|max:255',
+                'restaurant_store' => 'nullable|string|max:255',
+                'city'             => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+                'county'           => 'nullable|string|max:255',
+                'postcode'         => 'required|string|max:10|regex:/^[A-Z]{1,2}[0-9]{1,2}[A-Z]?\s?[0-9][A-Z]{2}$/i',
+                'is_default'       => 'nullable|boolean',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        }
+
+        $count = UserAddress::where('user_id', Auth::id())->count();
+        if ($count >= 5) {
+            return response()->json(['success' => false, 'message' => 'Maximum 5 addresses allowed.'], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $validated['postcode'] = strtoupper($validated['postcode']);
+
+            if (!empty($validated['is_default']) || $count === 0) {
+                UserAddress::where('user_id', Auth::id())->update(['is_default' => false]);
+                $validated['is_default'] = true;
+            }
+
+            $address = UserAddress::create(array_merge($validated, [
+                'user_id' => Auth::id(),
+                'country' => 'UK',
+            ]));
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Address saved.', 'address' => $address]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Failed to save address.'], 500);
+        }
+    }
+
+    public function updateAddress(Request $request, $id)
+    {
+        $address = UserAddress::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        try {
+            $validated = $request->validate([
+                'label'            => 'nullable|string|max:50',
+                'recipient_name'   => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+                'phone'            => 'required|string|min:10|max:20|regex:/^[0-9+\s\-()]+$/',
+                'address_line1'    => 'required|string|max:255',
+                'address_line2'    => 'nullable|string|max:255',
+                'restaurant_store' => 'nullable|string|max:255',
+                'city'             => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+                'county'           => 'nullable|string|max:255',
+                'postcode'         => 'required|string|max:10|regex:/^[A-Z]{1,2}[0-9]{1,2}[A-Z]?\s?[0-9][A-Z]{2}$/i',
+                'is_default'       => 'nullable|boolean',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $validated['postcode'] = strtoupper($validated['postcode']);
+
+            if (!empty($validated['is_default'])) {
+                UserAddress::where('user_id', Auth::id())->update(['is_default' => false]);
+            }
+
+            $address->update(array_merge($validated, ['country' => 'UK']));
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Address updated.', 'address' => $address->fresh()]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Failed to update address.'], 500);
+        }
+    }
+
+    public function setDefaultAddress($id)
+    {
+        $address = UserAddress::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        DB::beginTransaction();
+        try {
+            UserAddress::where('user_id', Auth::id())->update(['is_default' => false]);
+            $address->update(['is_default' => true]);
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Default address updated.']);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Failed to update default.'], 500);
+        }
+    }
+
 }

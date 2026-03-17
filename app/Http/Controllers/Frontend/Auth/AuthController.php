@@ -71,21 +71,43 @@ class AuthController extends Controller
     {
         $request->validate([
             'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
+            'email'    => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('users', 'email')->whereNull('deleted_at'),
+            ],
             'mobile'   => 'nullable|string|max:20',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
+        // Ensure OTP was actually verified before reaching this step
+        if (!Cache::get('email_verified_' . $request->email)) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['email' => ['Email verification has expired. Please restart registration.']],
+                ], 422);
+            }
+            return back()->withErrors(['email' => 'Email verification expired. Please try again.']);
+        }
+
+        // Clean up any lingering soft-deleted record for this email
+        \App\Models\User::onlyTrashed()->where('email', $request->email)->forceDelete();
+
         $user = User::create([
-            'name'             => $request->name,
-            'email'            => $request->email,
-            'mobile'           => $request->filled('mobile') ? $request->mobile : null,
-            'password'         => Hash::make($request->password),
-            'is_verified'      => true, // already OTP verified
-            'email_verified_at' => now(), // mark as verified since OTP passed
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'mobile'            => $request->filled('mobile') ? $request->mobile : null,
+            'password'          => Hash::make($request->password),
+            'is_verified'       => true,
+            'email_verified_at' => now(),
         ]);
 
-        // Just pass $user — no $verificationUrl needed
+        // Clear OTP verification flag
+        Cache::forget('email_verified_' . $request->email);
+
         Mail::to($user->email)->send(new WelcomeMail($user));
 
         Auth::login($user);
@@ -97,7 +119,7 @@ class AuthController extends Controller
             return response()->json([
                 'success'  => true,
                 'message'  => 'Account created! Welcome to Unique Foods.',
-                'redirect' => route('home')
+                'redirect' => route('home'),
             ]);
         }
 
@@ -108,13 +130,21 @@ class AuthController extends Controller
     // Called after step 1 (email entered)
     public function sendOtp(Request $request)
     {
-        $request->validate(['email' => 'required|email|unique:users,email']);
+        $request->validate([
+            'email' => [
+                'required',
+                'email',
+                // Only block if a non-deleted user exists with this email
+                \Illuminate\Validation\Rule::unique('users', 'email')->whereNull('deleted_at'),
+            ]
+        ]);
+
+        // If a soft-deleted account exists, permanently remove it so the new
+        // registration gets a clean slate
+        \App\Models\User::onlyTrashed()->where('email', $request->email)->forceDelete();
 
         $otp = rand(100000, 999999);
-
-        // Store OTP in cache for 10 minutes
         Cache::put('otp_' . $request->email, $otp, now()->addMinutes(10));
-
         Mail::to($request->email)->send(new OtpMail($otp));
 
         return response()->json(['success' => true, 'message' => 'OTP sent to your email.']);

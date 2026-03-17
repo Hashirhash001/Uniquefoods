@@ -429,6 +429,147 @@
         }
     }
 
+    /* ── Cancel Confirmation Modal ── */
+    .cancel-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .cancel-modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .cancel-modal {
+        background: #fff;
+        border-radius: 20px;
+        padding: 36px 32px 28px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+        transform: scale(0.92) translateY(10px);
+        transition: transform 0.25s ease;
+        text-align: center;
+    }
+
+    .cancel-modal-overlay.active .cancel-modal {
+        transform: scale(1) translateY(0);
+    }
+
+    .cancel-modal-icon {
+        width: 64px;
+        height: 64px;
+        background: #fee2e2;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .cancel-modal-icon i {
+        font-size: 28px;
+        color: #dc2626;
+    }
+
+    .cancel-modal h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .cancel-modal p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.7;
+        margin-bottom: 28px;
+    }
+
+    .cancel-modal p strong {
+        color: #0f508d;
+    }
+
+    .cancel-modal-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .cancel-modal-actions button {
+        flex: 1;
+        padding: 13px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .btn-keep {
+        background: #f1f5f9;
+        color: #475569;
+        border: 2px solid #e2e8f0 !important;
+    }
+
+    .btn-keep:hover {
+        background: #e2e8f0;
+    }
+
+    .btn-confirm-cancel {
+        background: #dc2626;
+        color: #fff;
+    }
+
+    .btn-confirm-cancel:hover {
+        background: #b91c1c;
+    }
+
+    .btn-confirm-cancel:disabled {
+        background: #fca5a5;
+        cursor: not-allowed;
+    }
+
+    /* Order number chip inside modal */
+    .cancel-modal-order-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+        border-radius: 99px;
+        padding: 4px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 400px) {
+        .cancel-modal {
+            padding: 24px 18px 20px;
+        }
+
+        .cancel-modal h2 {
+            font-size: 17px;
+        }
+
+        .cancel-modal-actions {
+            flex-direction: column;
+        }
+    }
+
 </style>
 @endpush
 
@@ -551,8 +692,191 @@
                     <i class="fa-solid fa-money-bill-wave"></i>
                     {{ $order->payment_status === 'paid' ? 'Payment Completed' : 'Cash on Delivery' }}
                 </div>
+
+                @if($order->status === 'pending')
+                    <button
+                        class="cancel-order-btn"
+                        data-order="{{ $order->order_number }}"
+                        data-url="{{ route('orders.cancel', $order->order_number) }}"
+                        style="
+                            margin-top: 16px;
+                            width: 100%;
+                            padding: 12px;
+                            background: #fee2e2;
+                            color: #991b1b;
+                            border: 2px solid #fca5a5;
+                            border-radius: 10px;
+                            font-weight: 700;
+                            font-size: 15px;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        ">
+                        <i class="fa-solid fa-xmark"></i> Cancel Order
+                    </button>
+                @endif
+
             </div>
         </div>
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+(function () {
+    // ── Build modal DOM once ────────────────────────────────────────
+    const overlay = document.createElement('div');
+    overlay.className = 'cancel-modal-overlay';
+    overlay.innerHTML = `
+        <div class="cancel-modal" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle">
+            <div class="cancel-modal-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h2 id="cancelModalTitle">Cancel this order?</h2>
+            <div class="cancel-modal-order-chip">
+                <i class="fa-solid fa-hashtag"></i>
+                <span id="cancelModalOrderNum"></span>
+            </div>
+            <p>This action <strong>cannot be undone</strong>. Your items will be restocked and the order will be permanently cancelled.</p>
+            <div class="cancel-modal-actions">
+                <button class="btn-keep" id="cancelModalKeep">
+                    <i class="fa-solid fa-arrow-left"></i> Keep Order
+                </button>
+                <button class="btn-confirm-cancel" id="cancelModalConfirm">
+                    <i class="fa-solid fa-xmark"></i> Yes, Cancel
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const orderNumEl  = overlay.querySelector('#cancelModalOrderNum');
+    const keepBtn     = overlay.querySelector('#cancelModalKeep');
+    const confirmBtn  = overlay.querySelector('#cancelModalConfirm');
+
+    let activeTriggerBtn = null;
+    let cancelUrl        = null;
+
+    // ── Open ───────────────────────────────────────────────────────
+    function openModal(triggerBtn) {
+        activeTriggerBtn = triggerBtn;
+        cancelUrl        = triggerBtn.dataset.url;
+        orderNumEl.textContent = triggerBtn.dataset.order;
+        overlay.classList.add('active');
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Yes, Cancel';
+        keepBtn.focus();
+    }
+
+    // ── Close ──────────────────────────────────────────────────────
+    function closeModal() {
+        overlay.classList.remove('active');
+        activeTriggerBtn = null;
+        cancelUrl        = null;
+    }
+
+    // ── Dismiss on overlay click ───────────────────────────────────
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeModal();
+    });
+
+    // ── Dismiss on Escape ──────────────────────────────────────────
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal();
+    });
+
+    keepBtn.addEventListener('click', closeModal);
+
+    // ── Confirm cancel ─────────────────────────────────────────────
+    confirmBtn.addEventListener('click', function () {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cancelling...';
+
+        // ✅ Capture BEFORE closeModal() nulls them
+        const triggerBtn = activeTriggerBtn;
+        const url        = cancelUrl;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            closeModal();
+
+            if (data.success) {
+                // ✅ Update status badge text + class
+                const badge = document.querySelector('.status-badge');
+                if (badge) {
+                    badge.className = 'status-badge status-cancelled';
+                    badge.textContent = 'Cancelled';
+                }
+
+                // ✅ Remove the cancel button from DOM
+                if (triggerBtn) triggerBtn.remove();
+
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message || 'Could not cancel order.', 'error');
+                if (triggerBtn) {
+                    triggerBtn.disabled = false;
+                    triggerBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Cancel Order';
+                }
+            }
+        })
+        .catch(() => {
+            closeModal();
+            showToast('Something went wrong. Please try again.', 'error');
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Cancel Order';
+            }
+        });
+    });
+
+    // ── Attach to cancel buttons ───────────────────────────────────
+    document.querySelectorAll('.cancel-order-btn').forEach(btn => {
+        btn.addEventListener('click', () => openModal(btn));
+    });
+
+    // ── Lightweight toast (replaces alert) ────────────────────────
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        const isSuccess = type === 'success';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: ${isSuccess ? '#065f46' : '#991b1b'};
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 90vw;
+            text-align: center;
+        `;
+        toast.innerHTML = `<i class="fa-solid fa-${isSuccess ? 'circle-check' : 'circle-xmark'}"></i> ${message}`;
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+        });
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(10px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+})();
+</script>
+@endpush

@@ -148,11 +148,11 @@
                                     </div>
                                     <div>
                                         <h4>{{ Auth::user()->name }}</h4>
-                                        <p>{{ Auth::user()->email }}</p>
+                                        <p style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->email }}</p>
                                     </div>
                                 </div>
                                 <div class="unique-menu-body">
-                                    <a href="#" class="unique-menu-link">
+                                    <a href="{{ route('account.profile') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-user"></i>
                                         <span>My Profile</span>
                                     </a>
@@ -164,14 +164,14 @@
                                         <i class="fa-regular fa-heart"></i>
                                         <span>Wishlist</span>
                                     </a>
-                                    <a href="#" class="unique-menu-link">
+                                    <a href="{{ route('account.addresses') }}" class="unique-menu-link">
                                         <i class="fa-regular fa-location-dot"></i>
                                         <span>Addresses</span>
                                     </a>
-                                    <a href="#" class="unique-menu-link">
+                                    {{-- <a href="#" class="unique-menu-link">
                                         <i class="fa-regular fa-gear"></i>
                                         <span>Settings</span>
-                                    </a>
+                                    </a> --}}
                                 </div>
                                 <div class="unique-menu-footer">
                                     <form action="{{ route('logout') }}" method="POST" style="width: 100%">
@@ -357,7 +357,7 @@
         </div>
         <div class="unique-sheet-body">
             @auth
-                <a href="#" class="unique-sheet-menu-item">
+                <a href="{{ route('account.profile') }}" class="unique-sheet-menu-item">
                     <i class="fa-regular fa-user"></i>
                     <span>My Profile</span>
                     <i class="fa-regular fa-chevron-right" style="margin-left:auto; color:#9ca3af; font-size:12px;"></i>
@@ -377,16 +377,16 @@
                     <span>My Cart</span>
                     <i class="fa-regular fa-chevron-right" style="margin-left:auto; color:#9ca3af; font-size:12px;"></i>
                 </a>
-                <a href="#" class="unique-sheet-menu-item">
+                <a href="{{ route('account.addresses') }}" class="unique-sheet-menu-item">
                     <i class="fa-regular fa-location-dot"></i>
                     <span>Addresses</span>
                     <i class="fa-regular fa-chevron-right" style="margin-left:auto; color:#9ca3af; font-size:12px;"></i>
                 </a>
-                <a href="#" class="unique-sheet-menu-item">
+                {{-- <a href="#" class="unique-sheet-menu-item">
                     <i class="fa-regular fa-gear"></i>
                     <span>Settings</span>
                     <i class="fa-regular fa-chevron-right" style="margin-left:auto; color:#9ca3af; font-size:12px;"></i>
-                </a>
+                </a> --}}
                 {{-- <div class="unique-sheet-divider"></div> --}}
                 <form action="{{ route('logout') }}" method="POST" style="margin:0;">
                     @csrf

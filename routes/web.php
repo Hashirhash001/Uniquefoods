@@ -17,6 +17,7 @@ use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryControll
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ProductController as FrontendProductController;
+use App\Http\Controllers\Frontend\ProfileController;
 use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Controllers\Frontend\ShopController;
 use App\Http\Controllers\Frontend\WishlistController;
@@ -97,13 +98,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/checkout/process', [CheckoutController::class, 'processOrder'])->name('checkout.process');
     Route::get('/orders', [CheckoutController::class, 'orders'])->name('orders.index');
     Route::get('/orders/{orderNumber}', [CheckoutController::class, 'orderDetails'])->name('orders.details');
+    Route::post('/orders/{orderNumber}/cancel', [CheckoutController::class, 'cancelOrder'])
+    ->name('orders.cancel');
 
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
-    Route::get('/account/addresses', [CheckoutController::class, 'getSavedAddresses']);
-    Route::delete('/account/addresses/{id}', [CheckoutController::class, 'deleteAddress']);
+    // ── Address routes (named now) ──
+    Route::get('/account/addresses', [CheckoutController::class, 'addressBook'])->name('account.addresses');
+    Route::get('/account/addresses/json', [CheckoutController::class, 'getSavedAddresses'])->name('account.addresses.json');
+    Route::post('/account/addresses', [CheckoutController::class, 'storeAddress'])->name('account.addresses.store');
+    Route::put('/account/addresses/{id}', [CheckoutController::class, 'updateAddress'])->name('account.addresses.update');
+    Route::delete('/account/addresses/{id}', [CheckoutController::class, 'deleteAddress'])->name('account.addresses.delete');
+    Route::post('/account/addresses/{id}/default', [CheckoutController::class, 'setDefaultAddress'])->name('account.addresses.default');
+
+    Route::get('/account/profile', [ProfileController::class, 'index'])->name('account.profile');
+    Route::put('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
+    Route::put('/account/profile/password', [ProfileController::class, 'updatePassword'])->name('account.profile.password');
+    Route::post('/account/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('account.profile.avatar');
+    Route::delete('/account/profile/avatar', [ProfileController::class, 'removeAvatar'])->name('account.profile.avatar.remove');
+
+    // Profile OTP routes
+    Route::post('/account/profile/send-change-email-otp', [ProfileController::class, 'sendEmailChangeOtp'])->name('account.profile.email.otp');
+    Route::post('/account/profile/verify-change-email-otp', [ProfileController::class, 'verifyEmailChangeOtp'])->name('account.profile.email.verify');
+    Route::delete('/account/profile/delete', [ProfileController::class, 'deleteAccount'])->name('account.profile.delete');
 });
 
 

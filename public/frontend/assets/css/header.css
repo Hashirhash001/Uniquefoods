@@ -317,6 +317,28 @@ body.header-is-hidden { padding-top: 0 !important; }
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
+     overflow: hidden !important;
+}
+
+.unique-menu-header-user > div {
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+.unique-menu-header-user h4 {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 0 4px !important;
+}
+
+.unique-menu-header-user p {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 12px !important;
+    color: #64748b !important;
+    margin: 0 !important;
 }
 .unique-menu-user-avatar {
     width: 44px !important; height: 44px !important;
@@ -645,7 +667,28 @@ body.header-is-hidden { padding-top: 0 !important; }
     background: white;
     z-index: 1;
 }
-.unique-sheet-user-info { display: flex; align-items: center; gap: 12px; }
+.unique-sheet-user-info { display: flex !important; align-items: center !important; gap: 12px !important; overflow: hidden !important; flex: 1 !important; min-width: 0 !important; }
+.unique-sheet-user-info > div {
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+.unique-sheet-user-info strong {
+    display: block !important;
+    font-size: 15px !important;
+    color: #111827 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.unique-sheet-user-info span {
+    font-size: 12px !important;
+    color: #6b7280 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
 .unique-sheet-avatar {
     width: 44px; height: 44px;
     border-radius: 50%;
