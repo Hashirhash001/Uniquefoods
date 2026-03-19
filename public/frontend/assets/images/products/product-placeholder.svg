@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+
+  <!-- Background -->
+  <rect width="200" height="200" rx="12" fill="#f3f4f6"/>
+
+  <!-- Bag body -->
+  <rect x="52" y="80" width="96" height="82" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="2"/>
+
+  <!-- Bag handles -->
+  <path d="M78 80 C78 58 122 58 122 80" stroke="#d1d5db" stroke-width="5" stroke-linecap="round" fill="none"/>
+
+  <!-- Bag crease lines -->
+  <line x1="100" y1="80" x2="100" y2="162" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- Tag hole -->
+  <circle cx="100" cy="110" r="7" fill="#d1d5db"/>
+  <circle cx="100" cy="110" r="3.5" fill="#f3f4f6"/>
+
+  <!-- Bottom shadow strip -->
+  <rect x="52" y="150" width="96" height="12" rx="0 0 8 8" fill="#d1d5db" opacity="0.6"/>
+
+</svg>

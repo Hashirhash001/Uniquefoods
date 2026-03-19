@@ -55,7 +55,7 @@
     }
 
     .rts-btn.btn-primary:hover {
-        background: linear-gradient(135deg, #0f508d 0%, #15803d 100%);
+        background: linear-gradient(135deg, #0f508d 0%, #0f508d 100%);
         box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
         transform: translateY(-1px);
     }

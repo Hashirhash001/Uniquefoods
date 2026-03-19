@@ -5,24 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class OrderController extends Controller
 {
-    /**
-     * Display orders list with filters
-     */
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'items'])
-            ->withCount('items');
+        $query = Order::with(['user', 'items'])->withCount('items');
 
-        // Search by order number, customer name, email, or phone
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
                   ->orWhere('customer_name', 'like', "%{$search}%")
                   ->orWhere('customer_email', 'like', "%{$search}%")
@@ -30,115 +26,91 @@ class OrderController extends Controller
             });
         }
 
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+        if ($request->filled('status'))         $query->where('status', $request->status);
+        if ($request->filled('payment_status')) $query->where('payment_status', $request->payment_status);
+        if ($request->filled('payment_method')) $query->where('payment_method', $request->payment_method);
+        if ($request->filled('date_from'))      $query->whereDate('created_at', '>=', $request->date_from);
+        if ($request->filled('date_to'))        $query->whereDate('created_at', '<=', $request->date_to);
+        if ($request->filled('min_amount'))     $query->where('total', '>=', $request->min_amount);
+        if ($request->filled('max_amount'))     $query->where('total', '<=', $request->max_amount);
+        if ($request->filled('customer_id'))    $query->where('user_id', $request->customer_id);
 
-        // Filter by payment status
-        if ($request->filled('payment_status')) {
-            $query->where('payment_status', $request->payment_status);
-        }
-
-        // Filter by payment method
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
-
-        // Filter by date range
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        // Filter by price range
-        if ($request->filled('min_amount')) {
-            $query->where('total', '>=', $request->min_amount);
-        }
-        if ($request->filled('max_amount')) {
-            $query->where('total', '<=', $request->max_amount);
-        }
-
-        // Filter by customer
-        if ($request->filled('customer_id')) {
-            $query->where('user_id', $request->customer_id);
-        }
-
-        // Sorting
-        $sortBy = $request->get('sort_by', 'created_at');
+        $sortBy    = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Pagination
-        $orders = $query->paginate(20);
+        $orders = $query->paginate(20)->withQueryString();
 
-        // AJAX Request
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('admin.orders.partials.table-rows', compact('orders'))->render(),
-                'pagination' => $orders->appends($request->except('page'))->links('pagination::bootstrap-5')->render(),
-                'total' => $orders->total(),
-                'showing' => [
-                    'from' => $orders->firstItem(),
-                    'to' => $orders->lastItem(),
-                    'total' => $orders->total()
-                ]
+                'html'       => view('admin.orders.partials.table-rows', compact('orders'))->render(),
+                'pagination' => $orders->links('pagination::bootstrap-5')->render(),
+                'total'      => $orders->total(),
+                'showing'    => [
+                    'from'  => $orders->firstItem() ?? 0,
+                    'to'    => $orders->lastItem()  ?? 0,
+                    'total' => $orders->total(),
+                ],
             ]);
         }
 
-        // Get customers for filter dropdown
         $customers = User::where('is_admin', 0)
             ->whereHas('orders')
             ->select('id', 'name', 'email')
             ->orderBy('name')
             ->get();
 
-        // Statistics for dashboard cards
         $stats = [
-            'total_orders' => Order::count(),
-            'pending_orders' => Order::where('status', 'pending')->count(),
+            'total_orders'      => Order::count(),
+            'pending_orders'    => Order::where('status', 'pending')->count(),
             'processing_orders' => Order::where('status', 'processing')->count(),
-            'completed_orders' => Order::where('status', 'delivered')->count(),
-            'cancelled_orders' => Order::where('status', 'cancelled')->count(),
-            'total_revenue' => Order::where('status', '!=', 'cancelled')->sum('total'),
-            'today_orders' => Order::whereDate('created_at', today())->count(),
-            'today_revenue' => Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->sum('total'),
+            'shipped_orders'    => Order::where('status', 'shipped')->count(),
+            'delivered_orders'  => Order::where('status', 'delivered')->count(),
+            'completed_orders'  => Order::where('status', 'completed')->count(),
+            'cancelled_orders'  => Order::where('status', 'cancelled')->count(),
+            'total_revenue'     => Order::where('status', '!=', 'cancelled')->sum('total'),
+            'today_orders'      => Order::whereDate('created_at', today())->count(),
+            'today_revenue'     => Order::whereDate('created_at', today())
+                                        ->where('status', '!=', 'cancelled')->sum('total'),
         ];
 
         return view('admin.orders.index', compact('orders', 'customers', 'stats'));
     }
 
-    /**
-     * Show order details
-     */
     public function show(Order $order)
     {
         $order->load(['user', 'items.product.primaryImage']);
-
         return view('admin.orders.show', compact('order'));
     }
 
     /**
-     * Update order status
+     * Stream PDF invoice in browser (no print page)
      */
+    public function invoice(Order $order)
+    {
+        $order->load(['user', 'items.product']);
+
+        $pdf = Pdf::loadView('admin.orders.invoice-pdf', compact('order'))
+                  ->setPaper('a4', 'portrait');
+
+        // stream = view in browser; download = force download
+        return $pdf->stream('invoice-' . $order->order_number . '.pdf');
+    }
+
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
-            'admin_notes' => 'nullable|string|max:1000'
+            'status'      => 'required|in:pending,processing,shipped,delivered,completed,cancelled',
+            'admin_notes' => 'nullable|string|max:1000',
         ]);
 
         try {
             $oldStatus = $order->status;
-
             $order->update([
-                'status' => $request->status,
-                'admin_notes' => $request->admin_notes
+                'status'      => $request->status,
+                'admin_notes' => $request->admin_notes,
             ]);
 
-            // If order is cancelled, restore product stock
             if ($request->status === 'cancelled' && $oldStatus !== 'cancelled') {
                 foreach ($order->items as $item) {
                     if ($item->product && !$item->product->is_weight_based) {
@@ -148,54 +120,36 @@ class OrderController extends Controller
             }
 
             return response()->json([
-                'success' => true,
-                'message' => 'Order status updated successfully',
-                'new_status' => $request->status
+                'success'    => true,
+                'message'    => 'Order status updated successfully',
+                'new_status' => $request->status,
             ]);
-
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update order status: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Update payment status
-     */
     public function updatePaymentStatus(Request $request, Order $order)
     {
         $request->validate([
-            'payment_status' => 'required|in:pending,paid,failed,refunded'
+            'payment_status' => 'required|in:pending,paid,failed,refunded',
         ]);
 
         try {
             $order->update([
                 'payment_status' => $request->payment_status,
-                'paid_at' => $request->payment_status === 'paid' ? now() : null
+                'paid_at'        => $request->payment_status === 'paid' ? now() : null,
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Payment status updated successfully'
-            ]);
-
+            return response()->json(['success' => true, 'message' => 'Payment status updated']);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update payment status: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Delete order
-     */
     public function destroy(Order $order)
     {
         try {
-            // Restore stock if order is not cancelled
             if ($order->status !== 'cancelled') {
                 foreach ($order->items as $item) {
                     if ($item->product && !$item->product->is_weight_based) {
@@ -203,39 +157,27 @@ class OrderController extends Controller
                     }
                 }
             }
-
             $order->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Order deleted successfully'
-            ]);
-
+            return response()->json(['success' => true, 'message' => 'Order deleted successfully']);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete order: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Bulk delete orders
-     */
     public function bulkDelete(Request $request)
     {
         $request->validate([
-            'order_ids' => 'required|array',
-            'order_ids.*' => 'exists:orders,id'
+            'order_ids'   => 'required|array',
+            'order_ids.*' => 'exists:orders,id',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $orders = Order::whereIn('id', $request->order_ids)->get();
+            $orders = Order::whereIn('id', $request->order_ids)->with('items.product')->get();
 
             foreach ($orders as $order) {
-                // Restore stock if not cancelled
                 if ($order->status !== 'cancelled') {
                     foreach ($order->items as $item) {
                         if ($item->product && !$item->product->is_weight_based) {
@@ -246,73 +188,42 @@ class OrderController extends Controller
             }
 
             Order::whereIn('id', $request->order_ids)->delete();
-
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => count($request->order_ids) . ' orders deleted successfully'
+                'message' => count($request->order_ids) . ' orders deleted successfully',
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete orders: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Export orders to CSV
-     */
     public function export(Request $request)
     {
         $query = Order::with(['user', 'items']);
 
-        // Apply same filters as index
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%");
-            });
+            $s = $request->search;
+            $query->where(fn($q) => $q->where('order_number', 'like', "%$s%")
+                ->orWhere('customer_name', 'like', "%$s%")
+                ->orWhere('customer_email', 'like', "%$s%"));
         }
+        if ($request->filled('status'))    $query->where('status', $request->status);
+        if ($request->filled('date_from')) $query->whereDate('created_at', '>=', $request->date_from);
+        if ($request->filled('date_to'))   $query->whereDate('created_at', '<=', $request->date_to);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        $orders = $query->get();
-
+        $orders   = $query->latest()->get();
         $filename = 'orders_' . date('Y-m-d_His') . '.csv';
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function() use ($orders) {
+        return response()->streamDownload(function () use ($orders) {
             $file = fopen('php://output', 'w');
-
-            // Headers
             fputcsv($file, [
                 'Order Number', 'Customer Name', 'Email', 'Phone',
                 'Subtotal', 'Shipping', 'Tax', 'Total',
-                'Payment Method', 'Payment Status', 'Order Status',
-                'Date', 'Items Count'
+                'Payment Method', 'Payment Status', 'Order Status', 'Date', 'Items',
             ]);
-
-            // Data rows
             foreach ($orders as $order) {
                 fputcsv($file, [
                     $order->order_number,
@@ -327,23 +238,10 @@ class OrderController extends Controller
                     $order->payment_status,
                     $order->status,
                     $order->created_at->format('Y-m-d H:i:s'),
-                    $order->items->count()
+                    $order->items->count(),
                 ]);
             }
-
             fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
-    /**
-     * Print invoice
-     */
-    public function invoice(Order $order)
-    {
-        $order->load(['user', 'items.product']);
-
-        return view('admin.orders.invoice', compact('order'));
+        }, $filename, ['Content-Type' => 'text/csv']);
     }
 }

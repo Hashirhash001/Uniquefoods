@@ -215,7 +215,7 @@ $(document).ready(function () {
 
         return '<div class="modern-cart-item" data-product-id="' + item.id + '">'
             +     '<div class="item-image">'
-            +         '<img src="' + item.image + '" alt="' + item.name + '" onerror="this.src=\'/frontend/assets/images/grocery/01.jpg\'">'
+            +         '<img src="' + item.image + '" alt="' + item.name + '" onerror="this.src=\'/frontend/assets/images/products/product-placeholder.svg\'">'
             +         outOfStockBadge
             +     '</div>'
             +     '<div class="item-details">'

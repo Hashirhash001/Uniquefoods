@@ -331,7 +331,7 @@
                 container.append(`
                     <div class="unique-cart-item" data-product-id="${item.id}">
                         <img src="${item.image}" alt="${item.name}" class="unique-cart-item-image"
-                            onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
+                            onerror="this.src='/frontend/assets/images/products/product-placeholder.svg'">
                         <div class="unique-cart-item-details">
                             <h5 class="unique-cart-item-name">${item.name}</h5>
                             <div class="unique-cart-item-meta">
@@ -492,6 +492,10 @@
     };
 
     window.Wishlist = Wishlist;
+
+    window.updateWishlistCount = function(count) {
+        Wishlist.updateCount(count);
+    };
 
     // Reset guards before re-fetching so fresh data always loads after user actions
     window.updateWishlistUI = () => {

@@ -617,7 +617,7 @@
             @endphp
 
             @foreach($relatedProducts as $related)
-                <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+                <div class="col-lg-2 col-md-4 col-sm-6 col-6">
                     <div class="shop-product-card">
                         <div class="product-image-wrapper">
                             <a href="{{ route('product.show', $related->slug) }}" class="product-image-link">
@@ -829,6 +829,20 @@ $(document).ready(function() {
     const productPrice = '£{{ number_format($product->price, 2) }}';
     const productImage = '{{ $product->image_url }}';
 
+    function handleProductImgError(img) {
+        img.onerror = null;
+        img.src = window.PLACEHOLDER_IMG;
+        img.classList.add('product-placeholder-image');
+
+        const thumb = img.closest('.product-thumb');
+        if (thumb) {
+            thumb.style.backgroundImage = "url('" + window.PLACEHOLDER_IMG + "')";
+            // Disable zoom cursor on placeholder
+            thumb.style.cursor = 'default';
+            thumb.removeAttribute('onmousemove');
+        }
+    }
+
     // Open share modal
     $('#shareProductBtn').on('click', function() {
         $('#shareModalOverlay').addClass('active');
@@ -968,12 +982,14 @@ $(document).ready(function() {
     // Zoom
     window.zoom = function(e) {
         const zoomer = e.currentTarget;
-        const offsetX = e.offsetX ? e.offsetX : e.touches[0].pageX;
-        const offsetY = e.offsetY ? e.offsetY : e.touches[0].pageY;
-        const x = offsetX / zoomer.offsetWidth * 100;
-        const y = offsetY / zoomer.offsetHeight * 100;
+        // Only apply position tracking — CSS :hover handles background-size
+        const rect = zoomer.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const offsetY = e.clientY - rect.top;
+        const x = (offsetX / zoomer.offsetWidth) * 100;
+        const y = (offsetY / zoomer.offsetHeight) * 100;
         zoomer.style.backgroundPosition = x + '% ' + y + '%';
-    };
+    }
 
     // Close modal with Escape key
     $(document).on('keydown', function(e) {

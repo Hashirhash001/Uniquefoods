@@ -15,6 +15,10 @@ class Banner extends Model
         'image',
         'background_color',
         'text_color',
+        'title_color',
+        'subtitle_color',
+        'description_color',
+        'subtitle_bg_color',
         'sort_order',
         'is_active'
     ];

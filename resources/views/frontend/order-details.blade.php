@@ -625,9 +625,9 @@
                             <img src="{{ $item->product->image_url }}"
                                 alt="{{ $item->product_name }}"
                                 class="order-item-image"
-                                onerror="this.src='{{ asset('frontend/assets/images/grocery/01.jpg') }}'">
+                                onerror="this.src='{{ asset('frontend/assets/images/products/product-placeholder.svg') }}'">
                         @else
-                            <img src="{{ asset('frontend/assets/images/grocery/01.jpg') }}"
+                            <img src="{{ asset('frontend/assets/images/products/product-placeholder.svg') }}"
                                 alt="{{ $item->product_name }}"
                                 class="order-item-image">
                         @endif

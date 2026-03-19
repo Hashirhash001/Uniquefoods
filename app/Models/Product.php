@@ -127,15 +127,29 @@ class Product extends Model
     /* ================= ACCESSORS ================= */
     public function getImageUrlAttribute()
     {
-        if ($this->primaryImage) {
+        // ✅ Use relationLoaded check to avoid N+1 and use cached data
+        if ($this->relationLoaded('primaryImage') && $this->primaryImage) {
             return asset('storage/' . $this->primaryImage->image_path);
         }
 
-        if ($this->images->count() > 0) {
-            return asset('storage/' . $this->images->first()->image_path);
+        if ($this->relationLoaded('images') && $this->images->isNotEmpty()) {
+            $primary = $this->images->firstWhere('is_primary', true);
+            $image   = $primary ?? $this->images->first();
+            return asset('storage/' . $image->image_path);
         }
 
-        return asset('assets/images/grocery/01.jpg'); // fallback
+        // Lazy fallback (when not eager loaded)
+        $primary = $this->images()->where('is_primary', true)->first();
+        if ($primary) {
+            return asset('storage/' . $primary->image_path);
+        }
+
+        $first = $this->images()->first();
+        if ($first) {
+            return asset('storage/' . $first->image_path);
+        }
+
+        return asset('frontend/assets/images/products/product-placeholder.svg');
     }
 
     public function getDiscountPercentageAttribute()

@@ -31,6 +31,10 @@
             overflow-x: hidden;
         }
 
+        .right-area-body-content {
+            overflow: hidden;
+        }
+
         /* ===============================
         MAIN DASHBOARD LAYOUT
         ================================ */
@@ -92,8 +96,8 @@
         }
 
         .sidebar_left.minimized .single-menu-item > a {
-            justify-content: center;
-            padding: 12px 8px;
+            justify-content: flex-start;
+            /* padding: 12px 8px; */
             position: relative;
         }
 
@@ -201,7 +205,7 @@
         }
 
         .submenu-popup li.active a {
-            color: #15803d;
+            color: #0f508d;
             font-weight: 600;
             background: #f0fdf4;
         }
@@ -333,7 +337,7 @@
         .single-menu-item.active > a,
         .single-menu-item.uf-open > a {
             background: linear-gradient(135deg, #b9cfe3 0%, #e4f2ff 100%);
-            color: #15803d;
+            color: #0f508d;
             font-weight: 600;
         }
 
@@ -361,7 +365,7 @@
         .uf-submenu.uf-open > a .uf-arrow {
             transform: rotate(180deg);
             opacity: 1;
-            color: #15803d;
+            color: #0f508d;
         }
 
         /* Disable theme arrows */
@@ -433,9 +437,9 @@
         }
 
         .submenu li.active a {
-            color: #15803d;
+            color: #0f508d;
             font-weight: 600;
-            background: #f0fdf4;
+            background: #f0f3fd;
         }
 
         .submenu li.active a i {
@@ -980,15 +984,15 @@
             </li>
 
             <!-- Customers -->
-            <li class="single-menu-item">
-                <a href="#" data-title="Customers">
+            <li class="single-menu-item {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.customers.index') }}" data-title="Customers">
                     <i class="fas fa-user-friends icon"></i>
                     <span>Customers</span>
                 </a>
             </li>
 
             <!-- Transactions -->
-            <li class="single-menu-item">
+            {{-- <li class="single-menu-item">
                 <a href="#" data-title="Transactions">
                     <i class="fas fa-credit-card icon"></i>
                     <span>Transactions</span>
@@ -1001,7 +1005,7 @@
                     <i class="fas fa-cog icon"></i>
                     <span>Settings</span>
                 </a>
-            </li>
+            </li> --}}
 
         </ul>
     </aside>

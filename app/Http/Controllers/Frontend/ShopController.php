@@ -24,7 +24,7 @@ class ShopController extends Controller
      */
     public function filter(Request $request, PricingService $pricingService)
     {
-        $query = Product::with(['category', 'brand', 'primaryImage', 'images', 'reviews'])
+        $query = Product::with(['category', 'brand', 'images', 'reviews'])
                 ->where('is_active', 1);
 
         // Price filter

@@ -1,572 +1,216 @@
 @extends('admin.layouts.app')
-
-@section('title', 'Order Details - ' . $order->order_number)
+@section('title', 'Order ' . $order->order_number)
 
 @push('styles')
 <style>
-    :root {
-        --primary: #2563eb;
-        --success: #10b981;
-        --danger: #ef4444;
-        --warning: #f59e0b;
-        --info: #3b82f6;
-    }
-
-    .order-details-container {
-        padding: 24px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .badge-shipped {
-        background: #e0f2fe;
-        color: #0369a1;
-    }
-
-    .badge-delivered {
-        background: #d1fae5;
-        color: #059669;
-    }
-
-
-    /* Header */
-    .order-header {
-        background: white;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 24px;
-        border: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .order-header-left h1 {
-        font-size: 28px;
-        font-weight: 700;
-        color: #1e293b;
-        margin: 0 0 8px 0;
-    }
-
-    .order-meta {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-
-    .order-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        color: #64748b;
-    }
-
-    .order-meta-item i {
-        color: #94a3b8;
-    }
-
-    .order-header-actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-    }
-
-    .btn-primary {
-        background: var(--primary);
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #1d4ed8;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    }
-
-    .btn-success {
-        background: var(--success);
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #059669;
-    }
-
-    .btn-secondary {
-        background: #f1f5f9;
-        color: #475569;
-        border: 1px solid #cbd5e1;
-    }
-
-    .btn-secondary:hover {
-        background: #e2e8f0;
-    }
-
-    .btn-danger {
-        background: var(--danger);
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #dc2626;
-    }
-
-    /* Content Grid */
-    .order-content {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 24px;
-    }
-
-    @media (max-width: 1024px) {
-        .order-content {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .card {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-    }
-
-    .card-header {
-        padding: 20px 24px;
-        border-bottom: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .card-header h2 {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1e293b;
-        margin: 0;
-    }
-
-    .card-body {
-        padding: 24px;
-    }
-
-    /* Order Items Table */
-    .order-items-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .order-items-table thead th {
-        text-align: left;
-        padding: 12px 16px;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #64748b;
-        letter-spacing: 0.5px;
-        background: #f8fafc;
-        border-bottom: 2px solid #e2e8f0;
-    }
-
-    .order-items-table tbody td {
-        padding: 16px;
-        border-bottom: 1px solid #e2e8f0;
-        font-size: 14px;
-        vertical-align: middle;
-    }
-
-    .product-cell {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .product-image {
-        width: 60px;
-        height: 60px;
-        border-radius: 8px;
-        object-fit: cover;
-        border: 1px solid #e2e8f0;
-    }
-
-    .product-info {
-        flex: 1;
-    }
-
-    .product-name {
-        font-weight: 500;
-        color: #1e293b;
-        margin-bottom: 4px;
-    }
-
-    .product-sku {
-        font-size: 12px;
-        color: #64748b;
-    }
-
-    /* Order Summary */
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        font-size: 14px;
-    }
-
-    .summary-row:not(:last-child) {
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .summary-row.total {
-        font-size: 18px;
-        font-weight: 700;
-        color: #1e293b;
-        padding-top: 16px;
-        margin-top: 8px;
-        border-top: 2px solid #e2e8f0;
-    }
-
-    .summary-label {
-        color: #64748b;
-    }
-
-    .summary-value {
-        font-weight: 500;
-        color: #1e293b;
-    }
-
-    /* Info Sections */
-    .info-section {
-        margin-bottom: 24px;
-    }
-
-    .info-section:last-child {
-        margin-bottom: 0;
-    }
-
-    .info-section h3 {
-        font-size: 14px;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        font-size: 14px;
-    }
-
-    .info-label {
-        color: #64748b;
-        font-weight: 500;
-    }
-
-    .info-value {
-        color: #1e293b;
-        text-align: right;
-    }
-
-    .address-block {
-        background: #f8fafc;
-        padding: 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        line-height: 1.6;
-        color: #334155;
-    }
-
-    /* Status Badges */
-    .badge {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 12px;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: capitalize;
-    }
-
-    .badge-lg {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-
-    .badge-pending {
-        background: #fef3c7;
-        color: #d97706;
-    }
-
-    .badge-processing {
-        background: #dbeafe;
-        color: #2563eb;
-    }
-
-    .badge-completed {
-        background: #d1fae5;
-        color: #059669;
-    }
-
-    .badge-cancelled {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-
-    .badge-refunded {
-        background: #f3e8ff;
-        color: #9333ea;
-    }
-
-    .badge-paid {
-        background: #d1fae5;
-        color: #059669;
-    }
-
-    .badge-failed {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-
-    /* Status Update Form */
-    .status-form {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .form-group label {
-        font-size: 13px;
-        font-weight: 500;
-        color: #475569;
-    }
-
-    .form-control {
-        padding: 10px 14px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: all 0.2s;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    textarea.form-control {
-        resize: vertical;
-        min-height: 100px;
-    }
-
-    /* Timeline */
-    .timeline {
-        position: relative;
-        padding-left: 32px;
-    }
-
-    .timeline::before {
-        content: '';
-        position: absolute;
-        left: 8px;
-        top: 8px;
-        bottom: 8px;
-        width: 2px;
-        background: #e2e8f0;
-    }
-
-    .timeline-item {
-        position: relative;
-        padding-bottom: 24px;
-    }
-
-    .timeline-item:last-child {
-        padding-bottom: 0;
-    }
-
-    .timeline-dot {
-        position: absolute;
-        left: -28px;
-        top: 4px;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: white;
-        border: 3px solid var(--primary);
-    }
-
-    .timeline-dot.success {
-        border-color: var(--success);
-    }
-
-    .timeline-dot.warning {
-        border-color: var(--warning);
-    }
-
-    .timeline-dot.danger {
-        border-color: var(--danger);
-    }
-
-    .timeline-content {
-        background: #f8fafc;
-        padding: 12px 16px;
-        border-radius: 8px;
-    }
-
-    .timeline-title {
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 4px;
-        font-size: 14px;
-    }
-
-    .timeline-time {
-        font-size: 12px;
-        color: #64748b;
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 40px 24px;
-        color: #64748b;
-    }
-
-    .empty-icon {
-        font-size: 48px;
-        margin-bottom: 12px;
-        opacity: 0.3;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .order-details-container {
-            padding: 16px;
-        }
-
-        .order-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .order-header-actions {
-            width: 100%;
-        }
-
-        .order-header-actions .btn {
-            flex: 1;
-            justify-content: center;
-        }
-
-        .product-cell {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .order-items-table {
-            font-size: 13px;
-        }
-
-        .order-items-table thead th,
-        .order-items-table tbody td {
-            padding: 12px 8px;
-        }
-    }
-
-    /* Loading Spinner */
-    .loading-spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
+    .od-wrap { padding: 20px; max-width: 1400px; margin: 0 auto; }
+
+    /* ── Back bar ── */
+    .od-back {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 13px; font-weight: 600; color: #6b7280;
+        text-decoration: none; margin-bottom: 16px;
+        transition: color 0.2s;
+    }
+    .od-back:hover { color: #08437b; }
+
+    /* ── Header card ── */
+    .od-header {
+        background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+        padding: 20px 24px; margin-bottom: 20px;
+        display: flex; align-items: flex-start; justify-content: space-between;
+        flex-wrap: wrap; gap: 16px;
+    }
+    .od-header-left h1 { font-size: 20px; font-weight: 800; color: #111827; margin: 0 0 8px; }
+    .od-meta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .od-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6b7280; }
+    .od-meta-item i { color: #9ca3af; font-size: 12px; }
+    .od-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    /* ── Buttons ── */
+    .ob {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+        border: none; cursor: pointer; transition: all 0.2s; text-decoration: none;
+        white-space: nowrap;
+    }
+    .ob:hover { transform: translateY(-1px); opacity: 0.88; }
+    .ob-ghost  { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+    .ob-ghost:hover { background: #e5e7eb; opacity: 1; transform: none; color: #374151; }
+    .ob-pdf    { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .ob-pdf:hover { background: #fecaca; opacity: 1; transform: none; }
+    .ob-del    { background: #fee2e2; color: #991b1b; }
+    .ob-blue   { background: #08437b; color: white; }
+    .ob-green  { background: #10b981; color: white; }
+    .ob-sm { padding: 7px 13px; font-size: 12px; }
+
+    /* ── Status badges ── */
+    .sb { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: capitalize; white-space: nowrap; }
+    .sb-pending    { background: #fef3c7; color: #92400e; }
+    .sb-processing { background: #dbeafe; color: #1e40af; }
+    .sb-shipped    { background: #ede9fe; color: #5b21b6; }
+    .sb-delivered  { background: #d1fae5; color: #065f46; }
+    .sb-completed  { background: #d1fae5; color: #065f46; }
+    .sb-cancelled  { background: #fee2e2; color: #991b1b; }
+    .sb-paid       { background: #d1fae5; color: #065f46; }
+    .sb-unpaid     { background: #fef3c7; color: #92400e; }
+    .sb-failed     { background: #fee2e2; color: #991b1b; }
+    .sb-refunded   { background: #f3e8ff; color: #6d28d9; }
+    .sb-lg { font-size: 13px; padding: 6px 14px; }
+
+    /* ── Layout grid ── */
+    .od-grid { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+    @media(max-width:1100px) { .od-grid { grid-template-columns: 1fr; } }
+
+    /* ── Cards ── */
+    .od-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+    .od-card:last-child { margin-bottom: 0; }
+    .od-card-head {
+        padding: 14px 20px; border-bottom: 1px solid #e5e7eb;
+        display: flex; align-items: center; justify-content: space-between;
+        background: #fafafa;
+    }
+    .od-card-head h2 { font-size: 14px; font-weight: 700; color: #111827; margin: 0; display: flex; align-items: center; gap: 7px; }
+    .od-card-head h2 i { color: #08437b; font-size: 13px; }
+    .od-card-body { padding: 20px; }
+    .od-card-body-0 { padding: 0; }
+
+    /* ── Items table ── */
+    .od-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; }
+    .od-table thead th { background: #f9fafb; padding: 10px 14px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid #e5e7eb; text-align: left; white-space: nowrap; }
+    .od-table tbody td { padding: 13px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    .od-table tbody tr:last-child td { border-bottom: none; }
+    .od-table tbody tr:hover td { background: #fafafa; }
+
+    .prod-cell { display: flex; align-items: center; gap: 10px; }
+    .prod-img  { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; border: 1px solid #e5e7eb; flex-shrink: 0; }
+    .prod-img-placeholder { width: 46px; height: 46px; border-radius: 8px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; flex-shrink: 0; }
+    .prod-name { font-weight: 600; color: #111827; font-size: 13px; }
+    .prod-sku  { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+
+    /* ── Summary ── */
+    .sum-row { display: flex; justify-content: space-between; padding: 9px 0; font-size: 13px; border-bottom: 1px solid #f3f4f6; }
+    .sum-row:last-child { border-bottom: none; }
+    .sum-row.sum-total { font-size: 16px; font-weight: 800; color: #111827; border-top: 2px solid #e5e7eb; padding-top: 12px; margin-top: 4px; border-bottom: none; }
+    .sum-label { color: #6b7280; }
+    .sum-val   { font-weight: 600; color: #111827; }
+
+    /* ── Info rows ── */
+    .ir { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+    .ir:last-child { border-bottom: none; }
+    .ir-label { color: #6b7280; font-weight: 500; flex-shrink: 0; margin-right: 12px; }
+    .ir-val   { color: #111827; text-align: right; }
+
+    /* ── Address block ── */
+    .addr-block { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.7; color: #374151; }
+
+    /* ── Section divider ── */
+    .od-section-title { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin: 16px 0 8px; }
+
+    /* ── Form controls ── */
+    .od-select, .od-textarea {
+        width: 100%; border: 1px solid #d1d5db; border-radius: 8px;
+        padding: 9px 12px; font-size: 13px; background: white;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .od-select:focus, .od-textarea:focus {
+        border-color: #08437b; box-shadow: 0 0 0 3px rgba(8,67,123,0.08); outline: none;
+    }
+    .od-textarea { resize: vertical; min-height: 90px; }
+    .od-label { font-size: 12px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; display: block; }
+
+    /* ── Timeline ── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:2px; background:#e5e7eb; }
+    .tl-item { position: relative; padding-bottom: 20px; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot { position: absolute; left: -25px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: white; border: 3px solid #e5e7eb; }
+    .tl-dot.d-blue   { border-color: #08437b; }
+    .tl-dot.d-green  { border-color: #10b981; }
+    .tl-dot.d-amber  { border-color: #f59e0b; }
+    .tl-dot.d-purple { border-color: #8b5cf6; }
+    .tl-dot.d-red    { border-color: #ef4444; }
+    .tl-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; }
+    .tl-title { font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+    .tl-time  { font-size: 11px; color: #9ca3af; }
+
+    /* ── Loading spinner ── */
+    .ld-spin { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spn 0.6s linear infinite; display: inline-block; vertical-align: middle; }
+    @keyframes spn { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ── */
+    @media(max-width:767px) {
+        .od-wrap { padding: 12px; }
+        .od-header { padding: 16px; }
+        .od-header-left h1 { font-size: 17px; }
+        .od-actions { width: 100%; }
+        .od-card-body { padding: 14px; }
+        .prod-cell { flex-wrap: wrap; }
     }
 </style>
 @endpush
 
 @section('content')
-<div class="order-details-container">
-    <!-- Order Header -->
-    <div class="order-header">
-        <div class="order-header-left">
+<div class="od-wrap">
+
+    {{-- Back link --}}
+    <a href="{{ route('admin.orders.index') }}" class="od-back">
+        <i class="fas fa-arrow-left"></i> Back to Orders
+    </a>
+
+    {{-- ── Header ── --}}
+    <div class="od-header">
+        <div class="od-header-left">
             <h1>Order {{ $order->order_number }}</h1>
-            <div class="order-meta">
-                <div class="order-meta-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>{{ $order->created_at->format('M d, Y h:i A') }}</span>
+            <div class="od-meta">
+                <div class="od-meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ $order->created_at->format('d M Y, h:i A') }}
                 </div>
-                <div class="order-meta-item">
+                <div class="od-meta-item">
                     <i class="fas fa-user"></i>
-                    <span>{{ $order->customer_name }}</span>
+                    {{ $order->customer_name }}
                 </div>
-                <div class="order-meta-item">
-                    <span class="badge badge-{{ $order->status }} badge-lg">
-                        {{ ucfirst($order->status) }}
-                    </span>
-                </div>
+                <span class="sb sb-{{ $order->status }} sb-lg">{{ ucfirst($order->status) }}</span>
+                <span class="sb sb-{{ $order->payment_status }} sb-lg">
+                    <i class="fas fa-credit-card" style="font-size:10px;"></i>
+                    {{ ucfirst($order->payment_status) }}
+                </span>
             </div>
         </div>
-        <div class="order-header-actions">
-            <a href="{{ route('admin.orders.invoice', $order) }}" class="btn btn-secondary" target="_blank">
-                <i class="fas fa-print"></i> Print Invoice
+        <div class="od-actions">
+            {{-- Opens PDF in new tab --}}
+            <a href="{{ route('admin.orders.invoice', $order) }}"
+               class="ob ob-pdf" target="_blank">
+                <i class="fas fa-file-pdf"></i> Invoice PDF
             </a>
-            <button class="btn btn-danger" id="deleteOrderBtn">
-                <i class="fas fa-trash"></i> Delete Order
+            <button class="ob ob-del" id="deleteOrderBtn">
+                <i class="fas fa-trash"></i> Delete
             </button>
-            <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Orders
-            </a>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="order-content">
-        <!-- Left Column -->
-        <div class="left-column">
-            <!-- Order Items -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-shopping-cart"></i> Order Items ({{ $order->items->count() }})</h2>
+    {{-- ── Main grid ── --}}
+    <div class="od-grid">
+
+        {{-- ════ LEFT COLUMN ════ --}}
+        <div>
+
+            {{-- Order Items --}}
+            <div class="od-card">
+                <div class="od-card-head">
+                    <h2><i class="fas fa-shopping-bag"></i> Order Items</h2>
+                    <span style="font-size:12px;color:#9ca3af;">{{ $order->items->count() }} item(s)</span>
                 </div>
-                <div class="card-body" style="padding: 0;">
-                    <div style="overflow-x: auto;">
-                        <table class="order-items-table">
+                <div class="od-card-body-0">
+                    <div style="overflow-x:auto;">
+                        <table class="od-table">
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    @if($order->items->where('weight', '!=', null)->count() > 0)
+                                    <th>Unit Price</th>
+                                    <th>Qty</th>
+                                    @if($order->items->whereNotNull('weight')->count() > 0)
                                         <th>Weight</th>
                                     @endif
                                     <th>Subtotal</th>
@@ -574,217 +218,217 @@
                             </thead>
                             <tbody>
                                 @foreach($order->items as $item)
-                                    <tr>
-                                        <td>
-                                            <div class="product-cell">
-                                                @if($item->product && $item->product->primaryImage)
-                                                    <img src="{{ $item->product->image_url }}"
-                                                         alt="{{ $item->product_name }}"
-                                                         class="product-image">
-                                                @else
-                                                    <div class="product-image" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
-                                                        <i class="fas fa-image" style="color: #cbd5e1;"></i>
-                                                    </div>
-                                                @endif
-                                                <div class="product-info">
-                                                    <div class="product-name">{{ $item->product_name }}</div>
-                                                    @if($item->product_sku)
-                                                        <div class="product-sku">SKU: {{ $item->product_sku }}</div>
-                                                    @endif
+                                <tr>
+                                    <td>
+                                        <div class="prod-cell">
+                                            @if($item->product && $item->product->primaryImage)
+                                                <img src="{{ $item->product->image_url }}"
+                                                     alt="{{ $item->product_name }}"
+                                                     class="prod-img">
+                                            @else
+                                                <div class="prod-img-placeholder">
+                                                    <i class="fas fa-image" style="color:#d1d5db;"></i>
                                                 </div>
+                                            @endif
+                                            <div>
+                                                <div class="prod-name">{{ $item->product_name }}</div>
+                                                @if($item->product_sku)
+                                                    <div class="prod-sku">SKU: {{ $item->product_sku }}</div>
+                                                @endif
                                             </div>
-                                        </td>
-                                        <td>${{ number_format($item->price, 2) }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        @if($order->items->where('weight', '!=', null)->count() > 0)
-                                            <td>{{ $item->weight ? number_format($item->weight, 3) . ' kg' : '-' }}</td>
-                                        @endif
-                                        <td><strong>${{ number_format($item->subtotal, 2) }}</strong></td>
-                                    </tr>
+                                        </div>
+                                    </td>
+                                    <td style="white-space:nowrap;">£{{ number_format($item->price, 2) }}</td>
+                                    <td>{{ $item->quantity }}</td>
+                                    @if($order->items->whereNotNull('weight')->count() > 0)
+                                        <td>{{ $item->weight ? number_format($item->weight, 3).' kg' : '—' }}</td>
+                                    @endif
+                                    <td style="font-weight:700;white-space:nowrap;">
+                                        £{{ number_format($item->quantity * $item->price, 2) }}
+                                    </td>
+                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
 
-            <!-- Order Summary -->
-            <div class="card" style="margin-top: 24px;">
-                <div class="card-header">
-                    <h2><i class="fas fa-calculator"></i> Order Summary</h2>
-                </div>
-                <div class="card-body">
-                    <div class="summary-row">
-                        <span class="summary-label">Subtotal</span>
-                        <span class="summary-value">£{{ number_format($order->subtotal, 2) }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Shipping Cost</span>
-                        <span class="summary-value">£{{ number_format($order->shipping_cost, 2) }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Tax (20%)</span>
-                        <span class="summary-value">£{{ number_format($order->tax, 2) }}</span>
-                    </div>
-                    @if($order->discount > 0)
-                        <div class="summary-row">
-                            <span class="summary-label">Discount</span>
-                            <span class="summary-value" style="color: var(--success);">
-                                -${{ number_format($order->discount, 2) }}
+                    {{-- Summary inside the same card --}}
+                    <div style="padding:16px 20px;border-top:1px solid #f3f4f6;max-width:340px;margin-left:auto;">
+                        <div class="sum-row">
+                            <span class="sum-label">Subtotal</span>
+                            <span class="sum-val">£{{ number_format($order->subtotal, 2) }}</span>
+                        </div>
+                        <div class="sum-row">
+                            <span class="sum-label">Shipping</span>
+                            <span class="sum-val">
+                                {{ $order->shipping_cost > 0 ? '£'.number_format($order->shipping_cost,2) : 'Free' }}
                             </span>
                         </div>
-                    @endif
-                    <div class="summary-row total">
-                        <span class="summary-label">Total</span>
-                        <span class="summary-value">£{{ number_format($order->total, 2) }}</span>
+                        @if($order->tax > 0)
+                        <div class="sum-row">
+                            <span class="sum-label">Tax</span>
+                            <span class="sum-val">£{{ number_format($order->tax, 2) }}</span>
+                        </div>
+                        @endif
+                        @if($order->discount > 0)
+                        <div class="sum-row">
+                            <span class="sum-label">Discount</span>
+                            <span class="sum-val" style="color:#059669;">−£{{ number_format($order->discount, 2) }}</span>
+                        </div>
+                        @endif
+                        <div class="sum-row sum-total">
+                            <span>Total</span>
+                            <span style="color:#08437b;">£{{ number_format($order->total, 2) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Customer Information -->
-            <div class="card" style="margin-top: 24px;">
-                <div class="card-header">
-                    <h2><i class="fas fa-user"></i> Customer Information</h2>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Name:</span>
-                        <span class="info-value">{{ $order->customer_name }}</span>
+            {{-- Customer + Shipping in two columns on wide screens --}}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" class="cust-ship-grid">
+
+                {{-- Customer --}}
+                <div class="od-card">
+                    <div class="od-card-head">
+                        <h2><i class="fas fa-user"></i> Customer</h2>
+                        @if($order->user)
+                            <a href="{{ route('admin.customers.show', $order->user) }}"
+                               style="font-size:12px;color:#08437b;text-decoration:none;font-weight:600;">
+                                View Profile →
+                            </a>
+                        @endif
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">Email:</span>
-                        <span class="info-value">{{ $order->customer_email }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Phone:</span>
-                        <span class="info-value">{{ $order->customer_phone }}</span>
-                    </div>
-                    @if($order->user)
-                        <div class="info-row">
-                            <span class="info-label">Account:</span>
-                            <span class="info-value">
-                                <span class="badge badge-success">Registered User</span>
+                    <div class="od-card-body">
+                        <div class="ir">
+                            <span class="ir-label">Name</span>
+                            <span class="ir-val">{{ $order->customer_name }}</span>
+                        </div>
+                        <div class="ir">
+                            <span class="ir-label">Email</span>
+                            <span class="ir-val" style="word-break:break-all;">{{ $order->customer_email }}</span>
+                        </div>
+                        <div class="ir">
+                            <span class="ir-label">Phone</span>
+                            <span class="ir-val">{{ $order->customer_phone ?? '—' }}</span>
+                        </div>
+                        <div class="ir">
+                            <span class="ir-label">Account</span>
+                            <span class="ir-val">
+                                @if($order->user)
+                                    <span class="sb sb-completed" style="font-size:11px;">Registered</span>
+                                @else
+                                    <span class="sb sb-pending" style="font-size:11px;">Guest</span>
+                                @endif
                             </span>
                         </div>
-                    @else
-                        <div class="info-row">
-                            <span class="info-label">Account:</span>
-                            <span class="info-value">
-                                <span class="badge badge-pending">Guest</span>
-                            </span>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Shipping Information -->
-            <div class="card" style="margin-top: 24px;">
-                <div class="card-header">
-                    <h2><i class="fas fa-truck"></i> Shipping Information</h2>
-                </div>
-                <div class="card-body">
-                    <h3>Shipping Address</h3>
-                    <div class="address-block">
-                        <strong>{{ $order->customer_name }}</strong><br>
-                        {{ $order->shipping_address }}<br>
-                        {{ $order->shipping_city }}, {{ $order->shipping_postcode }}<br>
-                        {{ $order->shipping_country }}
                     </div>
+                </div>
 
-                    @if($order->customer_notes)
-                        <div style="margin-top: 20px;">
-                            <h3>Customer Notes</h3>
-                            <div class="address-block">
+                {{-- Shipping --}}
+                <div class="od-card">
+                    <div class="od-card-head">
+                        <h2><i class="fas fa-truck"></i> Shipping</h2>
+                    </div>
+                    <div class="od-card-body">
+                        <div class="addr-block">
+                            <strong>{{ $order->customer_name }}</strong><br>
+                            {{ $order->shipping_address }}<br>
+                            @if($order->shipping_city) {{ $order->shipping_city }}, @endif
+                            {{ $order->shipping_postcode }}<br>
+                            {{ $order->shipping_country }}
+                        </div>
+                        @if($order->customer_notes)
+                            <div class="od-section-title" style="margin-top:14px;">Customer Notes</div>
+                            <div class="addr-block" style="background:#fffbeb;border-color:#fde68a;">
                                 {{ $order->customer_notes }}
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- Right Column -->
-        <div class="right-column">
-            <!-- Update Order Status -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-edit"></i> Update Status</h2>
+        {{-- ════ RIGHT COLUMN ════ --}}
+        <div>
+
+            {{-- Update Order Status --}}
+            <div class="od-card">
+                <div class="od-card-head">
+                    <h2><i class="fas fa-pen"></i> Update Status</h2>
                 </div>
-                <div class="card-body">
-                    <form id="updateStatusForm" class="status-form">
+                <div class="od-card-body">
+                    <form id="updateStatusForm">
                         @csrf
                         @method('PUT')
-
-                        <div class="form-group">
-                            <label>Order Status</label>
-                            <select name="status" class="form-control" required>
-                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
-                                <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
-                                <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <div style="margin-bottom:14px;">
+                            <label class="od-label">Order Status</label>
+                            <select name="status" class="od-select" required>
+                                @foreach(['pending','processing','shipped','delivered','completed','cancelled'] as $s)
+                                    <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>
+                                        {{ ucfirst($s) }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
-
-                        <div class="form-group">
-                            <label>Admin Notes (Optional)</label>
-                            <textarea name="admin_notes" class="form-control" placeholder="Add internal notes...">{{ $order->admin_notes }}</textarea>
+                        <div style="margin-bottom:14px;">
+                            <label class="od-label">Admin Notes</label>
+                            <textarea name="admin_notes" class="od-textarea"
+                                      placeholder="Internal notes (not visible to customer)…">{{ $order->admin_notes }}</textarea>
                         </div>
-
-                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
-                            <i class="fas fa-save"></i> Update Order Status
+                        <button type="submit" class="ob ob-blue" id="updateStatusBtn"
+                                style="width:100%;justify-content:center;">
+                            <i class="fas fa-save"></i> Save Order Status
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Payment Information -->
-            <div class="card" style="margin-top: 24px;">
-                <div class="card-header">
-                    <h2><i class="fas fa-credit-card"></i> Payment Info</h2>
+            {{-- Payment Info + Update --}}
+            <div class="od-card">
+                <div class="od-card-head">
+                    <h2><i class="fas fa-credit-card"></i> Payment</h2>
                 </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Method:</span>
-                        <span class="info-value">{{ ucfirst(str_replace('_', ' ', $order->payment_method)) }}</span>
+                <div class="od-card-body">
+                    <div class="ir">
+                        <span class="ir-label">Method</span>
+                        <span class="ir-val">{{ ucfirst(str_replace('_',' ',$order->payment_method)) }}</span>
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">Status:</span>
-                        <span class="info-value">
-                            <span class="badge badge-{{ $order->payment_status }}">
-                                {{ ucfirst($order->payment_status) }}
-                            </span>
+                    <div class="ir">
+                        <span class="ir-label">Status</span>
+                        <span class="ir-val">
+                            <span class="sb sb-{{ $order->payment_status }}">{{ ucfirst($order->payment_status) }}</span>
                         </span>
                     </div>
                     @if($order->paid_at)
-                        <div class="info-row">
-                            <span class="info-label">Paid At:</span>
-                            <span class="info-value">{{ $order->paid_at->format('M d, Y h:i A') }}</span>
-                        </div>
+                    <div class="ir">
+                        <span class="ir-label">Paid At</span>
+                        <span class="ir-val">{{ $order->paid_at->format('d M Y h:i A') }}</span>
+                    </div>
                     @endif
                     @if($order->stripe_payment_intent_id)
-                        <div class="info-row">
-                            <span class="info-label">Payment ID:</span>
-                            <span class="info-value" style="font-size: 12px; word-break: break-all;">
-                                {{ $order->stripe_payment_intent_id }}
-                            </span>
-                        </div>
+                    <div class="ir">
+                        <span class="ir-label">Payment ID</span>
+                        <span class="ir-val" style="font-size:11px;word-break:break-all;max-width:160px;">
+                            {{ $order->stripe_payment_intent_id }}
+                        </span>
+                    </div>
                     @endif
 
-                    <div style="margin-top: 20px;">
+                    <div style="border-top:1px solid #f3f4f6;margin:14px 0;padding-top:14px;">
                         <form id="updatePaymentForm">
                             @csrf
                             @method('PUT')
-                            <div class="form-group">
-                                <label>Update Payment Status</label>
-                                <select name="payment_status" class="form-control" required>
-                                    <option value="pending" {{ $order->payment_status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="paid" {{ $order->payment_status == 'paid' ? 'selected' : '' }}>Paid</option>
-                                    <option value="failed" {{ $order->payment_status == 'failed' ? 'selected' : '' }}>Failed</option>
-                                    <option value="refunded" {{ $order->payment_status == 'refunded' ? 'selected' : '' }}>Refunded</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-success" style="width: 100%; justify-content: center;">
+                            <label class="od-label">Update Payment Status</label>
+                            <select name="payment_status" class="od-select" style="margin-bottom:10px;" required>
+                                @foreach(['pending','paid','failed','refunded'] as $ps)
+                                    <option value="{{ $ps }}" {{ $order->payment_status === $ps ? 'selected' : '' }}>
+                                        {{ ucfirst($ps) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="ob ob-green" id="updatePayBtn"
+                                    style="width:100%;justify-content:center;">
                                 <i class="fas fa-check"></i> Update Payment
                             </button>
                         </form>
@@ -792,185 +436,175 @@
                 </div>
             </div>
 
-            <!-- Order Timeline -->
-            <div class="card" style="margin-top: 24px;">
-                <div class="card-header">
-                    <h2><i class="fas fa-history"></i> Order Activity</h2>
+            {{-- Timeline --}}
+            <div class="od-card">
+                <div class="od-card-head">
+                    <h2><i class="fas fa-stream"></i> Order Activity</h2>
                 </div>
-                <div class="card-body">
+                <div class="od-card-body">
                     <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-dot success"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">Order Placed</div>
-                                <div class="timeline-time">{{ $order->created_at->format('M d, Y h:i A') }}</div>
+
+                        <div class="tl-item">
+                            <div class="tl-dot d-blue"></div>
+                            <div class="tl-box">
+                                <div class="tl-title">Order Placed</div>
+                                <div class="tl-time">{{ $order->created_at->format('d M Y, h:i A') }}</div>
                             </div>
                         </div>
 
-                        @if($order->payment_status == 'paid' && $order->paid_at)
-                            <div class="timeline-item">
-                                <div class="timeline-dot success"></div>
-                                <div class="timeline-content">
-                                    <div class="timeline-title">Payment Confirmed</div>
-                                    <div class="timeline-time">{{ $order->paid_at->format('M d, Y h:i A') }}</div>
-                                </div>
+                        @if($order->payment_status === 'paid' && $order->paid_at)
+                        <div class="tl-item">
+                            <div class="tl-dot d-green"></div>
+                            <div class="tl-box">
+                                <div class="tl-title">Payment Confirmed</div>
+                                <div class="tl-time">{{ $order->paid_at->format('d M Y, h:i A') }}</div>
                             </div>
+                        </div>
                         @endif
 
-                        @if($order->status == 'processing')
-                            <div class="timeline-item">
-                                <div class="timeline-dot warning"></div>
-                                <div class="timeline-content">
-                                    <div class="timeline-title">Order Processing</div>
-                                    <div class="timeline-time">{{ $order->updated_at->format('M d, Y h:i A') }}</div>
-                                </div>
+                        @if(in_array($order->status, ['processing','shipped','delivered','completed','cancelled']))
+                        <div class="tl-item">
+                            <div class="tl-dot
+                                {{ $order->status === 'cancelled' ? 'd-red' :
+                                   ($order->status === 'processing' ? 'd-amber' : 'd-green') }}">
                             </div>
+                            <div class="tl-box">
+                                <div class="tl-title">
+                                    @php
+                                        $statusLabels = [
+                                            'processing' => 'Order Processing',
+                                            'shipped'    => 'Order Shipped',
+                                            'delivered'  => 'Order Delivered',
+                                            'completed'  => 'Order Completed',
+                                            'cancelled'  => 'Order Cancelled',
+                                        ];
+                                    @endphp
+                                    {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
+                                </div>
+                                <div class="tl-time">{{ $order->updated_at->format('d M Y, h:i A') }}</div>
+                                @if($order->admin_notes)
+                                    <div style="font-size:12px;color:#6b7280;margin-top:5px;font-style:italic;">
+                                        "{{ $order->admin_notes }}"
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                         @endif
 
-                        @if(in_array($order->status, ['shipped', 'delivered']))
-                            <div class="timeline-item">
-                                <div class="timeline-dot {{ $order->status == 'delivered' ? 'success' : 'warning' }}"></div>
-                                <div class="timeline-content">
-                                    <div class="timeline-title">Order {{ ucfirst($order->status) }}</div>
-                                    <div class="timeline-time">{{ $order->updated_at->format('M d, Y h:i A') }}</div>
-                                </div>
-                            </div>
-                        @endif
-
-                        @if($order->status == 'cancelled')
-                            <div class="timeline-item">
-                                <div class="timeline-dot danger"></div>
-                                <div class="timeline-content">
-                                    <div class="timeline-title">Order Cancelled</div>
-                                    <div class="timeline-time">{{ $order->updated_at->format('M d, Y h:i A') }}</div>
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
+
 </div>
 @endsection
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // Update Order Status
+$(function() {
+
+    // ── Update order status ──────────────────────────────────────────────
     $('#updateStatusForm').on('submit', function(e) {
         e.preventDefault();
-
-        const $btn = $(this).find('button[type="submit"]');
-        const originalText = $btn.html();
-        $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Updating...');
+        const $btn = $('#updateStatusBtn');
+        $btn.prop('disabled', true).html('<span class="ld-spin"></span> Saving…');
 
         $.ajax({
-            url: '{{ route("admin.orders.update-status", $order) }}',
+            url:  '{{ route("admin.orders.update-status", $order) }}',
             type: 'PUT',
             data: $(this).serialize(),
-            success: function(response) {
-                if (response.success) {
+            success: function(r) {
+                if (r.success) {
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        location.reload();
-                    });
+                        icon: 'success', title: 'Updated!', text: r.message,
+                        confirmButtonColor: '#08437b', timer: 1600, showConfirmButton: false
+                    }).then(() => location.reload());
                 }
             },
             error: function(xhr) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: xhr.responseJSON?.message || 'Failed to update order status'
-                });
-                $btn.prop('disabled', false).html(originalText);
+                Swal.fire({ icon:'error', title:'Error', text: xhr.responseJSON?.message ?? 'Failed to update', confirmButtonColor:'#08437b' });
+                $btn.prop('disabled', false).html('<i class="fas fa-save"></i> Save Order Status');
             }
         });
     });
 
-    // Update Payment Status
+    // ── Update payment status ────────────────────────────────────────────
     $('#updatePaymentForm').on('submit', function(e) {
         e.preventDefault();
-
-        const $btn = $(this).find('button[type="submit"]');
-        const originalText = $btn.html();
-        $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Updating...');
+        const $btn = $('#updatePayBtn');
+        $btn.prop('disabled', true).html('<span class="ld-spin"></span> Saving…');
 
         $.ajax({
-            url: '{{ route("admin.orders.update-payment-status", $order) }}',
+            url:  '{{ route("admin.orders.update-payment-status", $order) }}',
             type: 'PUT',
             data: $(this).serialize(),
-            success: function(response) {
-                if (response.success) {
+            success: function(r) {
+                if (r.success) {
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        location.reload();
-                    });
+                        icon: 'success', title: 'Updated!', text: r.message,
+                        confirmButtonColor: '#08437b', timer: 1600, showConfirmButton: false
+                    }).then(() => location.reload());
                 }
             },
             error: function(xhr) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: xhr.responseJSON?.message || 'Failed to update payment status'
-                });
-                $btn.prop('disabled', false).html(originalText);
+                Swal.fire({ icon:'error', title:'Error', text: xhr.responseJSON?.message ?? 'Failed to update', confirmButtonColor:'#08437b' });
+                $btn.prop('disabled', false).html('<i class="fas fa-check"></i> Update Payment');
             }
         });
     });
 
-    // Delete Order
+    // ── Delete — requires typing DELETE ─────────────────────────────────
     $('#deleteOrderBtn').on('click', function() {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: 'Delete Order {{ $order->order_number }}?',
+            html: `<p style="color:#6b7280;font-size:14px;margin-bottom:12px;">
+                       This is irreversible. Stock will be restored automatically for non-cancelled orders.
+                   </p>
+                   <p style="font-size:13px;font-weight:600;">
+                       Type <span style="color:#ef4444;font-family:monospace;">DELETE</span> to confirm:
+                   </p>`,
+            input: 'text',
+            inputPlaceholder: 'Type DELETE',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '{{ route("admin.orders.destroy", $order) }}',
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Deleted!',
-                                text: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = '{{ route("admin.orders.index") }}';
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: xhr.responseJSON?.message || 'Failed to delete order'
-                        });
-                    }
-                });
+            confirmButtonText: '<i class="fas fa-trash"></i> Delete Order',
+            preConfirm: (val) => {
+                if (val !== 'DELETE')
+                    Swal.showValidationMessage('You must type DELETE exactly to confirm');
             }
+        }).then(result => {
+            if (!result.isConfirmed) return;
+
+            $.ajax({
+                url:  '{{ route("admin.orders.destroy", $order) }}',
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function(r) {
+                    if (r.success) {
+                        Swal.fire({
+                            icon: 'success', title: 'Deleted', text: r.message,
+                            confirmButtonColor: '#08437b', timer: 1600, showConfirmButton: false
+                        }).then(() => window.location.href = '{{ route("admin.orders.index") }}');
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({ icon:'error', title:'Error', text: xhr.responseJSON?.message ?? 'Delete failed', confirmButtonColor:'#08437b' });
+                }
+            });
         });
     });
+
 });
 </script>
+
+{{-- Responsive: stack customer/shipping on mobile --}}
+<style>
+    @media(max-width:640px) {
+        .cust-ship-grid { grid-template-columns: 1fr !important; }
+    }
+</style>
 @endpush

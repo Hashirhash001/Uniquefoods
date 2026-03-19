@@ -448,12 +448,49 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Text Color</label>
+                            <label class="form-label">Fallback Text Color</label>
                             <div class="color-input-group">
                                 <input type="color" id="textColor" value="#000000">
                                 <input type="text" name="text_color" id="textColorText" class="form-control" value="#000000">
                             </div>
-                            <small class="form-text">Color for title, subtitle and description</small>
+                            <small class="form-text">Used as fallback if individual colors below are not set</small>
+                        </div>
+
+                        {{-- ✅ NEW: Individual element colors --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Title Color</label>
+                            <div class="color-input-group">
+                                <input type="color" id="titleColor" value="#111827">
+                                <input type="text" name="title_color" id="titleColorText" class="form-control" value="#111827">
+                            </div>
+                            <small class="form-text">Color for the main heading</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Description Color</label>
+                            <div class="color-input-group">
+                                <input type="color" id="descriptionColor" value="#374151">
+                                <input type="text" name="description_color" id="descriptionColorText" class="form-control" value="#374151">
+                            </div>
+                            <small class="form-text">Color for the description paragraph</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Subtitle Text Color</label>
+                            <div class="color-input-group">
+                                <input type="color" id="subtitleColor" value="#08437b">
+                                <input type="text" name="subtitle_color" id="subtitleColorText" class="form-control" value="#08437b">
+                            </div>
+                            <small class="form-text">Color of the subtitle/promo text</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Subtitle Background Color</label>
+                            <div class="color-input-group">
+                                <input type="color" id="subtitleBgColor" value="#ffffff">
+                                <input type="text" name="subtitle_bg_color" id="subtitleBgColorText" class="form-control" value="#ffffff">
+                            </div>
+                            <small class="form-text">Background pill color behind the subtitle</small>
                         </div>
                     </div>
                 </div>
@@ -484,7 +521,8 @@
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" name="is_active" id="isActive" value="1" checked>
                                 <label class="checkbox-label" for="isActive">
-                                    <i class="fas fa-check-circle" style="color: #08437b;"></i> Publish this banner
+                                    {{-- <i class="fas fa-check-circle" style="color: #08437b;"></i>  --}}
+                                    Publish this banner
                                 </label>
                             </div>
                             <small class="form-text">Only active banners are displayed on the website</small>
@@ -511,20 +549,29 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Color picker sync
-    $('#bgColor').on('input', function() {
-        $('#bgColorText').val($(this).val());
-    });
-    $('#bgColorText').on('input', function() {
-        $('#bgColor').val($(this).val());
-    });
+    // Background color
+    $('#bgColor').on('input', function() { $('#bgColorText').val($(this).val()); });
+    $('#bgColorText').on('input', function() { $('#bgColor').val($(this).val()); });
 
-    $('#textColor').on('input', function() {
-        $('#textColorText').val($(this).val());
-    });
-    $('#textColorText').on('input', function() {
-        $('#textColor').val($(this).val());
-    });
+    // Fallback text color
+    $('#textColor').on('input', function() { $('#textColorText').val($(this).val()); });
+    $('#textColorText').on('input', function() { $('#textColor').val($(this).val()); });
+
+    // ✅ Title color
+    $('#titleColor').on('input', function() { $('#titleColorText').val($(this).val()); });
+    $('#titleColorText').on('input', function() { $('#titleColor').val($(this).val()); });
+
+    // ✅ Description color
+    $('#descriptionColor').on('input', function() { $('#descriptionColorText').val($(this).val()); });
+    $('#descriptionColorText').on('input', function() { $('#descriptionColor').val($(this).val()); });
+
+    // ✅ Subtitle text color
+    $('#subtitleColor').on('input', function() { $('#subtitleColorText').val($(this).val()); });
+    $('#subtitleColorText').on('input', function() { $('#subtitleColor').val($(this).val()); });
+
+    // ✅ Subtitle background color
+    $('#subtitleBgColor').on('input', function() { $('#subtitleBgColorText').val($(this).val()); });
+    $('#subtitleBgColorText').on('input', function() { $('#subtitleBgColor').val($(this).val()); });
 
     // ✅ FIX: Image upload - use native click, not jQuery
     const imageUploadBox = document.getElementById('imageUploadBox');

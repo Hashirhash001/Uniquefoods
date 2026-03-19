@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\CustomerGroupController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GroupPricingController;
@@ -174,6 +175,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
+            ->name('dashboard.stats');
+
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
         // Products
@@ -233,5 +237,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/export/csv', [OrderController::class, 'export'])->name('export');
             Route::get('/{order}/invoice', [OrderController::class, 'invoice'])->name('invoice');
         });
+
+        // Customers
+        Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('customers/{user}', [CustomerController::class, 'show'])->name('customers.show');
+
     });
 });

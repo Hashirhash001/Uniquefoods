@@ -99,6 +99,12 @@
 // Products already available from server — no AJAX needed on load
 const serverProducts = @json($products->values());
 
+function handleWishlistImgError(img) {
+    img.onerror = null;
+    img.src = '{{ asset("frontend/assets/images/products/product-placeholder.svg") }}';
+    img.classList.add('wishlist-placeholder-image');
+}
+
 $(document).ready(function() {
     if (serverProducts.length > 0) {
         displayWishlist(serverProducts);
@@ -132,7 +138,11 @@ $(document).ready(function() {
 
                         <div class="card-image">
                             <a href="/product/${product.slug}">
-                                <img src="${product.image_url}" alt="${product.name}" class="product-img" loading="lazy">
+                                <img src="${product.image_url}"
+                                    alt="${product.name}"
+                                    class="product-img"
+                                    loading="lazy"
+                                    onerror="handleWishlistImgError(this)">
                             </a>
                             ${product.stock <= 0 ? '<span class="stock-badge out">Out of Stock</span>' : ''}
                         </div>
@@ -209,8 +219,8 @@ $(document).ready(function() {
             data: { _token: '{{ csrf_token() }}', product_id: productId },
             success: function(response) {
                 if (response.success) {
-                    if (typeof window.updateWishlistCount === 'function') {
-                        window.updateWishlistCount(response.count);
+                    if (typeof window.Wishlist !== 'undefined') {
+                        window.Wishlist.updateCount(response.count);
                     }
                     card.slideUp(300, function() {
                         $(this).remove();

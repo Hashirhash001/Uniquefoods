@@ -761,3 +761,11 @@
         --bs-gutter-y: 8px !important;
     }
 }
+
+.modern-wishlist-card .product-img.wishlist-placeholder-image {
+    object-fit: contain;
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px dashed #e5e7eb;
+}

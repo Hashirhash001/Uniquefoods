@@ -1474,3 +1474,17 @@ input[type=checkbox]~label, input[type=radio]~label{
         padding: 4px 7px;
     }
 }
+
+.product-main-image.product-placeholder-image {
+    object-fit: contain;
+    background: #f9fafb;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px dashed #e5e7eb;
+}
+
+.product-image-wrapper {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+}

@@ -177,28 +177,39 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        // Check if category has products
+        // Check parent category's own products
         if ($category->products()->count() > 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cannot delete category with products. Please reassign products first.'
+                'message' => 'Cannot delete: this category has products. Reassign them first.'
             ], 422);
         }
 
-        // Delete image if exists
+        // Check if any child category has products
+        $childWithProducts = $category->children()
+            ->whereHas('products')
+            ->pluck('name')
+            ->first();
+
+        if ($childWithProducts) {
+            return response()->json([
+                'success' => false,
+                'message' => "Cannot delete: subcategory \"{$childWithProducts}\" has products. Reassign them first."
+            ], 422);
+        }
+
+        // Delete images
         if ($category->image) {
             Storage::disk('public')->delete($category->image);
         }
 
-        // Delete all child categories and their images
         foreach ($category->children as $child) {
             if ($child->image) {
                 Storage::disk('public')->delete($child->image);
             }
         }
-        $category->children()->delete();
 
-        // Delete the category
+        $category->children()->delete();
         $category->delete();
 
         return response()->json([
@@ -206,6 +217,7 @@ class CategoryController extends Controller
             'message' => 'Category and its subcategories deleted successfully'
         ]);
     }
+
 
     /**
      * Check if setting parent would create circular reference

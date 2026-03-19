@@ -128,7 +128,7 @@
                                     </div>
                                 ` : ''}
                                 <img src="${product.image_url}" alt="${product.name}" class="product-main-image"
-                                     onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
+                                     onerror="this.src='/frontend/assets/images/products/product-placeholder.svg'">
                             </a>
                             <div class="product-quick-actions">
                                 <button class="quick-action-btn wishlist-toggle-btn"

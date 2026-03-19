@@ -352,7 +352,9 @@ $(document).ready(function() {
     });
 
     function handleImgError(img) {
-        img.src = '/frontend/assets/images/grocery/01.jpg';
+        img.onerror = null;
+        img.src = '{{ asset("frontend/assets/images/products/product-placeholder.svg") }}';
+        img.classList.add('product-placeholder-image');
     }
 
     window.handleImgError = handleImgError;

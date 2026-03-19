@@ -92,13 +92,13 @@ class ProductController extends Controller
     /* ================= CREATE ================= */
     public function create()
     {
-        $categories = Category::where('is_active', 1)
+        $categories = Category::with('children')
+            ->whereNull('parent_id')
+            ->where('is_active', 1)
             ->orderBy('name')
             ->get();
 
-        $brands = Brand::where('is_active', 1)
-            ->orderBy('name')
-            ->get();
+        $brands = Brand::where('is_active', 1)->orderBy('name')->get();
 
         return view('admin.products.create', compact('categories', 'brands'));
     }
@@ -106,18 +106,13 @@ class ProductController extends Controller
     /* ================= STORE ================= */
     public function store(Request $request)
     {
-        $validated = $this->validateData($request);
+        $validated = $this->normaliseData($this->validateData($request));
 
         try {
             DB::beginTransaction();
-
-            // Generate unique SKU
             $validated['sku'] = $this->generateUniqueSKU();
-
-            // Create product
             $product = Product::create($validated);
 
-            // Handle images
             if ($request->hasFile('images')) {
                 $this->handleImageUpload($request->file('images'), $product);
             }
@@ -125,18 +120,14 @@ class ProductController extends Controller
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Product created successfully',
+                'success'    => true,
+                'message'    => 'Product created successfully',
                 'product_id' => $product->id
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create product: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed: ' . $e->getMessage()], 500);
         }
     }
 
@@ -152,13 +143,13 @@ class ProductController extends Controller
     {
         $product->load('images');
 
-        $categories = Category::where('is_active', 1)
+        $categories = Category::with('children')
+            ->whereNull('parent_id')
+            ->where('is_active', 1)
             ->orderBy('name')
             ->get();
 
-        $brands = Brand::where('is_active', 1)
-            ->orderBy('name')
-            ->get();
+        $brands = Brand::where('is_active', 1)->orderBy('name')->get();
 
         return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
@@ -166,53 +157,38 @@ class ProductController extends Controller
     /* ================= UPDATE ================= */
     public function update(Request $request, Product $product)
     {
-        $validated = $this->validateData($request, $product->id);
+        $validated = $this->normaliseData($this->validateData($request, $product->id));
 
         try {
             DB::beginTransaction();
-
-            // Update product
             $product->update($validated);
 
-            // Handle deleted images
             if ($request->has('deleted_images')) {
                 foreach ($request->deleted_images as $imageId) {
                     $image = ProductImage::find($imageId);
                     if ($image && $image->product_id == $product->id) {
-                        // Delete from storage
-                        if (Storage::disk('public')->exists($image->image_path)) {
-                            Storage::disk('public')->delete($image->image_path);
-                        }
+                        Storage::disk('public')->delete($image->image_path);
                         $image->delete();
                     }
                 }
             }
 
-            // Handle new images
             if ($request->hasFile('images')) {
                 $existingCount = $product->images()->count();
                 $this->handleImageUpload($request->file('images'), $product, $existingCount);
             }
 
-            // Ensure we have a primary image
             if ($product->images()->count() > 0 && !$product->images()->where('is_primary', true)->exists()) {
                 $product->images()->first()->update(['is_primary' => true]);
             }
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Product updated successfully'
-            ]);
+            return response()->json(['success' => true, 'message' => 'Product updated successfully']);
 
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update product: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed: ' . $e->getMessage()], 500);
         }
     }
 
@@ -259,48 +235,77 @@ class ProductController extends Controller
     }
 
     /* ================= VALIDATION ================= */
-    private function validateData(Request $request, $productId = null)
+    private function validateData(Request $request, $productId = null): array
     {
         $rules = [
-            'name' => 'required|string|max:255',
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
+            'name'           => 'required|string|max:255',
+            'slug'           => [
+                'nullable', 'string', 'max:255',
                 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
                 Rule::unique('products', 'slug')->ignore($productId)
             ],
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'price' => 'required|numeric|min:0',
-            'mrp' => 'nullable|numeric|min:0|gte:price',
-            'stock' => 'required|integer|min:0',
-            'unit' => 'required|string|in:pcs,kg,g,l,ml,dozen',
-            'is_active' => 'boolean',
-            'is_weight_based' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_popular' => 'boolean',
-            'price_per_kg' => 'nullable|required_if:is_weight_based,1|numeric|min:0',
-            'min_weight' => 'nullable|numeric|min:0',
-            'max_weight' => 'nullable|numeric|min:0|gte:min_weight',
-            'tax_rate' => 'nullable|numeric|min:0|max:100',
-            'barcode' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'images' => 'nullable|array|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:100' // 100KB = 100 kilobytes
+            'category_id'    => 'required|exists:categories,id',
+            'brand_id'       => 'nullable|exists:brands,id',
+            'price'          => 'required|numeric|min:0',
+            'mrp'            => 'nullable|numeric|min:0|gte:price',
+            'stock'          => 'required|integer|min:0',
+            'unit'           => 'required|string|in:pcs,kg,g,l,ml,nos,box,pkt,rol,drm,doz',
+            'is_active'      => 'nullable|in:0,1',
+            'is_weight_based'=> 'nullable|in:0,1',
+            'is_featured'    => 'nullable|in:0,1',
+            'is_popular'     => 'nullable|in:0,1',
+            'price_per_kg'   => 'nullable|numeric|min:0',
+            'min_weight'     => 'nullable|numeric|min:0',
+            'max_weight'     => 'nullable|numeric|min:0|gte:min_weight',
+            'tax_rate'       => 'nullable|numeric|min:0|max:100',
+            'barcode'        => 'nullable|string|max:255',
+            'description'    => 'nullable|string|max:1000',
+            'images'         => 'nullable|array|max:5',
+            'images.*'       => 'image|mimes:jpeg,png,jpg,webp|max:100',
         ];
 
+        // Only require price_per_kg when is_weight_based is explicitly 1
+        if ($request->input('is_weight_based') == '1') {
+            $rules['price_per_kg'] = 'required|numeric|min:0.01';
+        }
+
         $messages = [
-            'mrp.gte' => 'MRP must be greater than or equal to selling price',
-            'max_weight.gte' => 'Maximum weight must be greater than minimum weight',
-            'price_per_kg.required_if' => 'Price per KG is required for weight-based products',
-            'images.*.max' => 'Each image must not exceed 100 KB',
-            'images.*.mimes' => 'Images must be in JPEG, PNG, JPG or WEBP format',
-            'images.*.image' => 'File must be a valid image',
-            'images.max' => 'You can upload maximum 5 images'
+            'mrp.gte'              => 'MRP must be greater than or equal to the selling price',
+            'max_weight.gte'       => 'Maximum weight must be greater than minimum weight',
+            'price_per_kg.required'=> 'Price per KG is required for weight-based products',
+            'images.*.max'         => 'Each image must not exceed 100 KB',
+            'images.*.mimes'       => 'Images must be JPEG, PNG, JPG or WEBP',
+            'images.*.image'       => 'File must be a valid image',
+            'images.max'           => 'Maximum 5 images allowed',
         ];
 
         return $request->validate($rules, $messages);
+    }
+
+    private function normaliseData(array $data): array
+    {
+        // Cast boolean-like fields to integers
+        $data['is_active']       = isset($data['is_active'])       ? (int)$data['is_active']       : 1;
+        $data['is_weight_based'] = isset($data['is_weight_based']) ? (int)$data['is_weight_based'] : 0;
+        $data['is_featured']     = isset($data['is_featured'])     ? (int)$data['is_featured']     : 0;
+        $data['is_popular']      = isset($data['is_popular'])      ? (int)$data['is_popular']      : 0;
+
+        // If NOT weight-based, wipe weight-specific fields
+        if (!$data['is_weight_based']) {
+            $data['price_per_kg'] = null;
+            $data['min_weight']   = null;
+            $data['max_weight']   = null;
+        }
+
+        // Auto-generate slug if not provided
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['name']);
+        }
+
+        // Remove images array — handled separately
+        unset($data['images']);
+
+        return $data;
     }
 
     /* ================= GENERATE SKU ================= */

@@ -988,5 +988,29 @@ function debounce(func, wait) {
 
 // Initial state
 updateActiveFiltersCount();
+
+// ── Auto-apply filter from URL (e.g. ?stock_status=out_of_stock) ──
+(function applyUrlFilters() {
+    const params = new URLSearchParams(window.location.search);
+
+    const stockStatus = params.get('stock_status');
+    const status      = params.get('status');
+    const search      = params.get('search');
+    const categoryId  = params.get('category_id');
+    const brandId     = params.get('brand_id');
+
+    if (stockStatus) $('#stock_status').val(stockStatus);
+    if (status)      $('#status').val(status);
+    if (search)      $('#search').val(search);
+    if (categoryId)  $('#category_id').val(categoryId);
+    if (brandId)     $('#brand_id').val(brandId);
+
+    // If any filter was set from URL, trigger a reload
+    if (stockStatus || status || search || categoryId || brandId) {
+        loadProducts(1);
+        updateActiveFiltersCount();
+    }
+})();
+
 </script>
 @endpush

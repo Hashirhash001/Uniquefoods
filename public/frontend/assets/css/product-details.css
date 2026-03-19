@@ -55,6 +55,7 @@
     cursor: crosshair;
 }
 
+/* The <img> is always hidden — zoom div uses background-image only */
 .product-thumb img {
     position: absolute;
     top: 0;
@@ -62,19 +63,31 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    opacity: 0;              /* always invisible */
+    pointer-events: none;    /* don't block mouse events */
 }
 
-/* Image Zoom Effect */
+/* At rest — show full image normally */
 .product-thumb.zoom {
     background-repeat: no-repeat;
+    background-size: cover;           /* ← full image, not zoomed */
     background-position: center;
-    background-size: 200%;
-    transition: background-position 0.1s ease;
 }
 
-.product-thumb.zoom:hover img {
+/* Only zoom in when hovering */
+.product-thumb.zoom:hover {
+    background-size: 200%;            /* ← zoom activates on hover */
+    cursor: zoom-in;
+}
+
+/* Hide the <img> tag always — background does the work */
+.product-thumb img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
     opacity: 0;
+    pointer-events: none;
 }
 
 /* Thumbnail Filter Group */
@@ -2970,5 +2983,313 @@
     .share-copy-btn {
         padding: 6px 10px;
         font-size: 11px;
+    }
+}
+.product-main-image.product-placeholder-image {
+    object-fit: contain;
+    background: #f9fafb;
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px dashed #e5e7eb;
+}
+
+.thumb-filter img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================
+   20. REVIEWS SECTION — MOBILE RESPONSIVE
+   ========================================== */
+
+@media (max-width: 767px) {
+
+    /* Fix review card header layout on mobile */
+    .review-card-header {
+        display: flex;             /* ← back to flex, not grid */
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    /* Avatar stays fixed size */
+    .reviewer-avatar {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+
+    /* Name + date block takes available space */
+    .reviewer-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Stars sit inline next to avatar+name */
+    .review-stars {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin-left: auto !important;
+        flex-shrink: 0;
+    }
+
+    .review-stars i {
+        font-size: 13px;
+    }
+
+    /* Edit/delete buttons drop to a new line below */
+    .review-actions {
+        width: 100%;
+        display: flex;
+        gap: 6px;
+        margin-top: 2px;
+    }
+
+
+    /* ── Summary Bar ── */
+    .review-summary-bar {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+    }
+
+    .review-avg-score {
+        flex-direction: row;
+        gap: 12px;
+        min-width: unset;
+        align-items: center;
+    }
+
+    .avg-number {
+        font-size: 36px;
+    }
+
+    .avg-stars i {
+        font-size: 15px;
+    }
+
+    .avg-label {
+        font-size: 12px;
+    }
+
+    .review-bars {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .rating-bar-row {
+        gap: 8px;
+    }
+
+    .bar-label {
+        font-size: 12px;
+        width: 32px;
+    }
+
+    /* ── Write Review Card ── */
+    .write-review-card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .review-form-title {
+        font-size: 15px;
+        margin-bottom: 14px;
+    }
+
+    .star-input-group {
+        gap: 10px;
+    }
+
+    .star-input-group .star-pick {
+        font-size: 30px;     /* big enough for finger tap */
+    }
+
+    .btn-submit-review {
+        width: 100%;
+        padding: 13px;
+        font-size: 14px;
+        justify-content: center;
+    }
+
+    .btn-cancel-review {
+        width: 100%;
+        padding: 11px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    /* ── Review Notices ── */
+    .review-notice {
+        padding: 12px 14px;
+        gap: 10px;
+        border-radius: 10px;
+    }
+
+    .review-notice i {
+        font-size: 18px;
+    }
+
+    .review-notice strong {
+        font-size: 14px;
+    }
+
+    .review-notice p {
+        font-size: 12px;
+    }
+
+    /* ── Review Cards ── */
+    .review-card {
+        padding: 14px 0;
+    }
+
+    .review-card-header {
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .reviewer-avatar {
+        width: 36px;
+        height: 36px;
+    }
+
+    .reviewer-name {
+        font-size: 13px;
+    }
+
+    .review-date {
+        font-size: 11px;
+    }
+
+    .review-stars {
+        margin-left: 0 !important;
+        margin-top: 4px;
+    }
+
+    .review-stars i {
+        font-size: 12px;
+    }
+
+    /* Stack reviewer info + stars vertically */
+    .review-card-header {
+        display: grid;
+        grid-template-columns: 36px 1fr auto;
+        align-items: start;
+        gap: 10px;
+    }
+
+    .review-actions {
+        grid-column: 3;
+        grid-row: 1;
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn-review-edit,
+    .btn-review-delete {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .review-body {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    /* ── No Reviews State ── */
+    .no-reviews-state {
+        padding: 32px 16px;
+    }
+
+    .no-reviews-state i {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .no-reviews-state p {
+        font-size: 13px;
+    }
+
+    /* ── Edit Review Modal ── */
+    .review-edit-modal {
+        padding: 20px 16px;
+        margin: 12px;
+        border-radius: 14px;
+        max-width: calc(100vw - 24px);
+    }
+
+    .review-edit-header h5 {
+        font-size: 15px;
+    }
+
+    #editStarInput .star-pick {
+        font-size: 28px;
+    }
+
+    /* ── Delete Modal ── */
+    .delete-modal {
+        padding: 28px 20px;
+        border-radius: 16px;
+        max-width: calc(100vw - 32px);
+    }
+
+    .delete-modal-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .delete-modal-icon i {
+        font-size: 22px;
+    }
+
+    .delete-modal-title {
+        font-size: 17px;
+    }
+
+    .delete-modal-desc {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .delete-modal-actions {
+        gap: 10px;
+        flex-direction: column;  /* stack buttons vertically on small screens */
+    }
+
+    .btn-delete-cancel,
+    .btn-delete-confirm {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+/* ── Extra small phones ── */
+@media (max-width: 400px) {
+
+    .avg-number {
+        font-size: 30px;
+    }
+
+    .star-input-group .star-pick {
+        font-size: 26px;
+    }
+
+    .review-card-header {
+        grid-template-columns: 32px 1fr auto;
+    }
+
+    .reviewer-avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    .delete-modal-actions {
+        flex-direction: column;
     }
 }

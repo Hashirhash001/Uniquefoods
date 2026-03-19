@@ -424,7 +424,7 @@
                             <img src="{{ $item['image'] }}"
                                  alt="{{ $item['name'] }}"
                                  class="unique-order-item-image"
-                                 onerror="this.src='/frontend/assets/images/grocery/01.jpg'">
+                                 onerror="this.src='/frontend/assets/images/products/product-placeholder.svg'">
                             <div class="unique-order-item-details">
                                 <div class="unique-order-item-name">{{ $item['name'] }}</div>
                                 @if($isWeightBased)

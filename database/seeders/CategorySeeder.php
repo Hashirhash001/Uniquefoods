@@ -4,194 +4,82 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $categories = [
-            // 1. Fruits & Vegetables
-            [
-                'name' => 'Fruits & Vegetables',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Fresh Fruits', 'is_active' => 1],
-                    ['name' => 'Fresh Vegetables', 'is_active' => 1],
-                    ['name' => 'Exotic Fruits', 'is_active' => 1],
-                    ['name' => 'Exotic Vegetables', 'is_active' => 1],
-                    ['name' => 'Organic Fruits', 'is_active' => 1],
-                    ['name' => 'Organic Vegetables', 'is_active' => 1],
-                    ['name' => 'Herbs & Seasonings', 'is_active' => 1],
-                ]
-            ],
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('categories')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $now = now();
 
-            // 2. Dairy & Bakery
-            [
-                'name' => 'Dairy & Bakery',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Milk', 'is_active' => 1],
-                    ['name' => 'Butter & Ghee', 'is_active' => 1],
-                    ['name' => 'Cheese', 'is_active' => 1],
-                    ['name' => 'Yogurt & Curd', 'is_active' => 1],
-                    ['name' => 'Paneer', 'is_active' => 1],
-                    ['name' => 'Bread', 'is_active' => 1],
-                    ['name' => 'Cakes & Pastries', 'is_active' => 1],
-                    ['name' => 'Cookies & Biscuits', 'is_active' => 1],
-                ]
-            ],
+        // ── Parent categories ─────────────────────────────────
+        DB::table('categories')->insert([
+            ['id'=>1, 'name'=>'Fragrance',              'slug'=>'fragrance',               'parent_id'=>null,'is_active'=>1,'sort_order'=>1, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>2, 'name'=>'Canned Foods',            'slug'=>'canned-foods',            'parent_id'=>null,'is_active'=>1,'sort_order'=>2, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>3, 'name'=>'Charcoal & Flames',       'slug'=>'charcoal-flames',         'parent_id'=>null,'is_active'=>1,'sort_order'=>3, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>4, 'name'=>'Chocolates',              'slug'=>'chocolates',              'parent_id'=>null,'is_active'=>1,'sort_order'=>4, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>5, 'name'=>'Cleaning Products',       'slug'=>'cleaning-products',       'parent_id'=>null,'is_active'=>1,'sort_order'=>5, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>6, 'name'=>'Custards & Pudding Mix',  'slug'=>'custards-pudding-mix',    'parent_id'=>null,'is_active'=>1,'sort_order'=>6, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>7, 'name'=>'Dairy',                   'slug'=>'dairy',                   'parent_id'=>null,'is_active'=>1,'sort_order'=>7, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>8, 'name'=>'Dals',                    'slug'=>'dals',                    'parent_id'=>null,'is_active'=>1,'sort_order'=>8, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>9, 'name'=>'Dry Fruits',              'slug'=>'dry-fruits',              'parent_id'=>null,'is_active'=>1,'sort_order'=>9, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>10,'name'=>'Edible Oil',              'slug'=>'edible-oil',              'parent_id'=>null,'is_active'=>1,'sort_order'=>10,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>11,'name'=>'Egg',                     'slug'=>'egg',                     'parent_id'=>null,'is_active'=>1,'sort_order'=>11,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>12,'name'=>'Essence',                 'slug'=>'essence',                 'parent_id'=>null,'is_active'=>1,'sort_order'=>12,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>13,'name'=>'Frozen',                  'slug'=>'frozen',                  'parent_id'=>null,'is_active'=>1,'sort_order'=>13,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>14,'name'=>'Frozen Fish',             'slug'=>'frozen-fish',             'parent_id'=>null,'is_active'=>1,'sort_order'=>14,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>15,'name'=>'Grocery',                 'slug'=>'grocery',                 'parent_id'=>null,'is_active'=>1,'sort_order'=>15,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>16,'name'=>'Grocery 2',               'slug'=>'grocery-2',               'parent_id'=>null,'is_active'=>1,'sort_order'=>16,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>17,'name'=>'Kitchen Utility',         'slug'=>'kitchen-utility',         'parent_id'=>null,'is_active'=>1,'sort_order'=>17,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>18,'name'=>'Noodles',                 'slug'=>'noodles',                 'parent_id'=>null,'is_active'=>1,'sort_order'=>18,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>19,'name'=>'Nuts',                    'slug'=>'nuts',                    'parent_id'=>null,'is_active'=>1,'sort_order'=>19,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>20,'name'=>'Office Accessories',      'slug'=>'office-accessories',      'parent_id'=>null,'is_active'=>1,'sort_order'=>20,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>21,'name'=>'Packing',                 'slug'=>'packing',                 'parent_id'=>null,'is_active'=>1,'sort_order'=>21,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>22,'name'=>'Rice',                    'slug'=>'rice',                    'parent_id'=>null,'is_active'=>1,'sort_order'=>22,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>23,'name'=>'Spices',                  'slug'=>'spices',                  'parent_id'=>null,'is_active'=>1,'sort_order'=>23,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>24,'name'=>'Vegetables',              'slug'=>'vegetables',              'parent_id'=>null,'is_active'=>1,'sort_order'=>24,'created_at'=>$now,'updated_at'=>$now],
+            // ── New parent categories ──────────────────────────
+            ['id'=>53,'name'=>'Pickles',                 'slug'=>'pickles',                 'parent_id'=>null,'is_active'=>1,'sort_order'=>25,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>54,'name'=>'Tea Bags',                'slug'=>'tea-bags',                'parent_id'=>null,'is_active'=>1,'sort_order'=>26,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>55,'name'=>'Hot Drinks',              'slug'=>'hot-drinks',              'parent_id'=>null,'is_active'=>1,'sort_order'=>27,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>56,'name'=>'Soft Drinks',             'slug'=>'soft-drinks',             'parent_id'=>null,'is_active'=>1,'sort_order'=>28,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>57,'name'=>'Water',                   'slug'=>'water',                   'parent_id'=>null,'is_active'=>1,'sort_order'=>29,'created_at'=>$now,'updated_at'=>$now],
+        ]);
 
-            // 3. Staples
-            [
-                'name' => 'Staples',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Rice & Rice Products', 'is_active' => 1],
-                    ['name' => 'Atta, Flours & Sooji', 'is_active' => 1],
-                    ['name' => 'Dals & Pulses', 'is_active' => 1],
-                    ['name' => 'Edible Oils', 'is_active' => 1],
-                    ['name' => 'Masalas & Spices', 'is_active' => 1],
-                    ['name' => 'Salt, Sugar & Jaggery', 'is_active' => 1],
-                    ['name' => 'Dry Fruits', 'is_active' => 1],
-                ]
-            ],
+        // ── Sub-categories ────────────────────────────────────
+        DB::table('categories')->insert([
+            ['id'=>25,'name'=>'Vegetables',     'slug'=>'vegetables-2',       'parent_id'=>2, 'is_active'=>1,'sort_order'=>1, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>26,'name'=>'Fruits',         'slug'=>'fruits-2',           'parent_id'=>2, 'is_active'=>1,'sort_order'=>2, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>27,'name'=>'Others',         'slug'=>'others-2',           'parent_id'=>2, 'is_active'=>1,'sort_order'=>3, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>28,'name'=>'Ghee',           'slug'=>'ghee-7',             'parent_id'=>7, 'is_active'=>1,'sort_order'=>4, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>29,'name'=>'Yogurt',         'slug'=>'yogurt-7',           'parent_id'=>7, 'is_active'=>1,'sort_order'=>5, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>30,'name'=>'Oil',            'slug'=>'oil-10',             'parent_id'=>10,'is_active'=>1,'sort_order'=>6, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>31,'name'=>'Vegetables',     'slug'=>'vegetables-13',      'parent_id'=>13,'is_active'=>1,'sort_order'=>7, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>32,'name'=>'Porotta',        'slug'=>'porotta-13',         'parent_id'=>13,'is_active'=>1,'sort_order'=>8, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>33,'name'=>'Coconut Items',  'slug'=>'coconut-items-13',   'parent_id'=>13,'is_active'=>1,'sort_order'=>9, 'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>34,'name'=>'Others',         'slug'=>'others-13',          'parent_id'=>13,'is_active'=>1,'sort_order'=>10,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>35,'name'=>'Flour',          'slug'=>'flour-15',           'parent_id'=>15,'is_active'=>1,'sort_order'=>11,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>36,'name'=>'Powders',        'slug'=>'powders-15',         'parent_id'=>15,'is_active'=>1,'sort_order'=>12,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>37,'name'=>'Pickles',        'slug'=>'pickles-15',         'parent_id'=>15,'is_active'=>1,'sort_order'=>13,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>38,'name'=>'Chutney',        'slug'=>'chutney-15',         'parent_id'=>15,'is_active'=>1,'sort_order'=>14,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>39,'name'=>'Pappadam',       'slug'=>'pappadam-15',        'parent_id'=>15,'is_active'=>1,'sort_order'=>15,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>40,'name'=>'Coconut Items',  'slug'=>'coconut-items-15',   'parent_id'=>15,'is_active'=>1,'sort_order'=>16,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>41,'name'=>'Dal',            'slug'=>'dal-15',             'parent_id'=>15,'is_active'=>1,'sort_order'=>17,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>42,'name'=>'Dairy',          'slug'=>'dairy-15',           'parent_id'=>15,'is_active'=>1,'sort_order'=>18,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>43,'name'=>'Dry Fruits',     'slug'=>'dry-fruits-15',      'parent_id'=>15,'is_active'=>1,'sort_order'=>19,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>44,'name'=>'Others',         'slug'=>'others-15',          'parent_id'=>15,'is_active'=>1,'sort_order'=>20,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>45,'name'=>'Sev Items',      'slug'=>'sev-items-16',       'parent_id'=>16,'is_active'=>1,'sort_order'=>21,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>46,'name'=>'Food Colour',    'slug'=>'food-colour-16',     'parent_id'=>16,'is_active'=>1,'sort_order'=>22,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>47,'name'=>'Others',         'slug'=>'others-16',          'parent_id'=>16,'is_active'=>1,'sort_order'=>23,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>48,'name'=>'Containers',     'slug'=>'containers-21',      'parent_id'=>21,'is_active'=>1,'sort_order'=>24,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>49,'name'=>'Vegetables',     'slug'=>'vegetables-24',      'parent_id'=>24,'is_active'=>1,'sort_order'=>25,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>50,'name'=>'Fruits',         'slug'=>'fruits-24',          'parent_id'=>24,'is_active'=>1,'sort_order'=>26,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>51,'name'=>'Leaves & Herbs', 'slug'=>'leaves-herbs-24',    'parent_id'=>24,'is_active'=>1,'sort_order'=>27,'created_at'=>$now,'updated_at'=>$now],
+            ['id'=>52,'name'=>'Noodles',        'slug'=>'noodles-18',         'parent_id'=>18,'is_active'=>1,'sort_order'=>28,'created_at'=>$now,'updated_at'=>$now],
+        ]);
 
-            // 4. Snacks & Beverages
-            [
-                'name' => 'Snacks & Beverages',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Chips & Namkeen', 'is_active' => 1],
-                    ['name' => 'Biscuits & Cookies', 'is_active' => 1],
-                    ['name' => 'Chocolates & Candies', 'is_active' => 1],
-                    ['name' => 'Tea & Coffee', 'is_active' => 1],
-                    ['name' => 'Soft Drinks', 'is_active' => 1],
-                    ['name' => 'Juices', 'is_active' => 1],
-                    ['name' => 'Energy Drinks', 'is_active' => 1],
-                    ['name' => 'Water', 'is_active' => 1],
-                ]
-            ],
-
-            // 5. Packaged Food
-            [
-                'name' => 'Packaged Food',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Noodles & Pasta', 'is_active' => 1],
-                    ['name' => 'Breakfast Cereals', 'is_active' => 1],
-                    ['name' => 'Ready to Cook', 'is_active' => 1],
-                    ['name' => 'Ready to Eat', 'is_active' => 1],
-                    ['name' => 'Sauces & Spreads', 'is_active' => 1],
-                    ['name' => 'Pickles & Chutneys', 'is_active' => 1],
-                    ['name' => 'Canned Food', 'is_active' => 1],
-                ]
-            ],
-
-            // 6. Personal Care
-            [
-                'name' => 'Personal Care',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Bath & Body', 'is_active' => 1],
-                    ['name' => 'Hair Care', 'is_active' => 1],
-                    ['name' => 'Skin Care', 'is_active' => 1],
-                    ['name' => 'Oral Care', 'is_active' => 1],
-                    ['name' => 'Fragrances & Deodorants', 'is_active' => 1],
-                    ['name' => 'Shaving & Grooming', 'is_active' => 1],
-                    ['name' => 'Feminine Hygiene', 'is_active' => 1],
-                ]
-            ],
-
-            // 7. Household Care
-            [
-                'name' => 'Household Care',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Detergents & Fabric Care', 'is_active' => 1],
-                    ['name' => 'Cleaning Supplies', 'is_active' => 1],
-                    ['name' => 'Dishwashing', 'is_active' => 1],
-                    ['name' => 'Air Fresheners', 'is_active' => 1],
-                    ['name' => 'Insect Repellents', 'is_active' => 1],
-                    ['name' => 'Disposables', 'is_active' => 1],
-                ]
-            ],
-
-            // 8. Baby Care
-            [
-                'name' => 'Baby Care',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Baby Food', 'is_active' => 1],
-                    ['name' => 'Diapers', 'is_active' => 1],
-                    ['name' => 'Baby Bath & Skin Care', 'is_active' => 1],
-                    ['name' => 'Baby Accessories', 'is_active' => 1],
-                    ['name' => 'Baby Health & Safety', 'is_active' => 1],
-                ]
-            ],
-
-            // 9. Frozen Foods
-            [
-                'name' => 'Frozen Foods',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Frozen Vegetables', 'is_active' => 1],
-                    ['name' => 'Frozen Snacks', 'is_active' => 1],
-                    ['name' => 'Frozen Non-Veg', 'is_active' => 1],
-                    ['name' => 'Ice Creams & Desserts', 'is_active' => 1],
-                ]
-            ],
-
-            // 10. Pet Care
-            [
-                'name' => 'Pet Care',
-                'parent_id' => null,
-                'is_active' => 1,
-                'children' => [
-                    ['name' => 'Pet Food', 'is_active' => 1],
-                    ['name' => 'Pet Accessories', 'is_active' => 1],
-                    ['name' => 'Pet Grooming', 'is_active' => 1],
-                ]
-            ],
-        ];
-
-        $this->createCategories($categories);
-    }
-
-    private function createCategories($categories, $parentId = null)
-    {
-        foreach ($categories as $category) {
-            $categoryId = DB::table('categories')->insertGetId([
-                'name' => $category['name'],
-                'slug' => Str::slug($category['name']),
-                'parent_id' => $parentId,
-                'is_active' => $category['is_active'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            // Create subcategories if they exist
-            if (isset($category['children']) && count($category['children']) > 0) {
-                foreach ($category['children'] as $child) {
-                    DB::table('categories')->insert([
-                        'name' => $child['name'],
-                        'slug' => Str::slug($child['name']),
-                        'parent_id' => $categoryId,
-                        'is_active' => $child['is_active'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
-        }
+        $this->command->info('✅ '.DB::table('categories')->count().' categories seeded.');
     }
 }

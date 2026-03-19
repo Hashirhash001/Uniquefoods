@@ -38,13 +38,20 @@
                                 <div class="col-lg-12">
                                     <div class="banner-inner-content-three">
                                         @if($banner->subtitle)
-                                            <span class="pre" style="color: ;">{{ $banner->subtitle }}</span>
+                                            <span class="pre" style="
+                                                color: {{ $banner->subtitle_color ?? $banner->text_color ?? '#111827' }};
+                                                background-color: {{ $banner->subtitle_bg_color ?? 'rgba(255,255,255,0.95)' }};
+                                            ">{{ $banner->subtitle }}</span>
                                         @endif
 
-                                        <h1 class="title" style="color: {{ $banner->text_color }};">{!! nl2br(e($banner->title)) !!}</h1>
+                                        <h1 class="title" style="color: {{ $banner->title_color ?? $banner->text_color ?? '#111827' }};">
+                                            {!! nl2br(e($banner->title)) !!}
+                                        </h1>
 
                                         @if($banner->description)
-                                            <p class="dsicription" style="color: {{ $banner->text_color }};">{{ $banner->description }}</p>
+                                            <p class="dsicription" style="color: {{ $banner->description_color ?? $banner->text_color ?? '#111827' }};">
+                                                {{ $banner->description }}
+                                            </p>
                                         @endif
 
                                         @if($banner->button_text && $banner->button_link)

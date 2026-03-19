@@ -70,39 +70,46 @@ class GoogleController extends Controller
             DB::beginTransaction();
 
             // Find or create user
-            $user = User::where('email', $googleUser->getEmail())->first();
+            // Check including soft-deleted records
+            $user = User::withTrashed()->where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // User exists - update Google info
+                // Restore if soft-deleted
+                if ($user->trashed()) {
+                    $user->restore();
+                }
+
+                // Update Google info
                 $user->update([
-                    'provider' => 'google',
-                    'provider_id' => $googleUser->getId(),
-                    'avatar' => $googleUser->getAvatar(),
-                    'is_verified' => true,
-                    'email_verified_at' => now(),
+                    'provider'           => 'google',
+                    'provider_id'        => $googleUser->getId(),
+                    'avatar'             => $googleUser->getAvatar(),
+                    'is_verified'        => true,
+                    'email_verified_at'  => now(),
                 ]);
 
                 Log::info('Existing user logged in via Google', [
                     'user_id' => $user->id,
-                    'email' => $user->email
+                    'email'   => $user->email
                 ]);
+
             } else {
-                // Create new user
+                // Brand new user
                 $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'provider' => 'google',
-                    'provider_id' => $googleUser->getId(),
-                    'avatar' => $googleUser->getAvatar(),
-                    'is_verified' => true,
-                    'password' => null,
-                    'email_verified_at' => now(),
+                    'name'               => $googleUser->getName(),
+                    'email'              => $googleUser->getEmail(),
+                    'provider'           => 'google',
+                    'provider_id'        => $googleUser->getId(),
+                    'avatar'             => $googleUser->getAvatar(),
+                    'is_verified'        => true,
+                    'password'           => null,
+                    'email_verified_at'  => now(),
                 ]);
 
                 // Create cart
-                Cart::create(['user_id' => $user->id]);
+                Cart::firstOrCreate(['user_id' => $user->id]);
 
-                // ✅ Send welcome email just like normal registration
+                // Send welcome email
                 try {
                     Mail::to($user->email)->send(new \App\Mail\WelcomeMail($user));
                 } catch (\Exception $mailException) {
@@ -114,7 +121,7 @@ class GoogleController extends Controller
 
                 Log::info('New user created via Google', [
                     'user_id' => $user->id,
-                    'email' => $user->email
+                    'email'   => $user->email
                 ]);
             }
 

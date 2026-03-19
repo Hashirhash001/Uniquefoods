@@ -196,7 +196,7 @@
     }
 
     .btn-primary:hover {
-        background: linear-gradient(135deg, #0f508d 0%, #15803d 100%);
+        background: linear-gradient(135deg, #0f508d 0%, #0f508d 100%);
         transform: translateY(-1px);
         box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
     }
@@ -320,7 +320,7 @@
     .offer-type-btn.active {
         background: linear-gradient(135deg, #b9cfe3 0%, #e4f2ff 100%);
         border-color: #08437b;
-        color: #15803d;
+        color: #0f508d;
     }
 
     .offer-type-btn:hover:not(.active) {
