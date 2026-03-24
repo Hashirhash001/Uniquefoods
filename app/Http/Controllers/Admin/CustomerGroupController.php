@@ -27,9 +27,9 @@ class CustomerGroupController extends Controller
 
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('admin.customer-groups.partials.table-rows', compact('groups'))->render(),
+                'html'       => view('admin.customer-groups.partials.table-rows', compact('groups'))->render(),
                 'pagination' => $groups->links('pagination::bootstrap-5')->render(),
-                'total' => $groups->total()
+                'total'      => $groups->total()
             ]);
         }
 
@@ -38,27 +38,22 @@ class CustomerGroupController extends Controller
 
     public function create()
     {
-        $customers = User::where('is_admin', 0)
-            ->orderBy('name')
-            ->get();
-
+        $customers = User::where('is_admin', 0)->orderBy('name')->get();
         return view('admin.customer-groups.create', compact('customers'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:customer_groups,name',
+            'name'        => 'required|string|max:255|unique:customer_groups,name',
             'description' => 'nullable|string|max:1000',
-            'is_active' => 'boolean',
-            'customers' => 'nullable|array',
+            'is_active'   => 'boolean',
+            'customers'   => 'nullable|array',
             'customers.*' => 'exists:users,id'
         ]);
 
-        // Auto-generate slug from name
         $validated['slug'] = Str::slug($validated['name']);
 
-        // Ensure slug is unique
         $originalSlug = $validated['slug'];
         $count = 1;
         while (CustomerGroup::where('slug', $validated['slug'])->exists()) {
@@ -82,9 +77,7 @@ class CustomerGroupController extends Controller
     {
         $customerGroup->load('users');
 
-        $customers = User::where('is_admin', 0)
-            ->orderBy('name')
-            ->get();
+        $customers = User::where('is_admin', 0)->orderBy('name')->get();
 
         return view('admin.customer-groups.edit', compact('customerGroup', 'customers'));
     }
@@ -92,14 +85,13 @@ class CustomerGroupController extends Controller
     public function update(Request $request, CustomerGroup $customerGroup)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', Rule::unique('customer_groups')->ignore($customerGroup->id)],
+            'name'        => ['required', 'string', 'max:255', Rule::unique('customer_groups')->ignore($customerGroup->id)],
             'description' => 'nullable|string|max:1000',
-            'is_active' => 'boolean',
-            'customers' => 'nullable|array',
+            'is_active'   => 'boolean',
+            'customers'   => 'nullable|array',
             'customers.*' => 'exists:users,id'
         ]);
 
-        // Auto-update slug if name changed
         if ($validated['name'] !== $customerGroup->name) {
             $validated['slug'] = Str::slug($validated['name']);
 
@@ -142,8 +134,72 @@ class CustomerGroupController extends Controller
         $customerGroup->update(['is_active' => !$customerGroup->is_active]);
 
         return response()->json([
-            'success' => true,
+            'success'   => true,
             'is_active' => $customerGroup->is_active
         ]);
     }
+
+    public function overview(CustomerGroup $customerGroup, Request $request)
+    {
+        $productsQuery = $customerGroup->products()
+            ->with('primaryImage', 'category', 'brand')
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $q->where(function ($q2) use ($request) {
+                    $q2->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('sku',  'like', '%'.$request->search.'%');
+                });
+            })
+            ->when($request->filled('category_id'), fn($q) => $q->where('category_id', $request->category_id))
+            ->when($request->filled('status'),      fn($q) => $q->where('is_active',   $request->status))
+            ->when($request->filled('stock_status'), function ($q) use ($request) {
+                match($request->stock_status) {
+                    'in_stock'     => $q->where('stock', '>', 10),
+                    'low_stock'    => $q->whereBetween('stock', [1, 10]),
+                    'out_of_stock' => $q->where('stock', '<=', 0),
+                    default        => null,
+                };
+            })
+            ->orderBy('name');
+
+        $products   = $productsQuery->paginate(15, ['*'], 'products_page')->withQueryString();
+        $categories = \App\Models\Category::orderBy('name')->get();
+
+        $offersQuery = $customerGroup->groupProductOffers()
+            ->with(['product', 'category', 'brand'])
+            ->when($request->filled('offer_search'), function ($q) use ($request) {
+                $q->where(function ($q2) use ($request) {
+                    $q2->whereHas('product',   fn($p) => $p->where('name', 'like', '%'.$request->offer_search.'%'))
+                    ->orWhereHas('category', fn($c) => $c->where('name', 'like', '%'.$request->offer_search.'%'))
+                    ->orWhereHas('brand',    fn($b) => $b->where('name', 'like', '%'.$request->offer_search.'%'));
+                });
+            })
+            ->when($request->filled('offer_status'), function ($q) use ($request) {
+                $now = now();
+                if ($request->offer_status === '1') {
+                    $q->where('starts_at', '<=', $now)->where('ends_at', '>=', $now);
+                } else {
+                    $q->where('ends_at', '<', $now)->orWhere('starts_at', '>', $now);
+                }
+            })
+            ->orderBy('created_at', 'desc');
+
+        $offers = $offersQuery->paginate(10, ['*'], 'offers_page')->withQueryString();
+
+        // ── AJAX response ──
+        if ($request->ajax()) {
+            return response()->json([
+                'products_html'  => view('admin.customer-groups.partials.overview-products',
+                                        compact('products', 'customerGroup'))->render(),
+                'products_total' => $products->total(),
+                'offers_html'    => view('admin.customer-groups.partials.overview-offers',
+                                        compact('offers', 'customerGroup'))->render(),
+                'offers_total'   => $offers->total(),
+            ]);
+        }
+
+        return view('admin.customer-groups.overview', compact(
+            'customerGroup', 'products', 'categories', 'offers'
+        ));
+    }
+
 }

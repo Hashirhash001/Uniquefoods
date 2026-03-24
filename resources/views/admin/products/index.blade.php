@@ -390,20 +390,9 @@
     letter-spacing: 0.3px;
 }
 
-.badge-success {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.badge-danger {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.badge-warning {
-    background: #fef3c7;
-    color: #92400e;
-}
+.badge-success { background: #d1fae5; color: #065f46; }
+.badge-danger  { background: #fee2e2; color: #991b1b; }
+.badge-warning { background: #fef3c7; color: #92400e; }
 
 .action-btns {
     display: flex;
@@ -496,10 +485,8 @@
 /* Loading Overlay */
 .loading-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(255, 255, 255, 0.95);
     display: none;
     align-items: center;
@@ -508,135 +495,45 @@
     backdrop-filter: blur(2px);
 }
 
-.loading-overlay.active {
-    display: flex;
-}
+.loading-overlay.active { display: flex; }
 
 .spinner {
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     border: 3px solid #f3f4f6;
     border-top-color: #08437b;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Mobile Responsive */
 @media (max-width: 992px) {
-    .products-table th,
-    .products-table td {
-        padding: 0.75rem 0.5rem;
-        font-size: 13px;
-    }
-
-    .product-name {
-        font-size: 13px;
-    }
-
-    .action-btns {
-        flex-direction: column;
-        gap: 0.25rem;
-    }
+    .products-table th, .products-table td { padding: 0.75rem 0.5rem; font-size: 13px; }
+    .product-name { font-size: 13px; }
+    .action-btns { flex-direction: column; gap: 0.25rem; }
 }
 
 @media (max-width: 768px) {
-    .title-right-actioin-btn-wrapper-product-list {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-
-    .rts-btn.btn-primary {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .filters-card {
-        padding: 1rem;
-    }
-
-    .filters-header {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .table-header {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: flex-start;
-    }
-
-    /* Mobile Table */
-    .products-table thead {
-        display: none;
-    }
-
-    .products-table tbody tr {
-        display: block;
-        margin-bottom: 1rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 1rem;
-        background: white;
-    }
-
-    .products-table td {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.5rem 0;
-        border: none;
-        align-items: center;
-    }
-
-    .products-table td:before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #6b7280;
-        font-size: 12px;
-        text-transform: uppercase;
-    }
-
-    .product-info {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .action-btns {
-        flex-direction: row;
-        justify-content: flex-end;
-        width: 100%;
-    }
-
-    .price-range-group {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .price-separator {
-        text-align: center;
-    }
+    .title-right-actioin-btn-wrapper-product-list { flex-direction: column; gap: 1rem; align-items: stretch; }
+    .rts-btn.btn-primary { width: 100%; justify-content: center; }
+    .filters-card { padding: 1rem; }
+    .filters-header { flex-wrap: wrap; gap: 0.5rem; }
+    .table-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+    .products-table thead { display: none; }
+    .products-table tbody tr { display: block; margin-bottom: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; background: white; }
+    .products-table td { display: flex; justify-content: space-between; padding: 0.5rem 0; border: none; align-items: center; }
+    .products-table td:before { content: attr(data-label); font-weight: 600; color: #6b7280; font-size: 12px; text-transform: uppercase; }
+    .product-info { flex-direction: column; align-items: flex-start; }
+    .action-btns { flex-direction: row; justify-content: flex-end; width: 100%; }
+    .price-range-group { flex-direction: column; align-items: stretch; }
+    .price-separator { text-align: center; }
 }
 
 @media (max-width: 576px) {
-    .filters-title-wrapper {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .clear-filters {
-        font-size: 12px;
-    }
-
-    .filter-group-label {
-        font-size: 11px;
-    }
+    .filters-title-wrapper { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .clear-filters { font-size: 12px; }
+    .filter-group-label { font-size: 11px; }
 }
-
 </style>
 @endpush
 
@@ -673,9 +570,7 @@
             <!-- Search -->
             <div class="col-lg-4 col-md-6">
                 <div class="filter-group">
-                    <label class="filter-group-label">
-                        <i class="fas fa-search"></i> Search
-                    </label>
+                    <label class="filter-group-label"><i class="fas fa-search"></i> Search</label>
                     <div class="input-icon">
                         <i class="fas fa-search"></i>
                         <input type="text" id="search" class="form-control"
@@ -687,9 +582,7 @@
             <!-- Category -->
             <div class="col-lg-2 col-md-6">
                 <div class="filter-group">
-                    <label class="filter-group-label">
-                        <i class="fas fa-folder"></i> Category
-                    </label>
+                    <label class="filter-group-label"><i class="fas fa-folder"></i> Category</label>
                     <select id="category_id" class="form-select">
                         <option value="">All Categories</option>
                         @foreach($categories as $category)
@@ -702,9 +595,7 @@
             <!-- Brand -->
             <div class="col-lg-2 col-md-6">
                 <div class="filter-group">
-                    <label class="filter-group-label">
-                        <i class="fas fa-tag"></i> Brand
-                    </label>
+                    <label class="filter-group-label"><i class="fas fa-tag"></i> Brand</label>
                     <select id="brand_id" class="form-select">
                         <option value="">All Brands</option>
                         @foreach($brands as $brand)
@@ -714,12 +605,23 @@
                 </div>
             </div>
 
+            <!-- ── CUSTOMER GROUP FILTER (NEW) ── -->
+            <div class="col-lg-2 col-md-6">
+                <div class="filter-group">
+                    <label class="filter-group-label"><i class="fas fa-users"></i> Group</label>
+                    <select id="group_id" class="form-select">
+                        <option value="">All Groups</option>
+                        @foreach($customerGroups as $group)
+                            <option value="{{ $group->id }}">{{ $group->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
             <!-- Status -->
             <div class="col-lg-2 col-md-6">
                 <div class="filter-group">
-                    <label class="filter-group-label">
-                        <i class="fas fa-toggle-on"></i> Status
-                    </label>
+                    <label class="filter-group-label"><i class="fas fa-toggle-on"></i> Status</label>
                     <select id="status" class="form-select">
                         <option value="">All Status</option>
                         <option value="1">Active</option>
@@ -731,9 +633,7 @@
             <!-- Stock Status -->
             <div class="col-lg-2 col-md-6">
                 <div class="filter-group">
-                    <label class="filter-group-label">
-                        <i class="fas fa-boxes"></i> Stock
-                    </label>
+                    <label class="filter-group-label"><i class="fas fa-boxes"></i> Stock</label>
                     <select id="stock_status" class="form-select">
                         <option value="">All Stock</option>
                         <option value="in_stock">In Stock</option>
@@ -746,9 +646,7 @@
             <!-- Price Range -->
             <div class="col-lg-4 col-md-12">
                 <div class="filter-group">
-                    <label class="filter-group-label">
-                        <i class="fas fa-rupee-sign"></i> Price Range
-                    </label>
+                    <label class="filter-group-label"><i class="fas fa-pound-sign"></i> Price Range</label>
                     <div class="price-range-group">
                         <input type="number" id="min_price" class="form-control" placeholder="Min £">
                         <span class="price-separator">—</span>
@@ -778,7 +676,6 @@
                     @include('admin.products.partials.table-rows')
                 </div>
 
-                <!-- Pagination -->
                 <div class="card-footer">
                     <div id="paginationContainer">
                         {{ $products->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
@@ -792,24 +689,17 @@
 
 @push('scripts')
 <script>
-let currentSortBy = 'created_at';
+let currentSortBy    = 'created_at';
 let currentSortOrder = 'desc';
 
-// AJAX Pagination
 $(document).on('click', '#paginationContainer .pagination a', function(e) {
     e.preventDefault();
-
-    let url = $(this).attr('href');
+    let url  = $(this).attr('href');
     if (!url || url === '#') return;
-
     let page = new URL(url, window.location.origin).searchParams.get('page');
     if (page) {
         loadProducts(page);
-
-        // Scroll to top of table
-        $('html, body').animate({
-            scrollTop: $('.table-card').offset().top - 20
-        }, 300);
+        $('html, body').animate({ scrollTop: $('.table-card').offset().top - 20 }, 300);
     }
 });
 
@@ -819,116 +709,84 @@ function loadProducts(page = 1) {
     $.ajax({
         url: "{{ route('admin.products.index') }}",
         data: {
-            page: page,
-            search: $('#search').val(),
-            category_id: $('#category_id').val(),
-            brand_id: $('#brand_id').val(),
-            status: $('#status').val(),
+            page:         page,
+            search:       $('#search').val(),
+            category_id:  $('#category_id').val(),
+            brand_id:     $('#brand_id').val(),
+            group_id:     $('#group_id').val(),      // ← NEW
+            status:       $('#status').val(),
             stock_status: $('#stock_status').val(),
-            min_price: $('#min_price').val(),
-            max_price: $('#max_price').val(),
-            sort_by: currentSortBy,
-            sort_order: currentSortOrder
+            min_price:    $('#min_price').val(),
+            max_price:    $('#max_price').val(),
+            sort_by:      currentSortBy,
+            sort_order:   currentSortOrder
         },
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        success: function (response) {
-            // Update table
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function(response) {
             $('#productsTableContainer').html(response.html);
-
-            // Update pagination
             $('#paginationContainer').html(response.pagination);
-
-            // Update count
             $('#productCount').text(response.total);
-
             $('#loadingOverlay').removeClass('active');
             updateSortIndicators();
             updateActiveFiltersCount();
         },
         error: function() {
             $('#loadingOverlay').removeClass('active');
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to load products',
-                confirmButtonColor: '#08437b'
-            });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load products', confirmButtonColor: '#08437b' });
         }
     });
 }
 
 function updateSortIndicators() {
     $('.sortable').removeClass('active asc desc');
-    $(`.sortable[data-sort="${currentSortBy}"]`)
-        .addClass('active')
-        .addClass(currentSortOrder);
+    $(`.sortable[data-sort="${currentSortBy}"]`).addClass('active').addClass(currentSortOrder);
 }
 
 function updateActiveFiltersCount() {
     let count = 0;
-
-    if ($('#search').val()) count++;
-    if ($('#category_id').val()) count++;
-    if ($('#brand_id').val()) count++;
-    if ($('#status').val()) count++;
+    if ($('#search').val())       count++;
+    if ($('#category_id').val())  count++;
+    if ($('#brand_id').val())     count++;
+    if ($('#group_id').val())     count++;   // ← NEW
+    if ($('#status').val())       count++;
     if ($('#stock_status').val()) count++;
-    if ($('#min_price').val()) count++;
-    if ($('#max_price').val()) count++;
-
-    if (count > 0) {
-        $('#activeFiltersCount').text(count).show();
-    } else {
-        $('#activeFiltersCount').hide();
-    }
+    if ($('#min_price').val())    count++;
+    if ($('#max_price').val())    count++;
+    count > 0 ? $('#activeFiltersCount').text(count).show() : $('#activeFiltersCount').hide();
 }
 
-// Filter changes
-$(document).on('keyup', '#search', debounce(function () {
-    loadProducts(1);
-}, 500));
+$(document).on('keyup', '#search', debounce(function() { loadProducts(1); }, 500));
+$(document).on('change', '#category_id, #brand_id, #group_id, #status, #stock_status', function() { loadProducts(1); });
+$(document).on('change', '#min_price, #max_price', debounce(function() { loadProducts(1); }, 800));
 
-$(document).on('change', '#category_id, #brand_id, #status, #stock_status', function () {
-    loadProducts(1);
-});
-
-$(document).on('change', '#min_price, #max_price', debounce(function () {
-    loadProducts(1);
-}, 800));
-
-// Sorting
-$(document).on('click', '.sortable', function () {
+$(document).on('click', '.sortable', function() {
     const sortBy = $(this).data('sort');
-
     if (currentSortBy === sortBy) {
         currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
     } else {
-        currentSortBy = sortBy;
+        currentSortBy    = sortBy;
         currentSortOrder = 'asc';
     }
-
     loadProducts(1);
 });
 
-// Clear Filters
 $('#clearFilters').click(function(e) {
     e.preventDefault();
     $('#search').val('');
     $('#category_id').val('');
     $('#brand_id').val('');
+    $('#group_id').val('');     // ← NEW
     $('#status').val('');
     $('#stock_status').val('');
     $('#min_price').val('');
     $('#max_price').val('');
-    currentSortBy = 'created_at';
+    currentSortBy    = 'created_at';
     currentSortOrder = 'desc';
     loadProducts(1);
 });
 
-// Delete Product
-$(document).on('click', '.delete-product', function () {
-    const productId = $(this).data('id');
+$(document).on('click', '.delete-product', function() {
+    const productId   = $(this).data('id');
     const productName = $(this).data('name');
 
     Swal.fire({
@@ -940,77 +798,54 @@ $(document).on('click', '.delete-product', function () {
         cancelButtonColor: '#6b7280',
         confirmButtonText: 'Yes, Delete',
         cancelButtonText: 'Cancel',
-        width: '30em',
-        padding: '2rem'
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
                 url: `/admin/products/${productId}`,
                 method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        text: response.message,
-                        confirmButtonColor: '#08437b',
-                        timer: 2000
-                    });
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(response) {
+                    Swal.fire({ icon: 'success', title: 'Deleted!', text: response.message, confirmButtonColor: '#08437b', timer: 2000 });
                     loadProducts($('#paginationContainer .pagination .active .page-link').text() || 1);
                 },
-                error: function (xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: xhr.responseJSON?.message || 'Failed to delete product',
-                        confirmButtonColor: '#08437b'
-                    });
+                error: function(xhr) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.message || 'Failed to delete product', confirmButtonColor: '#08437b' });
                 }
             });
         }
     });
 });
 
-// Debounce function
 function debounce(func, wait) {
     let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
+    return function(...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func(...args), wait);
     };
 }
 
-// Initial state
 updateActiveFiltersCount();
 
-// ── Auto-apply filter from URL (e.g. ?stock_status=out_of_stock) ──
 (function applyUrlFilters() {
-    const params = new URLSearchParams(window.location.search);
-
+    const params      = new URLSearchParams(window.location.search);
     const stockStatus = params.get('stock_status');
     const status      = params.get('status');
     const search      = params.get('search');
     const categoryId  = params.get('category_id');
     const brandId     = params.get('brand_id');
+    const groupId     = params.get('group_id');   // ← NEW
 
     if (stockStatus) $('#stock_status').val(stockStatus);
     if (status)      $('#status').val(status);
     if (search)      $('#search').val(search);
     if (categoryId)  $('#category_id').val(categoryId);
     if (brandId)     $('#brand_id').val(brandId);
+    if (groupId)     $('#group_id').val(groupId); // ← NEW
 
-    // If any filter was set from URL, trigger a reload
-    if (stockStatus || status || search || categoryId || brandId) {
+    if (stockStatus || status || search || categoryId || brandId || groupId) {
         loadProducts(1);
         updateActiveFiltersCount();
     }
 })();
-
 </script>
 @endpush

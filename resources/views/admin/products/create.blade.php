@@ -149,6 +149,25 @@
         font-size: 11px; font-weight: 600; text-transform: uppercase;
     }
 
+    /* Group Visibility */
+    .group-check-card {
+        border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem 1.25rem;
+        display: flex; align-items: center; gap: 0.75rem; cursor: pointer;
+        transition: all 0.2s; background: white; user-select: none;
+    }
+    .group-check-card:hover { border-color: #08437b; background: #f0f9ff; }
+    .group-check-card input[type="checkbox"] {
+        width: 18px; height: 18px; accent-color: #08437b; cursor: pointer; flex-shrink: 0;
+    }
+    .group-check-card.checked { border-color: #08437b; background: #eff6ff; }
+    .group-check-card .group-name { font-size: 14px; font-weight: 600; color: #111827; }
+    .group-check-card .group-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .group-default-badge {
+        margin-left: auto; background: #dbeafe; color: #1e40af;
+        font-size: 10px; font-weight: 600; padding: 0.2rem 0.5rem;
+        border-radius: 4px; text-transform: uppercase; flex-shrink: 0;
+    }
+
     .form-footer {
         margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;
         display: flex; gap: 0.75rem; justify-content: flex-end;
@@ -312,15 +331,6 @@
                             <small class="form-text">How this product is sold</small>
                         </div>
 
-                        {{-- <div class="col-md-4">
-                            <label class="form-label">Weight Based Pricing?</label>
-                            <select name="is_weight_based" class="form-select" id="weightToggle">
-                                <option value="0" selected>No — Fixed Price</option>
-                                <option value="1">Yes — Price per KG</option>
-                            </select>
-                            <small class="form-text">Enable for vegetables, fruits, meat</small>
-                        </div> --}}
-
                         <div class="col-md-4">
                             <label class="form-label">Featured?</label>
                             <select name="is_featured" class="form-select">
@@ -384,28 +394,6 @@
                             <small class="text-danger error-stock"></small>
                         </div>
 
-                        {{-- Weight-based fields (hidden by default) --}}
-                        {{-- <div class="col-md-3 weight-field" id="pricePerKgWrapper" style="display:none;">
-                            <label class="form-label">Price per KG <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">£</span>
-                                <input type="number" step="0.01" name="price_per_kg" class="form-control" placeholder="0.00">
-                            </div>
-                            <small class="text-danger error-price_per_kg"></small>
-                        </div>
-
-                        <div class="col-md-3 weight-field" id="minWeightWrapper" style="display:none;">
-                            <label class="form-label">Min Weight (kg)</label>
-                            <input type="number" step="0.001" name="min_weight" class="form-control" placeholder="0.250">
-                            <small class="text-danger error-min_weight"></small>
-                        </div>
-
-                        <div class="col-md-3 weight-field" id="maxWeightWrapper" style="display:none;">
-                            <label class="form-label">Max Weight (kg)</label>
-                            <input type="number" step="0.001" name="max_weight" class="form-control" placeholder="5.000">
-                            <small class="text-danger error-max_weight"></small>
-                        </div> --}}
-
                     </div>
                 </div>
 
@@ -432,6 +420,40 @@
                         </div>
 
                     </div>
+                </div>
+
+                {{-- ── CUSTOMER GROUP VISIBILITY ── --}}
+                <div class="form-section">
+                    <h6 class="section-title">Visible To (Customer Groups)</h6>
+                    <p class="form-text mb-3">
+                        <i class="fas fa-info-circle"></i>
+                        Select which customer groups can see and purchase this product.
+                        If none selected, it defaults to <strong>Home Delivery</strong> only.
+                    </p>
+                    <div class="row g-3">
+                        @foreach($customerGroups as $group)
+                            <div class="col-md-4">
+                                <label class="group-check-card {{ $group->slug === 'home-delivery' ? 'checked' : '' }}"
+                                       id="groupCard_{{ $group->id }}">
+                                    <input type="checkbox"
+                                           name="group_ids[]"
+                                           value="{{ $group->id }}"
+                                           {{ $group->slug === 'home-delivery' ? 'checked' : '' }}
+                                           onchange="toggleGroupCard(this)">
+                                    <div>
+                                        <div class="group-name">{{ $group->name }}</div>
+                                        @if($group->description)
+                                            <div class="group-desc">{{ Str::limit($group->description, 60) }}</div>
+                                        @endif
+                                    </div>
+                                    @if($group->slug === 'home-delivery')
+                                        <span class="group-default-badge">Default</span>
+                                    @endif
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <small class="text-danger error-group_ids mt-2"></small>
                 </div>
 
                 {{-- ── IMAGES ── --}}
@@ -470,6 +492,12 @@
 @push('scripts')
 <script>
 
+/* ── GROUP CARD TOGGLE ── */
+function toggleGroupCard(checkbox) {
+    const card = checkbox.closest('.group-check-card');
+    card.classList.toggle('checked', checkbox.checked);
+}
+
 /* ── SEARCHABLE SELECT ── */
 function initSearchableSelect(wrapperId, triggerEl, dropdownEl, searchEl, optionsContainerId, hiddenInputId, placeholder) {
     const trigger   = document.getElementById(triggerEl);
@@ -502,7 +530,6 @@ function initSearchableSelect(wrapperId, triggerEl, dropdownEl, searchEl, option
         });
 
         groups.forEach(g => {
-            // Show group label only if it has visible children
             let next = g.nextElementSibling;
             let groupVisible = false;
             while (next && !next.classList.contains('select-optgroup-label')) {
@@ -554,27 +581,8 @@ function closeAllDropdowns() {
 
 document.addEventListener('click', closeAllDropdowns);
 
-// Init both selects
 initSearchableSelect('categorySelectWrapper','categoryTrigger','categoryDropdown','categorySearch','categoryOptions','categoryId','Select Category');
 initSearchableSelect('brandSelectWrapper','brandTrigger','brandDropdown','brandSearch','brandOptions','brandId','No Brand / Generic');
-
-
-/* ── WEIGHT TOGGLE ── */
-// document.getElementById('weightToggle').addEventListener('change', function() {
-//     const isWeight = this.value === '1';
-//     document.querySelectorAll('.weight-field').forEach(el => {
-//         el.style.display = isWeight ? '' : 'none';
-//     });
-//     const pkgInput = document.querySelector('[name="price_per_kg"]');
-//     if (isWeight) {
-//         pkgInput.setAttribute('required', true);
-//     } else {
-//         pkgInput.removeAttribute('required');
-//         pkgInput.value = '';
-//         document.querySelector('[name="min_weight"]').value = '';
-//         document.querySelector('[name="max_weight"]').value = '';
-//     }
-// });
 
 
 /* ── IMAGE UPLOAD ── */
@@ -582,9 +590,9 @@ const MAX_FILE_SIZE = 100 * 1024;
 const MAX_FILES     = 5;
 let selectedFiles   = [];
 
-const imageInput  = document.getElementById('imageInput');
+const imageInput   = document.getElementById('imageInput');
 const imagePreview = document.getElementById('imagePreview');
-const uploadBox   = document.getElementById('imageUploadBox');
+const uploadBox    = document.getElementById('imageUploadBox');
 
 uploadBox.onclick = () => imageInput.click();
 
@@ -668,10 +676,16 @@ $('#productForm').submit(function(e) {
     $('small.text-danger').text('');
     $('.form-control, .form-select').removeClass('is-invalid');
 
-    // Validate category selected
     if (!$('#categoryId').val()) {
         $('#categoryId').closest('.col-md-6').find('.text-danger').text('Please select a category');
         Swal.fire({ icon: 'warning', title: 'Category Required', text: 'Please select a category.', confirmButtonColor: '#08437b' });
+        return;
+    }
+
+    // Validate at least one group is checked
+    if ($('input[name="group_ids[]"]:checked').length === 0) {
+        $('.error-group_ids').text('Please select at least one customer group.');
+        Swal.fire({ icon: 'warning', title: 'Group Required', text: 'Please select at least one customer group.', confirmButtonColor: '#08437b' });
         return;
     }
 

@@ -26,6 +26,11 @@ class CustomerGroup extends Model
                     ->withTimestamps();
     }
 
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'customer_group_product');
+    }
+
     public function groupDiscounts()
     {
         return $this->hasMany(GroupDiscount::class);

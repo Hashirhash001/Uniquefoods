@@ -16,41 +16,41 @@ class GroupPricingController extends Controller
 {
     /* ================= GROUP DISCOUNTS ================= */
 
-    public function groupDiscounts(CustomerGroup $group)
+    public function groupDiscounts(CustomerGroup $customerGroup)
     {
-        $discounts = GroupDiscount::where('customer_group_id', $group->id)
+        $discounts = GroupDiscount::where('customer_group_id', $customerGroup->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.group-pricing.discounts', compact('group', 'discounts'));
+        // ✅ was compact('group', ...) — fixed
+        return view('admin.group-pricing.discounts', compact('customerGroup', 'discounts'));
     }
 
-    public function storeGroupDiscount(Request $request, CustomerGroup $group)
+    public function storeGroupDiscount(Request $request, CustomerGroup $customerGroup)
     {
         $validated = $request->validate([
-            'type' => 'required|in:percentage,fixed',
-            'value' => 'required|numeric|min:0',
+            'type'             => 'required|in:percentage,fixed',
+            'value'            => 'required|numeric|min:0',
             'min_order_amount' => 'nullable|numeric|min:0',
-            'is_active' => 'boolean'
+            'is_active'        => 'boolean'
         ], [
-            'type.required' => 'Please select discount type',
-            'type.in' => 'Invalid discount type',
-            'value.required' => 'Discount value is required',
-            'value.numeric' => 'Discount value must be a number',
-            'value.min' => 'Discount value must be at least 0',
-            'min_order_amount.numeric' => 'Minimum order amount must be a number',
-            'min_order_amount.min' => 'Minimum order amount must be at least 0'
+            'type.required'               => 'Please select discount type',
+            'type.in'                     => 'Invalid discount type',
+            'value.required'              => 'Discount value is required',
+            'value.numeric'               => 'Discount value must be a number',
+            'value.min'                   => 'Discount value must be at least 0',
+            'min_order_amount.numeric'    => 'Minimum order amount must be a number',
+            'min_order_amount.min'        => 'Minimum order amount must be at least 0'
         ]);
 
-        // Additional validation for percentage
         if ($validated['type'] === 'percentage' && $validated['value'] > 100) {
             return response()->json([
                 'success' => false,
-                'errors' => ['value' => ['Percentage cannot exceed 100']]
+                'errors'  => ['value' => ['Percentage cannot exceed 100']]
             ], 422);
         }
 
-        $validated['customer_group_id'] = $group->id;
+        $validated['customer_group_id'] = $customerGroup->id;
         $validated['is_active'] = $request->has('is_active') ? $request->is_active : 1;
 
         GroupDiscount::create($validated);
@@ -76,42 +76,42 @@ class GroupPricingController extends Controller
         $discount->update(['is_active' => !$discount->is_active]);
 
         return response()->json([
-            'success' => true,
+            'success'   => true,
             'is_active' => $discount->is_active
         ]);
     }
 
     /* ================= PRODUCT-SPECIFIC PRICES ================= */
 
-    public function productPrices(CustomerGroup $group)
+    public function productPrices(CustomerGroup $customerGroup)
     {
         $products = Product::active()->orderBy('name')->get();
 
-        $groupPrices = ProductGroupPrice::where('customer_group_id', $group->id)
+        $groupPrices = ProductGroupPrice::where('customer_group_id', $customerGroup->id)
             ->with('product')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.group-pricing.product-prices', compact('group', 'products', 'groupPrices'));
+        // ✅ was compact('group', ...) — fixed
+        return view('admin.group-pricing.product-prices', compact('customerGroup', 'products', 'groupPrices'));
     }
 
-    public function storeProductPrice(Request $request, CustomerGroup $group)
+    public function storeProductPrice(Request $request, CustomerGroup $customerGroup)
     {
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'price' => 'required|numeric|min:0'
+            'price'      => 'required|numeric|min:0'
         ], [
             'product_id.required' => 'Please select a product',
-            'product_id.exists' => 'Selected product does not exist',
-            'price.required' => 'Price is required',
-            'price.numeric' => 'Price must be a number',
-            'price.min' => 'Price must be at least 0'
+            'product_id.exists'   => 'Selected product does not exist',
+            'price.required'      => 'Price is required',
+            'price.numeric'       => 'Price must be a number',
+            'price.min'           => 'Price must be at least 0'
         ]);
 
-        $validated['customer_group_id'] = $group->id;
+        $validated['customer_group_id'] = $customerGroup->id;
 
-        // Check if price already exists
-        $existing = ProductGroupPrice::where('customer_group_id', $group->id)
+        $existing = ProductGroupPrice::where('customer_group_id', $customerGroup->id)
             ->where('product_id', $validated['product_id'])
             ->first();
 
@@ -141,62 +141,63 @@ class GroupPricingController extends Controller
 
     /* ================= PRODUCT OFFERS (Time-limited) ================= */
 
-    public function productOffers(CustomerGroup $group)
+    public function productOffers(CustomerGroup $customerGroup)
     {
-        $products = Product::active()->orderBy('name')->get();
+        $products   = Product::active()->orderBy('name')->get();
         $categories = Category::active()->orderBy('name')->get();
-        $brands = brand::active()->orderBy('name')->get();
+        $brands     = brand::active()->orderBy('name')->get();
 
-        $offers = GroupProductOffer::where('customer_group_id', $group->id)
+        $offers = GroupProductOffer::where('customer_group_id', $customerGroup->id)
             ->with(['product', 'category', 'brand'])
             ->orderBy('starts_at', 'desc')
             ->get();
 
-        return view('admin.group-pricing.product-offers', compact('group', 'products', 'categories', 'brands', 'offers'));
+        // ✅ was compact('group', ...) — fixed
+        return view('admin.group-pricing.product-offers', compact('customerGroup', 'products', 'categories', 'brands', 'offers'));
     }
 
-    public function storeProductOffer(Request $request, CustomerGroup $group)
+    public function storeProductOffer(Request $request, CustomerGroup $customerGroup)
     {
         $rules = [
             'offer_type' => 'required|in:product,category,brand',
-            'starts_at' => 'required|date|after_or_equal:today',
-            'ends_at' => 'required|date|after:starts_at',
+            'starts_at'  => 'required|date|after_or_equal:today',
+            'ends_at'    => 'required|date|after:starts_at',
         ];
 
         if ($request->offer_type === 'product') {
-            $rules['product_id'] = 'required|exists:products,id';
+            $rules['product_id']  = 'required|exists:products,id';
             $rules['offer_price'] = 'required|numeric|min:0';
         }
 
         if ($request->offer_type === 'category') {
-            $rules['category_id'] = 'required|exists:categories,id';
-            $rules['discount_type'] = 'required|in:percentage,fixed';
+            $rules['category_id']    = 'required|exists:categories,id';
+            $rules['discount_type']  = 'required|in:percentage,fixed';
             $rules['discount_value'] = 'required|numeric|min:0';
         }
 
         if ($request->offer_type === 'brand') {
-            $rules['brand_id'] = 'required|exists:brands,id';
-            $rules['discount_type'] = 'required|in:percentage,fixed';
+            $rules['brand_id']       = 'required|exists:brands,id';
+            $rules['discount_type']  = 'required|in:percentage,fixed';
             $rules['discount_value'] = 'required|numeric|min:0';
         }
 
         $validated = $request->validate($rules, [
-            'discount_type.required' => 'Please select discount type',
+            'discount_type.required'  => 'Please select discount type',
             'discount_value.required' => 'Discount value is required',
         ]);
 
         if (($validated['discount_type'] ?? null) === 'percentage' && ($validated['discount_value'] ?? 0) > 100) {
             return response()->json([
                 'message' => 'Validation error',
-                'errors' => ['discount_value' => ['Percentage cannot exceed 100']],
+                'errors'  => ['discount_value' => ['Percentage cannot exceed 100']],
             ], 422);
         }
 
-        $validated['customer_group_id'] = $group->id;
+        $validated['customer_group_id'] = $customerGroup->id;
 
         if ($validated['offer_type'] !== 'product') {
-            $validated['offer_price'] = null;   // category/brand offers don't have offer_price
-            $validated['product_id']  = null;   // also not applicable
+            $validated['offer_price'] = null;
+            $validated['product_id']  = null;
         }
 
         if ($validated['offer_type'] === 'product') {
@@ -204,23 +205,22 @@ class GroupPricingController extends Controller
             $validated['brand_id']    = null;
         }
 
-        // Check for overlapping offers
-        $overlap = GroupProductOffer::where('customer_group_id', $group->id)
-            ->where('product_id', $validated['product_id'])
-            ->where(function($query) use ($validated) {
+        $overlap = GroupProductOffer::where('customer_group_id', $customerGroup->id)
+            ->where('product_id', $validated['product_id'] ?? null)
+            ->where(function ($query) use ($validated) {
                 $query->whereBetween('starts_at', [$validated['starts_at'], $validated['ends_at']])
-                    ->orWhereBetween('ends_at', [$validated['starts_at'], $validated['ends_at']])
-                    ->orWhere(function($q) use ($validated) {
-                        $q->where('starts_at', '<=', $validated['starts_at'])
-                          ->where('ends_at', '>=', $validated['ends_at']);
-                    });
+                      ->orWhereBetween('ends_at', [$validated['starts_at'], $validated['ends_at']])
+                      ->orWhere(function ($q) use ($validated) {
+                          $q->where('starts_at', '<=', $validated['starts_at'])
+                            ->where('ends_at', '>=', $validated['ends_at']);
+                      });
             })
             ->exists();
 
         if ($overlap) {
             return response()->json([
                 'success' => false,
-                'errors' => ['starts_at' => ['An offer already exists for this product in the selected date range']]
+                'errors'  => ['starts_at' => ['An offer already exists for this product in the selected date range']]
             ], 422);
         }
 

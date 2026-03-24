@@ -204,7 +204,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('customer-groups.toggle-status');
 
         // Group Pricing & Discounts
-        Route::prefix('customer-groups/{group}')->name('customer-groups.')->group(function () {
+        Route::prefix('customer-groups/{customerGroup}')->name('customer-groups.')->group(function () {
             Route::get('discounts', [GroupPricingController::class, 'groupDiscounts'])->name('discounts');
             Route::post('discounts', [GroupPricingController::class, 'storeGroupDiscount'])->name('discounts.store');
 
@@ -213,6 +213,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('product-offers', [GroupPricingController::class, 'productOffers'])->name('product-offers');
             Route::post('product-offers', [GroupPricingController::class, 'storeProductOffer'])->name('product-offers.store');
+
+            Route::get('overview', [CustomerGroupController::class, 'overview'])->name('overview');
         });
 
         Route::delete('group-discounts/{discount}', [GroupPricingController::class, 'destroyGroupDiscount'])

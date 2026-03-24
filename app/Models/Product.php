@@ -124,6 +124,14 @@ class Product extends Model
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
     }
 
+    /**
+     * The customer groups this product is visible to.
+     */
+    public function customerGroups()
+    {
+        return $this->belongsToMany(CustomerGroup::class, 'customer_group_product');
+    }
+
     /* ================= ACCESSORS ================= */
     public function getImageUrlAttribute()
     {
@@ -201,6 +209,26 @@ class Product extends Model
             return round($this->reviews->avg('rating'), 1);
         }
         return round($this->reviews()->avg('rating'), 1);
+    }
+
+    /**
+     * Scope products visible to a given user (or guest).
+     * Guests see the 'home-delivery' group. Logged-in users see their own groups.
+     */
+    public function scopeVisibleTo($query, ?\App\Models\User $user)
+    {
+        if ($user && $user->groups->isNotEmpty()) {
+            $groupIds = $user->groups->pluck('id');
+        } else {
+            // Guest or user with no group → default to home-delivery
+            $groupIds = \App\Models\CustomerGroup::where('slug', 'home-delivery')
+                ->where('is_active', 1)
+                ->pluck('id');
+        }
+
+        if ($groupIds->isNotEmpty()) {
+            $query->whereHas('customerGroups', fn($q) => $q->whereIn('customer_groups.id', $groupIds));
+        }
     }
 
 }

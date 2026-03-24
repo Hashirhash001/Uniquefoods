@@ -219,74 +219,57 @@ class WishlistController extends Controller
         ]);
     }
 
-    /**
-     * Get wishlist items with pricing
-     */
     public function get()
     {
         $wishlistIds = $this->getWishlist();
 
         if (empty($wishlistIds)) {
-            return response()->json([
-                'success' => true,
-                'items' => []
-            ]);
+            return response()->json(['success' => true, 'items' => []]);
         }
 
         $user = Auth::user();
+        if ($user) {
+            $user->loadMissing('groups');
+        }
 
-        // ✅ Load products with group pricing
         $products = Product::with(['category', 'brand', 'primaryImage'])
             ->whereIn('id', $wishlistIds)
             ->where('is_active', 1)
+            ->visibleTo($user)   // ← GROUP FILTER
             ->get()
             ->map(function ($product) use ($user) {
-                $basePrice = (float) $product->price;
+                $basePrice  = (float) $product->price;
                 $finalPrice = (float) $this->pricingService->getCustomerPrice($product, $user);
 
-                $discountPercentage = 0;
-                if ($basePrice > 0 && $finalPrice < $basePrice) {
-                    $discountPercentage = round((($basePrice - $finalPrice) / $basePrice) * 100);
-                }
-
                 return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'slug' => $product->slug,
-                    'base_price' => number_format($basePrice, 2, '.', ''),
-                    'price' => number_format($finalPrice, 2, '.', ''),
-                    'mrp' => $product->mrp ? number_format((float)$product->mrp, 2, '.', '') : null,
-                    'discount_percentage' => $discountPercentage,
-                    'unit' => $product->unit,
-                    'stock' => $product->stock ?? 0,
-                    'image_url' => $product->image_url,
-                    'is_weight_based' => (bool) $product->is_weight_based,
-                    'category' => $product->category ? [
-                        'id' => $product->category->id,
-                        'name' => $product->category->name,
-                        'slug' => $product->category->slug,
-                    ] : null,
-                    'brand' => $product->brand ? [
-                        'id' => $product->brand->id,
-                        'name' => $product->brand->name,
-                        'slug' => $product->brand->slug,
-                    ] : null,
+                    'id'                  => $product->id,
+                    'name'                => $product->name,
+                    'slug'                => $product->slug,
+                    'base_price'          => number_format($basePrice, 2, '.', ''),
+                    'price'               => number_format($finalPrice, 2, '.', ''),
+                    'mrp'                 => $product->mrp ? number_format((float)$product->mrp, 2, '.', '') : null,
+                    'discount_percentage' => ($basePrice > 0 && $finalPrice < $basePrice)
+                        ? round((($basePrice - $finalPrice) / $basePrice) * 100) : 0,
+                    'unit'                => $product->unit,
+                    'stock'               => $product->stock ?? 0,
+                    'image_url'           => $product->image_url,
+                    'is_weight_based'     => (bool) $product->is_weight_based,
+                    'category'            => $product->category?->only(['id', 'name', 'slug']),
+                    'brand'               => $product->brand?->only(['id', 'name', 'slug']),
                 ];
             });
 
-        return response()->json([
-            'success' => true,
-            'items' => $products
-        ]);
+        return response()->json(['success' => true, 'items' => $products]);
     }
 
-    /**
-     * Wishlist index page
-     */
     public function index()
     {
-        $user = Auth::user();
+        $user        = Auth::user();
         $wishlistIds = $this->getWishlist();
+
+        if ($user) {
+            $user->loadMissing('groups');
+        }
 
         $products = collect();
 
@@ -294,26 +277,26 @@ class WishlistController extends Controller
             $products = Product::with(['category', 'brand', 'primaryImage'])
                 ->whereIn('id', $wishlistIds)
                 ->where('is_active', 1)
+                ->visibleTo($user)   // ← GROUP FILTER
                 ->get()
                 ->map(function ($product) use ($user) {
-                    $basePrice = (float) $product->price;
+                    $basePrice  = (float) $product->price;
                     $finalPrice = (float) $this->pricingService->getCustomerPrice($product, $user);
-                    $discountPercentage = ($basePrice > 0 && $finalPrice < $basePrice)
-                        ? round((($basePrice - $finalPrice) / $basePrice) * 100) : 0;
 
                     return [
-                        'id' => $product->id,
-                        'name' => $product->name,
-                        'slug' => $product->slug,
-                        'base_price' => number_format($basePrice, 2, '.', ''),
-                        'price' => number_format($finalPrice, 2, '.', ''),
-                        'discount_percentage' => $discountPercentage,
-                        'unit' => $product->unit,
-                        'stock' => $product->stock ?? 0,
-                        'image_url' => $product->image_url,
-                        'is_weight_based' => (bool) $product->is_weight_based,
-                        'category' => $product->category?->only(['id', 'name', 'slug']),
-                        'brand' => $product->brand?->only(['id', 'name', 'slug']),
+                        'id'                  => $product->id,
+                        'name'                => $product->name,
+                        'slug'                => $product->slug,
+                        'base_price'          => number_format($basePrice, 2, '.', ''),
+                        'price'               => number_format($finalPrice, 2, '.', ''),
+                        'discount_percentage' => ($basePrice > 0 && $finalPrice < $basePrice)
+                            ? round((($basePrice - $finalPrice) / $basePrice) * 100) : 0,
+                        'unit'                => $product->unit,
+                        'stock'               => $product->stock ?? 0,
+                        'image_url'           => $product->image_url,
+                        'is_weight_based'     => (bool) $product->is_weight_based,
+                        'category'            => $product->category?->only(['id', 'name', 'slug']),
+                        'brand'               => $product->brand?->only(['id', 'name', 'slug']),
                     ];
                 });
         }

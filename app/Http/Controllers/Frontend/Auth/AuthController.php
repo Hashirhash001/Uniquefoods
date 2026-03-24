@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Frontend\Auth;
 
-use App\Models\User;
-use App\Mail\OtpMail;
-use App\Mail\WelcomeMail;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\WishlistController;
+use App\Mail\OtpMail;
+use App\Mail\WelcomeMail;
+use App\Models\CustomerGroup;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -26,12 +27,12 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required|min:6',
         ]);
 
         $credentials = $request->only('email', 'password');
-        $remember = $request->filled('remember');
+        $remember    = $request->filled('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
@@ -42,23 +43,23 @@ class AuthController extends Controller
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Welcome back, ' . Auth::user()->name . '!',
-                    'redirect' => route('home')
+                    'success'  => true,
+                    'message'  => 'Welcome back, ' . Auth::user()->name . '!',
+                    'redirect' => route('home'),
                 ]);
             }
 
             return redirect()->intended(route('home'))
-                           ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
+                             ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
         }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => 'The provided credentials do not match our records.',
-                'errors' => [
-                    'email' => ['The provided credentials do not match our records.']
-                ]
+                'errors'  => [
+                    'email' => ['The provided credentials do not match our records.'],
+                ],
             ], 422);
         }
 
@@ -83,7 +84,7 @@ class AuthController extends Controller
         ]);
 
         // Ensure OTP was actually verified before reaching this step
-        if (!Cache::get('email_verified_' . $request->email)) {
+        if (! Cache::get('email_verified_' . $request->email)) {
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -104,6 +105,12 @@ class AuthController extends Controller
             'is_verified'       => true,
             'email_verified_at' => now(),
         ]);
+
+        // ── Auto-assign to Home Delivery group ────────────────────────────────
+        $homeDelivery = CustomerGroup::where('slug', 'home-delivery')->first();
+        if ($homeDelivery) {
+            $user->groups()->syncWithoutDetaching([$homeDelivery->id]);
+        }
 
         // Clear OTP verification flag
         Cache::forget('email_verified_' . $request->email);
@@ -134,9 +141,8 @@ class AuthController extends Controller
             'email' => [
                 'required',
                 'email',
-                // Only block if a non-deleted user exists with this email
                 \Illuminate\Validation\Rule::unique('users', 'email')->whereNull('deleted_at'),
-            ]
+            ],
         ]);
 
         // If a soft-deleted account exists, permanently remove it so the new
@@ -157,7 +163,7 @@ class AuthController extends Controller
 
         $cachedOtp = Cache::get('otp_' . $request->email);
 
-        if (!$cachedOtp || $cachedOtp != $request->otp) {
+        if (! $cachedOtp || $cachedOtp != $request->otp) {
             return response()->json(['success' => false, 'message' => 'Invalid or expired OTP.'], 422);
         }
 
@@ -176,7 +182,7 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home')
-                       ->with('success', 'You have been logged out successfully.');
+                         ->with('success', 'You have been logged out successfully.');
     }
 
     public function showRegistrationForm()

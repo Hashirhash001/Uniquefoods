@@ -3,7 +3,6 @@
 @section('title','Edit Product')
 
 @push('styles')
-{{-- Same <style> block as create.blade.php — copy it here --}}
 <style>
     * { box-sizing: border-box; }
     .page-header { margin-bottom: 1.25rem; }
@@ -66,6 +65,20 @@
     .existing-image-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; display: block; }
     .existing-image-card.marked-delete { opacity: 0.35; }
     .existing-image-card.marked-delete::after { content: 'Will be deleted'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(239,68,68,0.9); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+    /* Group Visibility */
+    .group-check-card {
+        border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem 1.25rem;
+        display: flex; align-items: center; gap: 0.75rem; cursor: pointer;
+        transition: all 0.2s; background: white; user-select: none;
+    }
+    .group-check-card:hover { border-color: #08437b; background: #f0f9ff; }
+    .group-check-card input[type="checkbox"] { width: 18px; height: 18px; accent-color: #08437b; cursor: pointer; flex-shrink: 0; }
+    .group-check-card.checked { border-color: #08437b; background: #eff6ff; }
+    .group-check-card .group-name { font-size: 14px; font-weight: 600; color: #111827; }
+    .group-check-card .group-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .group-default-badge { margin-left: auto; background: #dbeafe; color: #1e40af; font-size: 10px; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 4px; text-transform: uppercase; flex-shrink: 0; }
+
     .form-footer { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; display: flex; gap: 0.75rem; justify-content: flex-end; }
     .btn { padding: 0.625rem 1.25rem; border-radius: 6px; font-weight: 500; font-size: 14px; transition: all 0.2s; min-width: 100px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; gap: 0.5rem; }
     .btn-outline-secondary { background: white; border: 1px solid #d1d5db; color: #374151; }
@@ -220,14 +233,6 @@
                             </select>
                         </div>
 
-                        {{-- <div class="col-md-4">
-                            <label class="form-label">Weight Based Pricing?</label>
-                            <select name="is_weight_based" class="form-select" id="weightToggle">
-                                <option value="0" @selected(!old('is_weight_based',$product->is_weight_based))>No — Fixed Price</option>
-                                <option value="1" @selected(old('is_weight_based',$product->is_weight_based)==1)>Yes — Price per KG</option>
-                            </select>
-                        </div> --}}
-
                         <div class="col-md-4">
                             <label class="form-label">Featured?</label>
                             <select name="is_featured" class="form-select">
@@ -293,37 +298,6 @@
                             <small class="text-danger error-stock"></small>
                         </div>
 
-                        {{-- Weight fields — shown/hidden by JS --}}
-                        {{-- <div class="col-md-3 weight-field"
-                             id="pricePerKgWrapper"
-                             style="{{ $product->is_weight_based ? '' : 'display:none;' }}">
-                            <label class="form-label">Price per KG <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">£</span>
-                                <input type="number" step="0.01" name="price_per_kg" class="form-control"
-                                       value="{{ old('price_per_kg', $product->price_per_kg) }}" placeholder="0.00">
-                            </div>
-                            <small class="text-danger error-price_per_kg"></small>
-                        </div>
-
-                        <div class="col-md-3 weight-field"
-                             id="minWeightWrapper"
-                             style="{{ $product->is_weight_based ? '' : 'display:none;' }}">
-                            <label class="form-label">Min Weight (kg)</label>
-                            <input type="number" step="0.001" name="min_weight" class="form-control"
-                                   value="{{ old('min_weight', $product->min_weight) }}" placeholder="0.250">
-                            <small class="text-danger error-min_weight"></small>
-                        </div>
-
-                        <div class="col-md-3 weight-field"
-                             id="maxWeightWrapper"
-                             style="{{ $product->is_weight_based ? '' : 'display:none;' }}">
-                            <label class="form-label">Max Weight (kg)</label>
-                            <input type="number" step="0.001" name="max_weight" class="form-control"
-                                   value="{{ old('max_weight', $product->max_weight) }}" placeholder="5.000">
-                            <small class="text-danger error-max_weight"></small>
-                        </div> --}}
-
                     </div>
                 </div>
 
@@ -352,6 +326,44 @@
                         </div>
 
                     </div>
+                </div>
+
+                {{-- ── CUSTOMER GROUP VISIBILITY ── --}}
+                @php
+                    $assignedGroupIds = $product->customerGroups->pluck('id')->toArray();
+                @endphp
+                <div class="form-section">
+                    <h6 class="section-title">Visible To (Customer Groups)</h6>
+                    <p class="form-text mb-3">
+                        <i class="fas fa-info-circle"></i>
+                        Select which customer groups can see and purchase this product.
+                        If none selected, it will be hidden from all groups.
+                    </p>
+                    <div class="row g-3">
+                        @foreach($customerGroups as $group)
+                            @php $isAssigned = in_array($group->id, $assignedGroupIds); @endphp
+                            <div class="col-md-4">
+                                <label class="group-check-card {{ $isAssigned ? 'checked' : '' }}"
+                                       id="groupCard_{{ $group->id }}">
+                                    <input type="checkbox"
+                                           name="group_ids[]"
+                                           value="{{ $group->id }}"
+                                           {{ $isAssigned ? 'checked' : '' }}
+                                           onchange="toggleGroupCard(this)">
+                                    <div>
+                                        <div class="group-name">{{ $group->name }}</div>
+                                        @if($group->description)
+                                            <div class="group-desc">{{ Str::limit($group->description, 60) }}</div>
+                                        @endif
+                                    </div>
+                                    @if($group->slug === 'home-delivery')
+                                        <span class="group-default-badge">Default</span>
+                                    @endif
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <small class="text-danger error-group_ids mt-2"></small>
                 </div>
 
                 {{-- ── IMAGES ── --}}
@@ -413,7 +425,12 @@
 const PRODUCT_UPDATE_URL = "{{ route('admin.products.update', $product->id) }}";
 const PRODUCTS_INDEX_URL = "{{ route('admin.products.index') }}";
 
-/* ── SEARCHABLE SELECT (same function as create) ── */
+/* ── GROUP CARD TOGGLE ── */
+function toggleGroupCard(checkbox) {
+    checkbox.closest('.group-check-card').classList.toggle('checked', checkbox.checked);
+}
+
+/* ── SEARCHABLE SELECT ── */
 function initSearchableSelect(wrapperId, triggerEl, dropdownEl, searchEl, optionsContainerId, hiddenInputId) {
     const trigger   = document.getElementById(triggerEl);
     const dropdown  = document.getElementById(dropdownEl);
@@ -473,31 +490,12 @@ initSearchableSelect('categorySelectWrapper','categoryTrigger','categoryDropdown
 initSearchableSelect('brandSelectWrapper','brandTrigger','brandDropdown','brandSearch','brandOptions','brandId');
 
 
-/* ── WEIGHT TOGGLE ── */
-// document.getElementById('weightToggle').addEventListener('change', function() {
-//     const isWeight = this.value === '1';
-//     document.querySelectorAll('.weight-field').forEach(el => {
-//         el.style.display = isWeight ? '' : 'none';
-//     });
-//     const pkgInput = document.querySelector('[name="price_per_kg"]');
-//     if (isWeight) {
-//         pkgInput.setAttribute('required', true);
-//     } else {
-//         pkgInput.removeAttribute('required');
-//         pkgInput.value = '';
-//         document.querySelector('[name="min_weight"]').value = '';
-//         document.querySelector('[name="max_weight"]').value = '';
-//     }
-// });
-
-
 /* ── DELETE EXISTING IMAGES ── */
 let deletedImageIds = [];
 
 function markDeleteImage(id) {
     const card = document.getElementById(`existingCard${id}`);
     if (deletedImageIds.includes(id)) {
-        // Undo
         deletedImageIds = deletedImageIds.filter(i => i !== id);
         card.classList.remove('marked-delete');
     } else {
@@ -588,11 +586,16 @@ $('#productForm').submit(function(e) {
         return;
     }
 
+    // Validate at least one group is checked
+    if ($('input[name="group_ids[]"]:checked').length === 0) {
+        $('.error-group_ids').text('Please select at least one customer group.');
+        Swal.fire({ icon: 'warning', title: 'Group Required', text: 'Please select at least one customer group.', confirmButtonColor: '#08437b' });
+        return;
+    }
+
     const formData = new FormData(this);
     formData.delete('images[]');
     selectedFiles.forEach(file => formData.append('images[]', file));
-
-    // Append deleted image IDs
     deletedImageIds.forEach(id => formData.append('deleted_images[]', id));
 
     Swal.fire({

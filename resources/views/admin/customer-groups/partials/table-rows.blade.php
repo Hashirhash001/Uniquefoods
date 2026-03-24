@@ -35,27 +35,28 @@
             </td>
             <td>
                 <div class="action-btns">
-                    <a href="{{ route('admin.customer-groups.edit', $group) }}"
-                       class="btn-icon"
-                       title="Edit Group">
+                    <a href="{{ route('admin.customer-groups.overview', ['customerGroup' => $group->id]) }}"
+                       class="btn-icon" title="View Overview">
+                        <i class="fas fa-chart-bar"></i>
+                    </a>
+
+                    <a href="{{ route('admin.customer-groups.edit', ['customer_group' => $group->id]) }}"
+                       class="btn-icon" title="Edit Group">
                         <i class="fas fa-edit"></i>
                     </a>
 
-                    <a href="{{ route('admin.customer-groups.product-prices', $group) }}"
-                       class="btn-icon btn-success"
-                       title="Product Prices">
+                    <a href="{{ route('admin.customer-groups.product-prices', ['customerGroup' => $group->id]) }}"
+                       class="btn-icon btn-success" title="Product Prices">
                         <i class="fas fa-tags"></i>
                     </a>
 
-                    <a href="{{ route('admin.customer-groups.discounts', $group) }}"
-                       class="btn-icon"
-                       title="Group Discounts">
+                    <a href="{{ route('admin.customer-groups.discounts', ['customerGroup' => $group->id]) }}"
+                       class="btn-icon" title="Group Discounts">
                         <i class="fas fa-percent"></i>
                     </a>
 
-                    <a href="{{ route('admin.customer-groups.product-offers', $group) }}"
-                       class="btn-icon"
-                       title="Product Offers">
+                    <a href="{{ route('admin.customer-groups.product-offers', ['customerGroup' => $group->id]) }}"
+                       class="btn-icon" title="Product Offers">
                         <i class="fas fa-gift"></i>
                     </a>
 
