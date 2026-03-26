@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\CustomerGroup;
 use App\Models\Product;
 use App\Models\Wishlist;
 use App\Models\WishlistItem;
@@ -16,6 +17,13 @@ class HomeController extends Controller
 {
     public function index(PricingService $pricingService)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user) {
+            $user->loadMissing('groups');
+        }
+
         $banners = Cache::remember('active_banners', 1800, function () {
             return Banner::active()->orderBy('sort_order')->get();
         });
@@ -31,6 +39,7 @@ class HomeController extends Controller
         $products = Product::with(['category', 'brand', 'primaryImage', 'images', 'reviews'])
             ->where('is_active', 1)
             ->where('is_featured', 1)
+            ->visibleTo($user)   // ← GROUP FILTER
             ->latest()
             ->take(10)
             ->get();
@@ -38,6 +47,7 @@ class HomeController extends Controller
         $popularProducts = Product::with(['category', 'brand', 'primaryImage', 'images', 'reviews'])
             ->where('is_active', 1)
             ->where('is_popular', 1)
+            ->visibleTo($user)   // ← GROUP FILTER
             ->latest()
             ->take(20)
             ->get();
@@ -46,8 +56,6 @@ class HomeController extends Controller
             ->where('is_active', 1)
             ->take(4)
             ->get();
-
-        $user = Auth::user();
 
         $wishlistedIds = [];
         if ($user) {
@@ -61,7 +69,6 @@ class HomeController extends Controller
             $wishlistedIds = array_keys(session()->get('wishlist', []));
         }
 
-        // ✅ Single shared transform — no duplication
         $applyPricing = function ($p) use ($pricingService, $user, $wishlistedIds) {
             $p->base_price  = (float) $p->price;
             $p->final_price = (float) $pricingService->getCustomerPrice($p, $user);
@@ -69,8 +76,8 @@ class HomeController extends Controller
                 ? round((($p->base_price - $p->final_price) / $p->base_price) * 100)
                 : 0;
             $p->is_wishlisted  = in_array($p->id, $wishlistedIds);
-            $p->average_rating = round((float) $p->reviews->avg('rating'), 1); // ✅ no query
-            $p->reviews_count  = $p->reviews->count();                          // ✅ no query
+            $p->average_rating = round((float) $p->reviews->avg('rating'), 1);
+            $p->reviews_count  = $p->reviews->count();
             return $p;
         };
 

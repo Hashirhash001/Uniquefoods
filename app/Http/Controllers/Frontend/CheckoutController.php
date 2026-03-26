@@ -29,7 +29,7 @@ class CheckoutController extends Controller
 
         $subtotal     = $this->calculateSubtotal($cart);
         $shippingCost = $this->calculateShipping($subtotal);
-        $tax          = $this->calculateTax($subtotal);
+        $tax          = $this->calculateTax($cart);
         $total        = $subtotal + $shippingCost + $tax;
 
         $savedAddresses = collect();
@@ -77,6 +77,7 @@ class CheckoutController extends Controller
                 'county'           => 'nullable|string|max:255|regex:/^[a-zA-Z\s]+$/',
                 'postcode'         => 'required|string|max:10|regex:/^[A-Z]{1,2}[0-9]{1,2}[A-Z]?\s?[0-9][A-Z]{2}$/i',
                 'payment_method'   => 'required|in:cash_on_delivery',
+                'cod_delivery_method'  => 'required|in:cash,bank_transfer',
                 'customer_notes'   => 'nullable|string|max:1000',
                 'save_address'     => 'nullable|boolean',
                 'address_label'    => 'nullable|string|max:50',
@@ -149,7 +150,7 @@ class CheckoutController extends Controller
 
             $subtotal     = $this->calculateSubtotal($cart);
             $shippingCost = $this->calculateShipping($subtotal);
-            $tax          = $this->calculateTax($subtotal);
+            $tax          = $this->calculateTax($cart);
             $total        = $subtotal + $shippingCost + $tax;
 
             // ── Duplicate order guard ──────────────────────────────
@@ -182,6 +183,7 @@ class CheckoutController extends Controller
                 'tax'                      => $tax,
                 'total'                    => $total,
                 'payment_method'           => 'cash_on_delivery',
+                'cod_delivery_method' => $validated['cod_delivery_method'],
                 'payment_status'           => 'pending',
                 'stripe_payment_intent_id' => null,
                 'paid_at'                  => null,
@@ -321,35 +323,54 @@ class CheckoutController extends Controller
     }
 
     // ── Private helpers ───────────────────────────────────────────
-
     private function getCart(): array
     {
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
             if (!$cart) return [];
 
-            return $cart->items()
-                ->with(['product']) // ✅ removed primaryImage — not needed for checkout logic
+            return $cart->items()                          // ← query builder, not property
+                ->with(['product' => function ($q) {       // eager load with only needed columns
+                    $q->select([
+                        'id', 'name', 'slug', 'stock',
+                        'is_weight_based', 'tax_rate',
+                        'min_weight', 'max_weight',
+                        'is_active',
+                    ])
+                    ->with(['primaryImage:id,product_id,image_path']);
+                }])
                 ->get()
                 ->map(function ($item) {
                     if (!$item->product || !$item->product->is_active) return null;
+
                     return [
                         'id'              => $item->product_id,
                         'cart_item_id'    => $item->id,
                         'name'            => $item->product->name,
                         'slug'            => $item->product->slug,
                         'price'           => (float) $item->price,
-                        'quantity'        => $item->quantity,
+                        'quantity'        => (int) $item->quantity,
                         'weight'          => $item->weight,
                         'image'           => $item->product->image_url,
                         'stock'           => $item->product->stock,
                         'is_weight_based' => (bool) $item->product->is_weight_based,
+                        'tax_rate'        => (float) ($item->product->tax_rate ?? 20),
                     ];
                 })
-                ->filter()->values()->toArray();
+                ->filter()
+                ->values()
+                ->toArray();
         }
 
-        return session()->get('cart', []);
+        // ── Guest cart from session ──
+        // Session cart items won't have tax_rate, default to 20
+        return collect(session()->get('cart', []))
+            ->map(function ($item) {
+                return array_merge($item, [
+                    'tax_rate' => (float) ($item['tax_rate'] ?? 20),
+                ]);
+            })
+            ->toArray();
     }
 
     private function calculateSubtotal(array $cart): float
@@ -363,7 +384,22 @@ class CheckoutController extends Controller
     }
 
     private function calculateShipping(float $subtotal): float { return $subtotal >= 500 ? 0 : 5.99; }
-    private function calculateTax(float $subtotal): float      { return round($subtotal * 0.20, 2); }
+    private function calculateTax(array $cart): float
+    {
+        $tax = 0;
+
+        foreach ($cart as $item) {
+            $isWeightBased = !empty($item['weight']) && (float)$item['weight'] > 0;
+            $lineSubtotal  = $isWeightBased
+                ? (float)$item['price'] * (float)$item['weight']
+                : (float)$item['price'] * (int)$item['quantity'];
+
+            $rate = (float)($item['tax_rate'] ?? 20); // fallback 20% if missing
+            $tax += $lineSubtotal * ($rate / 100);
+        }
+
+        return round($tax, 2);
+    }
 
     public function orders()
     {

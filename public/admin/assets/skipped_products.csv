@@ -1,1 +1,1 @@
-row,reason,category,barcode,name,unit,price,tax
+seq,reason,website_category,website_sub,barcode,name,unit,price,tax

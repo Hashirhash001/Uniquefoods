@@ -227,6 +227,7 @@ class WishlistController extends Controller
             return response()->json(['success' => true, 'items' => []]);
         }
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user) {
             $user->loadMissing('groups');
@@ -264,6 +265,7 @@ class WishlistController extends Controller
 
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user        = Auth::user();
         $wishlistIds = $this->getWishlist();
 

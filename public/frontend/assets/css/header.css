@@ -13,6 +13,21 @@
     --mobile-header-height: 70px;
 }
 
+/* ── Fix position:sticky broken by body overflow ── */
+html,
+body {
+    overflow-x: clip !important; /* clip instead of hidden — doesn't break scroll container */
+    overflow-y: visible !important;
+}
+
+/* Kill SimpleBar/sf-js-enabled scroll hijack on desktop */
+@media (min-width: 993px) {
+    .sf-js-enabled {
+        overflow: visible !important;
+        height: auto !important;
+    }
+}
+
 /* ===== GLOBAL ===== */
 html { scroll-behavior: smooth; }
 

@@ -12,8 +12,9 @@ use Illuminate\Support\Str;
 class ImportProducts extends Command
 {
     protected $signature   = 'products:import {file : Path to the CSV file}';
-    protected $description = 'One-time import of products from the Zenero product list CSV';
+    protected $description = 'Import products from the Zenero recategorized product list CSV';
 
+    // ── Unit normalisation ────────────────────────────────────────────────────
     private array $units = [
         'kg'     => 'kg',
         'g'      => 'g',
@@ -44,6 +45,7 @@ class ImportProducts extends Command
         'willkg' => 'kg',
     ];
 
+    // ── Brand detection prefixes ──────────────────────────────────────────────
     private array $brandPrefixes = [
         'QUALITY STREET' => 'Quality Street',
         'DAILY DELIGHT'  => 'Daily Delight',
@@ -102,11 +104,9 @@ class ImportProducts extends Command
         'SHANA'          => 'Shana',
         'SUVAI'          => 'Suvai',
         'KINGS'          => 'Kings',
-        'EAST-'          => 'Eastern',
         'PRIYA'          => 'Priya',
         'GEETA'          => "Geeta's",
         'AHMED'          => 'Ahmed',
-        'PAPA-'          => 'Papa',
         'PRIDE'          => 'Pride',
         'DALDA'          => 'Dalda',
         'KNORR'          => 'Knorr',
@@ -120,9 +120,6 @@ class ImportProducts extends Command
         'ARDO'           => 'Ardo',
         'BALA'           => 'Bala',
         'NAGA'           => 'Naga',
-        'EAS-'           => 'Eastern',
-        'EST-'           => 'Eastern',
-        'EST.'           => 'Eastern',
         'AMOY'           => 'Amoy',
         'TL -'           => 'Tate & Lyle',
         'LION'           => 'Lion',
@@ -146,48 +143,29 @@ class ImportProducts extends Command
     ];
 
     /**
-     * Maps CSV raw category (uppercased) → exact name in your categories table.
+     * Maps website_category (col 8) → parent Category name in DB.
+     * These must exist in your categories table with parent_id = NULL.
      */
-    private array $categoryMap = [
-        'CANNED FOODS'                     => 'Canned Foods',
-        'CHARCOAL FLAMES'                  => 'Charcoal & Flames',
-        'CHARCOAL'                         => 'Charcoal & Flames',
-        'CHOCOLATES'                       => 'Chocolates',
-        'CLEANING PRODUCT'                 => 'Cleaning Products',
-        'CUSTARDS AND PUDDING MIX'         => 'Custards & Pudding Mix',
-        'DAIRY'                            => 'Dairy',
-        'DAIRY GHEE'                       => 'Dairy',
-        'DAIRY YOGURT'                     => 'Dairy',
-        'DALS'                             => 'Dals',
-        'DRY FRUITS 02'                    => 'Dry Fruits',
-        'DRY FRUITS'                       => 'Dry Fruits',
-        'EDIBLE OIL'                       => 'Edible Oil',
-        'EGG'                              => 'Egg',
-        'EGGS'                             => 'Egg',
-        'ESSENCE'                          => 'Essence',
-        'FRAGRANCE'                        => 'Fragrance',
-        'FROZEN'                           => 'Frozen',
-        'FROZEN FISH'                      => 'Frozen Fish',
-        'GROCERY'                          => 'Grocery',
-        'GROCERY 2'                        => 'Grocery 2',
-        'HOT DRINKS'                       => 'Hot Drinks',
-        'KITCHEN UTILITY PRODUCT'          => 'Kitchen Utility',
-        'NOODLES'                          => 'Noodles',
-        'NOODLES NOODLES'                  => 'Noodles',
-        'NUTS'                             => 'Nuts',
-        'OFFICE ACCESSORIES'               => 'Office Accessories',
-        'OFFICE ACCESSORIES PRINTING ROLL' => 'Office Accessories',
-        'PACKING'                          => 'Packing',
-        'PICKLES'                          => 'Pickles',
-        'RICE CEREALS'                     => 'Rice',
-        'RICE'                             => 'Rice',
-        'SOFT DRING'                       => 'Soft Drinks',
-        'SOFT DRINKS'                      => 'Soft Drinks',
-        'SPICES'                           => 'Spices',
-        'TEA BAGS'                         => 'Tea Bags',
-        'VEGETABLES'                       => 'Vegetables',
-        'WATER'                            => 'Water',
-        'WHOLE DALS AND SPLIT DALS'        => 'Dals',
+    private array $parentCategoryMap = [
+        'BBQ & Outdoor'            => 'BBQ & Outdoor',
+        'Baking & Desserts'        => 'Baking & Desserts',
+        'Beverages'                => 'Beverages',
+        'Canned & Packaged Foods'  => 'Canned & Packaged Foods',
+        'Cleaning & Household'     => 'Cleaning & Household',
+        'Condiments & Sauces'      => 'Condiments & Sauces',
+        'Dairy & Eggs'             => 'Dairy & Eggs',
+        'Flour & Baking'           => 'Flour & Baking',
+        'Fresh Produce'            => 'Fresh Produce',
+        'Frozen Foods'             => 'Frozen Foods',
+        'General'                  => 'General',
+        'Grocery'                  => 'Grocery',
+        'Nuts & Dry Fruits'        => 'Nuts & Dry Fruits',
+        'Oils & Fats'              => 'Oils & Fats',
+        'Packaging & Disposables'  => 'Packaging & Disposables',
+        'Pulses & Lentils'         => 'Pulses & Lentils',
+        'Rice & Cereals'           => 'Rice & Cereals',
+        'Snacks & Confectionery'   => 'Snacks & Confectionery',
+        'Spices & Seasonings'      => 'Spices & Seasonings',
     ];
 
     public function handle(): int
@@ -205,21 +183,23 @@ class ImportProducts extends Command
             return self::FAILURE;
         }
 
-        fgetcsv($handle); // skip header row
+        $headers = fgetcsv($handle); // skip/read header row
+        $this->info('CSV columns: ' . implode(', ', $headers));
 
         $allRows = [];
         while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) < 6) continue;
+            if (count($row) < 8) continue;
             $allRows[] = [
-                'category'    => trim($row[0] ?? ''),
-                'sub_category'=> trim($row[1] ?? ''),
-                'barcode'     => trim($row[2] ?? ''),
-                'name'        => trim($row[3] ?? ''),
-                'unit'        => trim($row[4] ?? ''),
-                'price'       => trim($row[5] ?? ''),
-                'tax'         => trim($row[6] ?? ''),
-                'brand_col'   => trim($row[7] ?? ''),
-                'description' => trim($row[8] ?? ''),
+                'seq'              => trim($row[0] ?? ''),
+                'category'         => trim($row[1] ?? ''),   // raw PDF category (unused for DB lookup)
+                'sub_category'     => trim($row[2] ?? ''),   // raw PDF sub-category (unused for DB lookup)
+                'barcode'          => trim($row[3] ?? ''),   // product code / barcode
+                'name'             => trim($row[4] ?? ''),
+                'unit'             => trim($row[5] ?? ''),
+                'price'            => trim($row[6] ?? ''),
+                'tax'              => trim($row[7] ?? ''),
+                'website_category' => trim($row[8] ?? ''),   // parent category for DB
+                'website_sub'      => trim($row[9] ?? ''),   // child category for DB
             ];
         }
         fclose($handle);
@@ -228,12 +208,16 @@ class ImportProducts extends Command
 
         $this->info("\n── First 3 rows preview ──");
         foreach (array_slice($allRows, 0, 3) as $i => $r) {
-            $brand = $this->detectBrand($r['name'], $r['brand_col']);
+            $brand = $this->detectBrand($r['name'], '');
             $this->line(sprintf(
-                "Row %d: cat=[%s] name=[%s] brand=[%s] unit=[%s] price=[%s]",
+                "Row %d: name=[%s] brand=[%s] unit=[%s] price=[%s] cat=[%s > %s]",
                 $i + 1,
-                $r['category'], $r['name'],
-                $brand ?? 'none', $r['unit'], $r['price']
+                $r['name'],
+                $brand ?? 'none',
+                $r['unit'],
+                $r['price'],
+                $r['website_category'],
+                $r['website_sub'],
             ));
         }
         $this->newLine();
@@ -246,10 +230,23 @@ class ImportProducts extends Command
         $csvDir      = dirname($file);
         $skippedPath = $csvDir . '/skipped_products.csv';
         $skippedFH   = fopen($skippedPath, 'w');
-        fputcsv($skippedFH, ['row', 'reason', 'category', 'barcode', 'name', 'unit', 'price', 'tax']);
+        fputcsv($skippedFH, ['seq', 'reason', 'website_category', 'website_sub', 'barcode', 'name', 'unit', 'price', 'tax']);
 
         $created     = $updated = $skipped = 0;
         $skipReasons = [];
+
+        // ── Pre-load all categories into memory for performance ───────────────
+        // Structure: $catCache['Parent Name']['Child Name'] = Category $child
+        //            $catCache['Parent Name']['__self__']   = Category $parent
+        $catCache = [];
+        Category::with('children')->get()->each(function ($cat) use (&$catCache) {
+            if (is_null($cat->parent_id)) {
+                $catCache[$cat->name]['__self__'] = $cat;
+                foreach ($cat->children as $child) {
+                    $catCache[$cat->name][$child->name] = $child;
+                }
+            }
+        });
 
         $bar = $this->output->createProgressBar(count($allRows));
         $bar->start();
@@ -258,21 +255,23 @@ class ImportProducts extends Command
         try {
             foreach ($allRows as $idx => $r) {
 
-                $rawCat  = strtoupper(trim($r['category']));
-                $barcode = $r['barcode'];
-                $name    = $r['name'];
-                $unitRaw = strtolower(trim($r['unit']));
-                $priceV  = $r['price'];
-                $taxRaw  = $r['tax'];
+                $rowNum        = (int)($r['seq'] ?: $idx + 2);
+                $name          = $r['name'];
+                $barcode       = $r['barcode'];
+                $unitRaw       = strtolower(trim($r['unit']));
+                $priceV        = $r['price'];
+                $taxRaw        = $r['tax'];
+                $websiteCat    = $r['website_category'];
+                $websiteSub    = $r['website_sub'];
 
-                $rowNum = $idx + 2;
-
-                $skip = function (string $reason) use (&$skipped, &$skipReasons, $skippedFH, $rowNum, $r, $bar) {
+                $skip = function (string $reason) use (
+                    &$skipped, &$skipReasons, $skippedFH, $rowNum, $r, $bar
+                ) {
                     $skipReasons[] = "Row {$rowNum}: {$reason}";
                     fputcsv($skippedFH, [
                         $rowNum, $reason,
-                        $r['category'], $r['barcode'],
-                        $r['name'], $r['unit'], $r['price'], $r['tax'],
+                        $r['website_category'], $r['website_sub'],
+                        $r['barcode'], $r['name'], $r['unit'], $r['price'], $r['tax'],
                     ]);
                     $skipped++;
                     $bar->advance();
@@ -283,41 +282,48 @@ class ImportProducts extends Command
                     $skip('blank name'); continue;
                 }
 
-                // ── Validate price (0 is allowed) ─────────────────────────────
+                // ── Validate price ────────────────────────────────────────────
                 if (! is_numeric($priceV)) {
                     $skip("non-numeric price ['{$priceV}']"); continue;
                 }
 
-                $price   = (float)$priceV;
-                $taxRate = is_numeric($taxRaw) ? (float)$taxRaw : 0;
+                $price   = (float) $priceV;
+                $taxRate = is_numeric($taxRaw) ? (float) $taxRaw : 0;
                 $barcode = strlen($barcode) > 2 ? $barcode : null;
 
                 // ── Normalize unit ────────────────────────────────────────────
                 $unit = $this->units[$unitRaw] ?? 'nos';
 
-                // ── Resolve category ──────────────────────────────────────────
-                $catName = $this->categoryMap[$rawCat] ?? null;
+                // ── Resolve parent category ───────────────────────────────────
+                $parentName = $this->parentCategoryMap[$websiteCat] ?? $websiteCat;
 
-                if (! $catName) {
-                    // Strip trailing word and retry (handles "RICE & CEREALS Rice" etc.)
-                    $catName = $this->categoryMap[preg_replace('/\s+\S+$/', '', $rawCat)] ?? null;
+                if (! isset($catCache[$parentName]['__self__'])) {
+                    $skip("parent category '{$parentName}' not found in DB"); continue;
                 }
 
-                if (! $catName) {
-                    $skip("unknown category '{$rawCat}'"); continue;
-                }
+                $parentCat = $catCache[$parentName]['__self__'];
 
-                $cat = Category::where('name', $catName)
-                    ->whereNull('parent_id')
-                    ->first();
-
-                if (! $cat) {
-                    $skip("category '{$catName}' not found in DB"); continue;
+                // ── Resolve child (sub) category ──────────────────────────────
+                // If the sub-category doesn't exist yet, auto-create it under the parent
+                if (! empty($websiteSub)) {
+                    if (! isset($catCache[$parentName][$websiteSub])) {
+                        $newChild = Category::create([
+                            'name'      => $websiteSub,
+                            'slug'      => Str::slug($parentName) . '-' . Str::slug($websiteSub),
+                            'parent_id' => $parentCat->id,
+                            'is_active' => 1,
+                        ]);
+                        $catCache[$parentName][$websiteSub] = $newChild;
+                    }
+                    $categoryId = $catCache[$parentName][$websiteSub]->id;
+                } else {
+                    // No sub-category — assign directly to parent
+                    $categoryId = $parentCat->id;
                 }
 
                 // ── Detect brand ──────────────────────────────────────────────
                 $brandId   = null;
-                $brandName = $this->detectBrand($name, $r['brand_col']);
+                $brandName = $this->detectBrand($name, '');
                 if ($brandName) {
                     $brand   = Brand::firstOrCreate(
                         ['name' => $brandName],
@@ -329,8 +335,8 @@ class ImportProducts extends Command
                 // ── Build payload ─────────────────────────────────────────────
                 $payload = [
                     'name'            => $name,
-                    'description'     => $r['description'] ?: $name,
-                    'category_id'     => $cat->id,
+                    'description'     => $name,
+                    'category_id'     => $categoryId,
                     'brand_id'        => $brandId,
                     'price'           => $price,
                     'mrp'             => $price,

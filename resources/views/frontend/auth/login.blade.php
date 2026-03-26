@@ -83,8 +83,11 @@
                 </div>
 
                 {{-- Login Form --}}
-                <form action="{{ route('login') }}" method="POST" class="unique-auth-form">
+                <form id="loginForm" action="{{ route('login') }}" method="POST" class="unique-auth-form">
                     @csrf
+
+                    {{-- Alert Container --}}
+                    <div id="alertContainer"></div>
 
                     {{-- Email Field --}}
                     <div class="unique-form-group">
@@ -93,11 +96,11 @@
                             <span>Email Address</span>
                         </label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}"
-                               class="unique-input @error('email') unique-input-error @enderror"
-                               placeholder="Enter your email" required autofocus>
-                        @error('email')
-                            <span class="unique-error-text">{{ $message }}</span>
-                        @enderror
+                            class="unique-input @error('email') unique-input-error @enderror"
+                            placeholder="Enter your email" required autofocus>
+                        <span class="unique-error-text" id="error-email">
+                            @error('email'){{ $message }}@enderror
+                        </span>
                     </div>
 
                     {{-- Password Field --}}
@@ -108,21 +111,21 @@
                         </label>
                         <div class="unique-password-wrapper">
                             <input type="password" id="password" name="password"
-                                   class="unique-input @error('password') unique-input-error @enderror"
-                                   placeholder="Enter your password" required>
+                                class="unique-input @error('password') unique-input-error @enderror"
+                                placeholder="Enter your password" required>
                             <button type="button" class="unique-password-toggle" id="togglePassword">
                                 <i class="fa-regular fa-eye"></i>
                             </button>
                         </div>
-                        @error('password')
-                            <span class="unique-error-text">{{ $message }}</span>
-                        @enderror
+                        <span class="unique-error-text" id="error-password">
+                            @error('password'){{ $message }}@enderror
+                        </span>
                     </div>
 
                     {{-- Remember & Forgot --}}
                     <div class="unique-form-options">
                         <label class="unique-checkbox">
-                            <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                            <input type="checkbox" name="remember" id="rememberMe" {{ old('remember') ? 'checked' : '' }}>
                             <span class="checkmark"></span>
                             <span class="label-text">Remember me</span>
                         </label>
@@ -130,7 +133,7 @@
                     </div>
 
                     {{-- Submit Button --}}
-                    <button type="submit" class="unique-btn-submit">
+                    <button type="submit" class="unique-btn-submit" id="loginBtn">
                         <span>Sign In</span>
                         <i class="fa-regular fa-arrow-right"></i>
                     </button>
@@ -496,26 +499,35 @@
         margin-bottom: 24px;
     }
 
+    /* Checkbox fix */
     .unique-checkbox {
         display: flex;
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        position: relative;
+        user-select: none;
     }
 
     .unique-checkbox input[type="checkbox"] {
         position: absolute;
         opacity: 0;
-        cursor: pointer;
+        width: 0;
+        height: 0;
+        pointer-events: none;
     }
 
     .checkmark {
         width: 20px;
         height: 20px;
+        min-width: 20px;         /* prevents shrink */
         border: 2px solid var(--unique-border);
         border-radius: 6px;
+        background: white;
         transition: all 0.3s;
+        position: relative;      /* ← tick renders inside this */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .unique-checkbox input[type="checkbox"]:checked ~ .checkmark {
@@ -523,16 +535,15 @@
         border-color: var(--unique-green);
     }
 
+    /* Tick — inside the box using ::after on .checkmark, not .unique-checkbox */
     .unique-checkbox input[type="checkbox"]:checked ~ .checkmark::after {
         content: '\f00c';
-        font-family: 'Font Awesome 6 Pro';
+        font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Pro';
         font-weight: 900;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        font-size: 11px;
         color: white;
-        font-size: 12px;
+        line-height: 1;
+        /* remove position absolute — flexbox centres it */
     }
 
     .label-text {
@@ -771,87 +782,103 @@
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        // Password toggle
-        $('#togglePassword').on('click', function() {
-            const $password = $('#password');
-            const $icon = $(this).find('i');
+$(document).ready(function () {
 
-            const type = $password.attr('type') === 'password' ? 'text' : 'password';
-            $password.attr('type', type);
-
-            $icon.toggleClass('fa-eye fa-eye-slash');
-        });
-
-        // AJAX Login Form
-        $('#loginForm').on('submit', function(e) {
-            e.preventDefault();
-
-            // Clear previous errors
-            $('.unique-error-text').text('');
-            $('.unique-input').removeClass('unique-input-error');
-            $('#alertContainer').empty();
-
-            const $btn = $('#loginBtn');
-            const $btnText = $btn.find('span');
-            const originalText = $btnText.text();
-
-            // Loading state
-            $btn.addClass('loading').prop('disabled', true);
-            $btnText.text('Signing in...');
-
-            $.ajax({
-                url: '{{ route("login") }}',
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    // Show success message
-                    showAlert('success', response.message || 'Login successful! Redirecting...');
-
-                    // Redirect after 1 second
-                    setTimeout(function() {
-                        window.location.href = response.redirect || '{{ route("home") }}';
-                    }, 1000);
-                },
-                error: function(xhr) {
-                    $btn.removeClass('loading').prop('disabled', false);
-                    $btnText.text(originalText);
-
-                    if (xhr.status === 422) {
-                        // Validation errors
-                        const errors = xhr.responseJSON.errors;
-
-                        $.each(errors, function(field, messages) {
-                            const $input = $(`#${field}`);
-                            const $error = $(`#error-${field}`);
-
-                            $input.addClass('unique-input-error');
-                            $error.text(messages[0]);
-                        });
-
-                        showAlert('danger', 'Invalid credentials. Please check your email and password.');
-                    } else {
-                        // General error
-                        showAlert('danger', xhr.responseJSON?.message || 'Login failed. Please try again.');
-                    }
-                }
-            });
-        });
-
-        // Helper function to show alerts
-        function showAlert(type, message) {
-            const alertClass = type === 'success' ? 'unique-alert-success' : 'unique-alert-danger';
-            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
-
-            const html = `
-                <div class="unique-alert ${alertClass}">
-                    <i class="fa-regular ${icon}"></i>
-                    <p>${message}</p>
-                </div>
-            `;
-
-            $('#alertContainer').html(html);
-        }
+    /* ── Password toggle ── */
+    $('#togglePassword').on('click', function () {
+        const $pwd  = $('#password');
+        const $icon = $(this).find('i');
+        const isHidden = $pwd.attr('type') === 'password';
+        $pwd.attr('type', isHidden ? 'text' : 'password');
+        $icon.toggleClass('fa-eye fa-eye-slash');
     });
+
+    /* ── Helpers ── */
+    function showAlert(type, message) {
+        const isSuccess  = type === 'success';
+        const alertClass = isSuccess ? 'unique-alert-success' : 'unique-alert-danger';
+        const icon       = isSuccess ? 'fa-circle-check'      : 'fa-circle-xmark';
+        $('#alertContainer').html(`
+            <div class="unique-alert ${alertClass}" style="margin-bottom:20px">
+                <i class="fa-regular ${icon}"></i>
+                <p>${message}</p>
+            </div>
+        `);
+    }
+
+    function clearErrors() {
+        $('.unique-error-text').text('');
+        $('.unique-input').removeClass('unique-input-error');
+        $('#alertContainer').empty();
+    }
+
+    function setLoading(loading) {
+        const $btn  = $('#loginBtn');
+        const $span = $btn.find('span');
+        const $icon = $btn.find('i');
+        if (loading) {
+            $btn.addClass('loading').prop('disabled', true);
+            $span.text('Signing in...');
+            $icon.hide();
+        } else {
+            $btn.removeClass('loading').prop('disabled', false);
+            $span.text('Sign In');
+            $icon.show();
+        }
+    }
+
+    /* ── AJAX Login ── */
+    $('#loginForm').on('submit', function (e) {
+        e.preventDefault();
+        clearErrors();
+        setLoading(true);
+
+        $.ajax({
+            url:    '{{ route("login") }}',
+            method: 'POST',
+            data:   $(this).serialize(),
+
+            success(response) {
+                showAlert('success', response.message || 'Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = response.redirect || '{{ route("home") }}';
+                }, 1000);
+            },
+
+            error(xhr) {
+                setLoading(false);
+
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON?.errors || {};
+
+                    // Show inline field errors
+                    $.each(errors, function (field, messages) {
+                        $(`#${field}`).addClass('unique-input-error');
+                        $(`#error-${field}`).text(messages[0]);
+                    });
+
+                    // Top alert
+                    const msg = xhr.responseJSON?.message
+                        || 'Invalid credentials. Please check your email and password.';
+                    showAlert('danger', msg);
+
+                } else if (xhr.status === 429) {
+                    showAlert('danger', 'Too many attempts. Please wait a moment and try again.');
+
+                } else {
+                    showAlert('danger', xhr.responseJSON?.message || 'Login failed. Please try again.');
+                }
+            }
+        });
+    });
+
+    /* ── Clear field error on input ── */
+    $('.unique-input').on('input', function () {
+        $(this).removeClass('unique-input-error');
+        const field = $(this).attr('id');
+        $(`#error-${field}`).text('');
+    });
+
+});
 </script>
 @endpush

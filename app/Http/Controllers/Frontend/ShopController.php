@@ -13,11 +13,51 @@ class ShopController extends Controller
 {
     public function index()
     {
-        return view('frontend.shop');
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        if ($user) {
+            $user->load('groups');
+        }
+
+        // Get ALL parent category IDs that have visible products directly
+        $directParentIds = Category::whereNull('parent_id')
+            ->where('is_active', 1)
+            ->whereHas('products', fn($q) => $q->where('is_active', 1)->visibleTo($user))
+            ->pluck('id');
+
+        // Get parent category IDs whose CHILDREN have visible products
+        $viaChildIds = Category::whereNull('parent_id')
+            ->where('is_active', 1)
+            ->whereHas('children', function ($q) use ($user) {
+                $q->where('is_active', 1)
+                ->whereHas('products', fn($p) => $p->where('is_active', 1)->visibleTo($user));
+            })
+            ->pluck('id');
+
+        // Merge both sets
+        $allParentIds = $directParentIds->merge($viaChildIds)->unique();
+
+        // Fetch those parents with only the children that have visible products
+        $categories = Category::with(['children' => function ($q) use ($user) {
+                $q->where('is_active', 1)
+                ->whereHas('products', fn($p) => $p->where('is_active', 1)->visibleTo($user))
+                ->orderBy('name');
+            }])
+            ->whereIn('id', $allParentIds)
+            ->orderBy('name')
+            ->get();
+
+        $brands = \App\Models\Brand::where('is_active', 1)
+            ->whereHas('products', fn($q) => $q->where('is_active', 1)->visibleTo($user))
+            ->orderBy('name')
+            ->get();
+
+        return view('frontend.shop', compact('categories', 'brands'));
     }
 
     public function filter(Request $request, PricingService $pricingService)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Preload groups to avoid N+1
@@ -125,6 +165,7 @@ class ShopController extends Controller
 
     public function show($slug, PricingService $pricingService)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user) {
             $user->loadMissing('groups');
@@ -200,6 +241,7 @@ class ShopController extends Controller
             return response()->json(['success' => true, 'products' => [], 'categories' => [], 'total' => 0]);
         }
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user) {
             $user->loadMissing('groups');
@@ -253,6 +295,8 @@ class ShopController extends Controller
     public function category($slug, PricingService $pricingService)
     {
         $category = Category::where('slug', $slug)->where('is_active', 1)->firstOrFail();
+
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user) {
             $user->loadMissing('groups');

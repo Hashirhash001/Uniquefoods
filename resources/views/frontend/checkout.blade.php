@@ -158,6 +158,104 @@
             cursor: pointer;
         }
 
+        /* ── COD Delivery Method Sub-options ── */
+        .cod-delivery-method-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .cod-delivery-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            background: #fff;
+        }
+
+        .cod-delivery-option:hover {
+            border-color: #0f508d;
+            background: #f0f7ff;
+        }
+
+        .cod-delivery-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* Selected state driven by JS class */
+        .cod-delivery-option.selected {
+            border-color: #0f508d;
+            background: #f0f7ff;
+            box-shadow: 0 0 0 3px rgba(15, 80, 141, 0.1);
+        }
+
+        .cod-delivery-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(15, 80, 141, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
+            color: #0f508d;
+            transition: background 0.2s;
+        }
+
+        .cod-delivery-option.selected .cod-delivery-icon {
+            background: #0f508d;
+            color: #fff;
+        }
+
+        .cod-delivery-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .cod-delivery-label strong {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .cod-delivery-label small {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .cod-delivery-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 10px;
+            color: transparent;
+            transition: all 0.2s;
+        }
+
+        .cod-delivery-option.selected .cod-delivery-check {
+            background: #0f508d;
+            border-color: #0f508d;
+            color: #fff;
+        }
+
         @media (max-width: 576px) {
             .saved-address-card {
                 flex: 1 1 100%;
@@ -357,32 +455,64 @@
                     @endauth
                 </div>
 
-                <!-- ── PAYMENT METHOD ── -->
+                {{-- PAYMENT METHOD --}}
                 <div class="unique-checkout-form-section">
                     <h3><i class="fa-solid fa-credit-card"></i> Payment Method</h3>
 
                     <div class="unique-payment-methods">
+
+                        {{-- Card Payment (Coming Soon) --}}
                         <div class="unique-payment-method-card disabled" data-method="stripe">
                             <span class="unique-coming-soon-badge">Coming Soon</span>
-                            <input type="radio" name="payment_method" value="stripe" disabled>
+                            <input type="radio" name="paymentmethod" value="stripe" disabled>
                             <i class="fa-brands fa-cc-stripe"></i>
                             <span>Card Payment</span>
                         </div>
 
-                        <div class="unique-payment-method-card active" data-method="cash_on_delivery">
-                            <input type="radio" name="payment_method" value="cash_on_delivery" checked>
+                        {{-- Cash on Delivery --}}
+                        <div class="unique-payment-method-card active" data-method="cashondelivery">
+                            <input type="radio" name="paymentmethod" value="cashondelivery" checked>
                             <i class="fa-solid fa-money-bill-wave"></i>
                             <span>Cash on Delivery</span>
                         </div>
+
                     </div>
 
-                    <div class="unique-cod-info">
+                    {{-- COD Sub-options: shown when COD is selected --}}
+                    <div class="unique-cod-info" id="codInfoBox">
                         <i class="fa-solid fa-circle-info"></i>
                         <div class="unique-cod-info-text">
-                            <strong>Cash on Delivery</strong>
-                            <p>Pay with cash when your order is delivered to your doorstep. Please keep exact change ready for a smooth delivery experience.</p>
+                            <strong>How would you like to pay on delivery?</strong>
+                            <p>Please select your preferred payment method at the door.</p>
                         </div>
                     </div>
+
+                    <div class="cod-delivery-method-box" id="codDeliveryMethodBox">
+                        <label class="cod-delivery-option" id="codOptCash">
+                            <input type="radio" name="cod_delivery_method" value="cash" checked>
+                            <span class="cod-delivery-icon">
+                                <i class="fa-solid fa-money-bills"></i>
+                            </span>
+                            <span class="cod-delivery-label">
+                                <strong>Cash</strong>
+                                <small>Pay in cash when the order arrives. Please have the exact amount ready.</small>
+                            </span>
+                            <span class="cod-delivery-check"><i class="fa-solid fa-check"></i></span>
+                        </label>
+
+                        <label class="cod-delivery-option" id="codOptBank">
+                            <input type="radio" name="cod_delivery_method" value="bank_transfer">
+                            <span class="cod-delivery-icon">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </span>
+                            <span class="cod-delivery-label">
+                                <strong>Bank Transfer on Delivery</strong>
+                                <small>Transfer the amount to our bank account when the delivery agent arrives.</small>
+                            </span>
+                            <span class="cod-delivery-check"><i class="fa-solid fa-check"></i></span>
+                        </label>
+                    </div>
+
                 </div>
 
                 <!-- ── ORDER NOTES ── -->
@@ -460,10 +590,41 @@
                         </div>
                     @endif
 
-                    <div class="unique-order-total-row">
-                        <span>VAT (20%):</span>
-                        <span>£{{ number_format($tax, 2) }}</span>
-                    </div>
+                    {{-- Tax breakdown by rate --}}
+                    @php
+                        $taxBreakdown = [];
+                        foreach ($cart as $item) {
+                            $rate = (float)($item['tax_rate'] ?? 20);
+                            if ($rate <= 0) continue;
+                            $isWeightBased = !empty($item['weight']) && (float)$item['weight'] > 0;
+                            $line = $isWeightBased
+                                ? (float)$item['price'] * (float)$item['weight']
+                                : (float)$item['price'] * (int)$item['quantity'];
+                            $taxBreakdown[$rate] = ($taxBreakdown[$rate] ?? 0) + ($line * $rate / 100);
+                        }
+                    @endphp
+
+                    @if(count($taxBreakdown) === 1 && isset($taxBreakdown[20]))
+                        {{-- Simple case: everything at 20% --}}
+                        <div class="unique-order-total-row">
+                            <span>VAT (20%)</span>
+                            <span>£{{ number_format($tax, 2) }}</span>
+                        </div>
+                    @elseif(count($taxBreakdown) > 0)
+                        {{-- Mixed rates: show each --}}
+                        @foreach($taxBreakdown as $rate => $amount)
+                            <div class="unique-order-total-row">
+                                <span>VAT ({{ $rate }}%)</span>
+                                <span>£{{ number_format($amount, 2) }}</span>
+                            </div>
+                        @endforeach
+                    @else
+                        {{-- Zero tax --}}
+                        <div class="unique-order-total-row">
+                            <span>VAT</span>
+                            <span>£0.00</span>
+                        </div>
+                    @endif
 
                     <div class="unique-order-total-row final">
                         <span>Total:</span>
@@ -503,6 +664,16 @@ $(document).ready(function () {
         $(this).find('input[type="radio"]').prop('checked', true);
     });
 
+    // ── COD sub-option selection ──
+    $('.cod-delivery-option').on('click', function () {
+        $('.cod-delivery-option').removeClass('selected');
+        $(this).addClass('selected');
+        $(this).find('input[type="radio"]').prop('checked', true);
+    });
+
+    // Set first option selected on load
+    $('.cod-delivery-option').first().addClass('selected');
+
     $('#save_address').on('change', function () {
         $('#saveAddressOptions').slideToggle(200);
     });
@@ -535,6 +706,7 @@ $(document).ready(function () {
             county:           $('#county').val().trim(),
             postcode:         $('#postcode').val().trim().toUpperCase(),
             payment_method:   'cash_on_delivery',
+            cod_delivery_method: $('input[name="cod_delivery_method"]:checked').val(),
             customer_notes:   $('#customer_notes').val(),
             save_address:     $('#save_address').is(':checked') ? 1 : 0,
             address_label:    $('#address_label').val().trim(),
@@ -707,5 +879,41 @@ window.deleteSavedAddress = function (e, id, btn) {
         });
     });
 };
+
+// ── Sync Order Summary sticky top with dynamic header ──
+(function () {
+    const summary       = document.querySelector('.unique-order-summary');
+    const desktopHeader = document.querySelector('.unique-modern-header');
+
+    if (!summary || !desktopHeader) return;
+
+    function updateStickyTop() {
+        // Only apply on desktop (> 992px)
+        if (window.innerWidth <= 992) {
+            summary.style.top = '';
+            return;
+        }
+
+        const isHidden     = desktopHeader.classList.contains('header-hidden');
+        const headerHeight = isHidden ? 0 : desktopHeader.getBoundingClientRect().height;
+        summary.style.top  = (headerHeight + 24) + 'px';
+    }
+
+    // Run immediately
+    updateStickyTop();
+
+    // Watch header class changes (show/hide/compact)
+    new MutationObserver(updateStickyTop).observe(desktopHeader, {
+        attributes:      true,
+        attributeFilter: ['class', 'style']
+    });
+
+    // Re-run on resize
+    window.addEventListener('resize', updateStickyTop, { passive: true });
+
+    // Also expose so AutoHideHeader can call it directly after transitions
+    window.updateCheckoutStickyTop = updateStickyTop;
+})();
+
 </script>
 @endpush

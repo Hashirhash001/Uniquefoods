@@ -17,7 +17,7 @@ class Order extends Model
         'restaurant_store',
         'billing_address', 'billing_city', 'billing_postcode', 'billing_country',
         'subtotal', 'shipping_cost', 'tax', 'discount', 'total',
-        'payment_method', 'payment_status', 'stripe_payment_intent_id', 'paid_at',
+        'payment_method', 'cod_delivery_method', 'payment_status', 'stripe_payment_intent_id', 'paid_at',
         'status', 'customer_notes', 'admin_notes',
     ];
 

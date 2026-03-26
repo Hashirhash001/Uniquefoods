@@ -33,7 +33,7 @@
     <div class="container">
         <div class="row">
             <!-- Filter Sidebar -->
-            <div class="col-lg-3 col-md-12">
+            <div class="col-lg-3 col-md-12 shop-sidebar-col">
                 <div class="shop-filter-overlay" id="shopFilterOverlay"></div>
                 <div class="shop-filter-sidebar-wrapper" id="shopFilterSidebarWrapper">
 
@@ -159,14 +159,28 @@
             </div>
 
             <!-- Products Grid -->
-            <div class="col-lg-9 col-md-12">
+            <div class="col-lg-9 col-md-12 shop-products-col">
                 <!-- Product Grid Header -->
                 <div class="shop-product-grid-header">
+                    {{-- Desktop: toggle sidebar button --}}
+                    <button class="shop-toggle-sidebar-btn d-none d-lg-inline-flex"
+                            id="shopToggleSidebar" title="Toggle Filters">
+                        <i class="fa-regular fa-sidebar" id="shopToggleSidebarIcon"></i>
+                        <span id="shopToggleSidebarLabel">Hide Filters</span>
+                    </button>
+
+                    {{-- Active filters inline (visible when sidebar hidden) --}}
+                    <div class="shop-inline-active-filters d-none d-lg-flex" id="shopInlineActiveFilters"></div>
+
+                    {{-- Spacer: pushes sort to right when no inline filters --}}
+                    <div class="shop-header-spacer d-none d-lg-block"></div>
+
+                    {{-- Left: result count --}}
                     <div class="shop-result-count">
                         <span id="shopResultCount">Loading...</span>
                     </div>
 
-                    <!-- Desktop Sort Dropdown -->
+                    {{-- Right: sort dropdown --}}
                     <div class="shop-desktop-sort-dropdown-wrapper" id="shopDesktopSortWrapper">
                         <button class="shop-desktop-sort-trigger" id="shopDesktopSortTrigger">
                             <i class="fa-regular fa-clock" id="shopDesktopSortIcon"></i>
@@ -175,32 +189,28 @@
                         </button>
                         <div class="shop-desktop-sort-menu" id="shopDesktopSortMenu">
                             <button class="shop-desktop-sort-option active" data-value="latest" data-label="Latest First" data-icon="fa-regular fa-clock">
-                                <i class="fa-regular fa-clock"></i>
-                                <span>Latest First</span>
+                                <i class="fa-regular fa-clock"></i><span>Latest First</span>
                                 <i class="fa-solid fa-check shop-sort-check"></i>
                             </button>
                             <button class="shop-desktop-sort-option" data-value="price_low" data-label="Price: Low to High" data-icon="fa-regular fa-arrow-up">
-                                <i class="fa-regular fa-arrow-up"></i>
-                                <span>Price: Low to High</span>
+                                <i class="fa-regular fa-arrow-up"></i><span>Price: Low to High</span>
                                 <i class="fa-solid fa-check shop-sort-check"></i>
                             </button>
                             <button class="shop-desktop-sort-option" data-value="price_high" data-label="Price: High to Low" data-icon="fa-regular fa-arrow-down">
-                                <i class="fa-regular fa-arrow-down"></i>
-                                <span>Price: High to Low</span>
+                                <i class="fa-regular fa-arrow-down"></i><span>Price: High to Low</span>
                                 <i class="fa-solid fa-check shop-sort-check"></i>
                             </button>
                             <button class="shop-desktop-sort-option" data-value="name_asc" data-label="Name: A to Z" data-icon="fa-regular fa-arrow-down-a-z">
-                                <i class="fa-regular fa-arrow-down-a-z"></i>
-                                <span>Name: A to Z</span>
+                                <i class="fa-regular fa-arrow-down-a-z"></i><span>Name: A to Z</span>
                                 <i class="fa-solid fa-check shop-sort-check"></i>
                             </button>
                             <button class="shop-desktop-sort-option" data-value="name_desc" data-label="Name: Z to A" data-icon="fa-regular fa-arrow-up-a-z">
-                                <i class="fa-regular fa-arrow-up-a-z"></i>
-                                <span>Name: Z to A</span>
+                                <i class="fa-regular fa-arrow-up-a-z"></i><span>Name: Z to A</span>
                                 <i class="fa-solid fa-check shop-sort-check"></i>
                             </button>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Products Container -->
@@ -677,12 +687,12 @@ $(document).ready(function() {
             }
             $(document).trigger('shopFiltersChanged');
 
-            // ✅ Skeleton cards instead of spinner
+            // Skeleton on reset
             var skeletonCard =
                 '<div class="col-lg-3 col-md-4 col-sm-6 col-6 skeleton-col">' +
                     '<div class="shop-product-card skeleton-card">' +
                         '<div class="skeleton skeleton-image"></div>' +
-                        '<div class="product-info" style="padding: 12px">' +
+                        '<div class="product-info" style="padding:12px">' +
                             '<div class="skeleton skeleton-text short"></div>' +
                             '<div class="skeleton skeleton-text"></div>' +
                             '<div class="skeleton skeleton-text medium"></div>' +
@@ -691,10 +701,24 @@ $(document).ready(function() {
                         '</div>' +
                     '</div>' +
                 '</div>';
+            $('#shopProductsContainer').html(skeletonCard.repeat(8));
 
-            $('#shopProductsContainer').html(
-                skeletonCard.repeat(8)
-            );
+        } else {
+            // ── Skeleton appended at bottom for "load more" ──
+            var skeletonCard =
+                '<div class="col-lg-3 col-md-4 col-sm-6 col-6 skeleton-col load-more-skeleton">' +
+                    '<div class="shop-product-card skeleton-card">' +
+                        '<div class="skeleton skeleton-image"></div>' +
+                        '<div class="product-info" style="padding:12px">' +
+                            '<div class="skeleton skeleton-text short"></div>' +
+                            '<div class="skeleton skeleton-text"></div>' +
+                            '<div class="skeleton skeleton-text medium"></div>' +
+                            '<div class="skeleton skeleton-price"></div>' +
+                            '<div class="skeleton skeleton-btn"></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            $('#shopProductsContainer').append(skeletonCard.repeat(4));
         }
 
         var data = {
@@ -703,7 +727,7 @@ $(document).ready(function() {
             max_price:  activeFilters.maxPrice,
             categories: activeFilters.categories,
             brands:     activeFilters.brands,
-            sort: currentSort || 'latest'
+            sort:       currentSort || 'latest'
         };
 
         $.ajax({
@@ -712,6 +736,9 @@ $(document).ready(function() {
             data:     data,
             dataType: 'json',
             success: function(response) {
+                // Remove load-more skeletons before appending real products
+                $('.load-more-skeleton').remove();
+
                 if (response.success) {
                     displayProducts(response.products, reset);
                     updateProductCount(response.total, response.from, response.to);
@@ -725,7 +752,10 @@ $(document).ready(function() {
                     showError('Failed to load products');
                 }
             },
-            error: function() { showError('Error loading products. Please try again.'); }
+            error: function() {
+                $('.load-more-skeleton').remove();
+                showError('Error loading products. Please try again.');
+            }
         });
     }
 
@@ -848,6 +878,50 @@ $(document).ready(function() {
             '</div></div>'
         );
     }
+
+    // ── Desktop: Toggle sidebar ──
+    var sidebarVisible = true;
+    var $shopRow = $('#shopFilterSidebarWrapper').closest('.row');
+
+    $('#shopToggleSidebar').on('click', function () {
+        sidebarVisible = !sidebarVisible;
+        var $btn = $(this);
+
+        if (sidebarVisible) {
+            $shopRow.removeClass('shop-sidebar-hidden');
+            $btn.removeClass('sidebar-is-hidden');
+            $('#shopToggleSidebarLabel').text('Hide Filters');
+            $('#shopToggleSidebarIcon').attr('class', 'fa-regular fa-sidebar');
+            $('#shopInlineActiveFilters').html('').removeClass('has-filters');
+            $('.shop-header-spacer').show();
+        } else {
+            $shopRow.addClass('shop-sidebar-hidden');
+            $btn.addClass('sidebar-is-hidden');
+            $('#shopToggleSidebarLabel').text('Show Filters');
+            $('#shopToggleSidebarIcon').attr('class', 'fa-regular fa-sidebar-flip');
+
+            var tagsHtml = $('#shopActiveFilterTags').html();
+            if (tagsHtml && tagsHtml.trim()) {
+                $('#shopInlineActiveFilters').html(tagsHtml).addClass('has-filters');
+                $('.shop-header-spacer').hide();
+            } else {
+                $('.shop-header-spacer').show();
+            }
+        }
+    });
+
+    $(document).on('shopFiltersChanged', function () {
+        if (!sidebarVisible) {
+            var tagsHtml = $('#shopActiveFilterTags').html();
+            if (tagsHtml && tagsHtml.trim()) {
+                $('#shopInlineActiveFilters').html(tagsHtml).addClass('has-filters');
+                $('.shop-header-spacer').hide();
+            } else {
+                $('#shopInlineActiveFilters').html('').removeClass('has-filters');
+                $('.shop-header-spacer').show();
+            }
+        }
+    });
 
     // Initial load
     updateActiveFilters();

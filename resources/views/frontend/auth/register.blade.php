@@ -425,10 +425,52 @@
     .strength-label { font-size: 12px; margin-top: 4px; font-weight: 600; display: block; }
 
     /* Checkbox */
-    .unique-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; }
-    .unique-checkbox input[type="checkbox"] { position: absolute; opacity: 0; cursor: pointer; }
-    .checkmark { width: 20px; height: 20px; border: 2px solid var(--unique-border); border-radius: 6px; transition: all 0.3s; flex-shrink: 0; }
-    .unique-checkbox input[type="checkbox"]:checked ~ .checkmark { background: var(--unique-green); border-color: var(--unique-green); }
+    .unique-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .unique-checkbox input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+
+    .checkmark {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;         /* prevents shrink */
+        border: 2px solid var(--unique-border);
+        border-radius: 6px;
+        background: white;
+        transition: all 0.3s;
+        position: relative;      /* ← tick renders inside this */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .unique-checkbox input[type="checkbox"]:checked ~ .checkmark {
+        background: var(--unique-green);
+        border-color: var(--unique-green);
+    }
+
+    /* Tick — inside the box using ::after on .checkmark, not .unique-checkbox */
+    .unique-checkbox input[type="checkbox"]:checked ~ .checkmark::after {
+        content: '\f00c';
+        font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Pro';
+        font-weight: 900;
+        font-size: 11px;
+        color: white;
+        line-height: 1;
+        /* remove position absolute — flexbox centres it */
+    }
+
     .label-text { font-size: 14px; color: var(--unique-gray); }
 
     /* Footer */

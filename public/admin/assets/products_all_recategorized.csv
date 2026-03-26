@@ -1,0 +1,938 @@
+seq,category,sub_category,code,name,uom,price,tax,website_category,website_sub_category
+1,VEGETABLES & FRESH PRODUCE,Fresh Vegetables,UFS7169,AUBERGINE 1X5KG,item,15.99,0,Fresh Produce,Fresh Vegetables
+2,VEGETABLES & FRESH PRODUCE,Fresh Vegetables,UFS7019,BABY AUBERGINE 1X4KG,g,17.89,0,Fresh Produce,Fresh Vegetables
+3,VEGETABLES & FRESH PRODUCE,Fresh Vegetables,UFS7151,BUTTERNUT SQUASH 1X800G-1000G EACH,item,1.99,0,Fresh Produce,Fresh Vegetables
+4,VEGETABLES & FRESH PRODUCE,Fresh Vegetables,UFS7170,BUTTERNUT SQUASH BOX 1X1 EACH,item,1.99,0,Fresh Produce,Fresh Vegetables
+5,VEGETABLES & FRESH PRODUCE,Fresh Vegetables,UFS7171,TOMATOES VINE 1X5KG,item,12.3,0,Fresh Produce,Fresh Vegetables
+6,FROZEN FOODS,Frozen Coconut Products,8002930,SHANA SHREDDED COCONUT 1X300G,g,2.26,0,Frozen Foods,Frozen Coconut Products
+7,FROZEN FOODS,Frozen Coconut Products,8002352,VISWAS GRATED COCONUT 1X400G,g,2.6,0,Frozen Foods,Frozen Coconut Products
+8,FROZEN FOODS,Frozen Coconut Products,UFS02,VISWAS GRATED COCONUT 32X400G,g,0.0,0,Frozen Foods,Frozen Coconut Products
+9,FROZEN FOODS,Frozen Coconut Products,UFS212,VISWAS SLICED COCONUT 1X400G,g,3.2,0,Frozen Foods,Frozen Coconut Products
+10,FROZEN FOODS,Frozen Fruits,8002611,MIX FRUIT (FROZEN) 1X500G,g,2.75,0,Frozen Foods,Frozen Fruits
+11,FROZEN FOODS,Frozen Herbs & Leaves,8002454,FROZEN KAFFIR LIME LEAVES 1X100GM,g,2.49,0,Frozen Foods,Frozen Herbs & Leaves
+12,FROZEN FOODS,Frozen Herbs & Leaves,8002353,KAFFIR LIME LEAVES 1X100GM,g,2.3,0,Frozen Foods,Frozen Herbs & Leaves
+13,FROZEN FOODS,Frozen Meat & Poultry,8002899,ARMAAN CHICKEN SAMOOSA 1X18S,nos,4.35,0,Frozen Foods,Frozen Meat & Poultry
+14,FROZEN FOODS,Frozen Meat & Poultry,8002614,CHICKEN FILLETS (FULLY COOKED HALAL) 18X110G,NOS,20.99,0,Frozen Foods,Frozen Meat & Poultry
+15,FROZEN FOODS,Frozen Meat & Poultry,8002873,FROZEN HALAL NZ BONELESS LAMB LEG 1X1KG,kg,11.75,0,Frozen Foods,Frozen Meat & Poultry
+16,FROZEN FOODS,Frozen Meat & Poultry,80021555,FROZEN HALAL SKINLESS BONELESS CHICKEN LEG MEAT 1X10KG,kg,39.99,0,Frozen Foods,Frozen Meat & Poultry
+17,FROZEN FOODS,Frozen Meat & Poultry,80021554,FROZEN HALAL SKINLESS BONELESS CHICKEN LEG MEAT 1X2.5KG,kg,11.55,0,Frozen Foods,Frozen Meat & Poultry
+18,FROZEN FOODS,Frozen Meat & Poultry,8002871,FROZEN HALAL SKINLESS BONELESS CHICKEN LEG MEAT 1X5KG,kg,22.75,0,Frozen Foods,Frozen Meat & Poultry
+19,FROZEN FOODS,Frozen Meat & Poultry,8002874,FROZEN TOPSIDE PAD BEEF (CAP OFF) 1X1KG,kg,10.65,0,Frozen Foods,Frozen Meat & Poultry
+20,FROZEN FOODS,Frozen Meat & Poultry,8002872,HALAL RAW FROZEN 70% CHICKEN BREAST FILLETS (250G) 1X10KG,kg,46.99,0,Frozen Foods,Frozen Meat & Poultry
+21,FROZEN FOODS,Frozen Other,8002355,SANA FROZEN 1X BOX,g,33.89,0,Frozen Foods,Frozen Other
+22,FROZEN FOODS,Frozen Other,8002939,VISWAS GREEN CUT MANGO 1X400G,g,2.65,0,Frozen Foods,Frozen Other
+23,FROZEN FOODS,Frozen Snacks & Starters,8002615,5 INCH SEEDED BURGER BUNS 1X48 EACH,nos,14.89,0,Frozen Foods,Frozen Snacks & Starters
+24,FROZEN FOODS,Frozen Snacks & Starters,8002616,BURGER CHEESE SLICES 1X112 EACH,nos,10.99,0,Frozen Foods,Frozen Snacks & Starters
+25,FROZEN FOODS,Frozen Snacks & Starters,8002617,BURGER FISH CAKES (4OZ) 24X113G,item,15.69,0,Frozen Foods,Frozen Snacks & Starters
+26,FROZEN FOODS,Frozen Snacks & Starters,8002354,FRENCH FRIES 1X2.27KG,kg,4.49,0,Frozen Foods,Frozen Snacks & Starters
+27,FROZEN FOODS,Frozen Snacks & Starters,80021397,HALDIRAMS PUNJABI SAMOSA 12X650G,item,54.49,0,Frozen Foods,Frozen Snacks & Starters
+28,FROZEN FOODS,Frozen Snacks & Starters,80021532,MALABAR TREAT FROZEN GURUVAYOOR PAPADAM 20X200G,g,36.14,0,Frozen Foods,Frozen Snacks & Starters
+29,FROZEN FOODS,Frozen Snacks & Starters,8002589,PRI-SPECIAL PAPADAM (FROZEN) 50X200G,BOX,81.99,0,Frozen Foods,Frozen Snacks & Starters
+30,FROZEN FOODS,Frozen Snacks & Starters,UFS372,SHANA PUNJABI SAMOSA 20S (6X1180G),g,32.1,0,Frozen Foods,Frozen Snacks & Starters
+31,FROZEN FOODS,Frozen Snacks & Starters,8002365,SUVAI IDLY 1X10 EACH,NOS,3.75,0,Frozen Foods,Frozen Snacks & Starters
+32,FROZEN FOODS,Frozen Snacks & Starters,8002931,SWITZ SAMOSA PAD 1X500G (50 SHEETS),g,1.99,0,Frozen Foods,Frozen Snacks & Starters
+33,FROZEN FOODS,Frozen Snacks & Starters,8002386,TYJ SPRING ROLL PASTRY 10 INCH 30X20,BOX,58.99,0,Frozen Foods,Frozen Snacks & Starters
+34,FROZEN FOODS,Frozen Snacks & Starters,UFS16,TYJ SPRING ROLL PASTRY 1X BOX,box,44.5,0,Frozen Foods,Frozen Snacks & Starters
+35,FROZEN FOODS,Frozen Snacks & Starters,80021489,TYJ SPRING ROLL PASTRY SHEET 8.5 INCH 1X30SHEET,SET,2.45,0,Frozen Foods,Frozen Snacks & Starters
+36,FROZEN FOODS,Frozen Snacks & Starters,80021561,TYJ SPRING ROLL PASTRY SHEETS (10 INCH) 1X30S,ft,2.1,0,Frozen Foods,Frozen Snacks & Starters
+37,FROZEN FOODS,Frozen Snacks & Starters,8002619,VEGETABLE BURGER 10X113G,g,8.65,0,Frozen Foods,Frozen Snacks & Starters
+38,FROZEN FOODS,Frozen Snacks & Starters,80021419,VISWAS IDIYAPPAM WHITE (FROZEN) 1X454G,g,2.89,0,Frozen Foods,Frozen Snacks & Starters
+39,FROZEN FOODS,Frozen Snacks & Starters,80021553,VISWAS RESTAURANT UZHUNNU VADA 1X908G,g,6.1,0,Frozen Foods,Frozen Snacks & Starters
+40,FROZEN FOODS,Frozen Tapioca & Starches,8002937,TAJ-KAPPA (MOGU) CHIPS 1X1KG,kg,4.75,0,Frozen Foods,Frozen Tapioca & Starches
+41,FROZEN FOODS,Frozen Tapioca & Starches,8002936,TAJ-KAPPA (MOGU) CHIPS 6X1KG,BOX,25.49,0,Frozen Foods,Frozen Tapioca & Starches
+42,FROZEN FOODS,Frozen Tapioca & Starches,8002442,VISWAS TAPIOCA SLICE 1X908G,g,3.49,0,Frozen Foods,Frozen Tapioca & Starches
+43,FROZEN FOODS,Frozen Vegetables,216,ARDO GARDEN PEAS 1X1KG,kg,2.0,0,Frozen Foods,Frozen Vegetables
+44,FROZEN FOODS,Frozen Vegetables,UFS215,ARDO MIXED VEGETABLES 1X1KG,kg,2.0,0,Frozen Foods,Frozen Vegetables
+45,FROZEN FOODS,Frozen Vegetables,8002503,ARDO SWEET CORN 10X1KG,kg,21.2,0,Frozen Foods,Frozen Vegetables
+46,FROZEN FOODS,Frozen Vegetables,80021526,BABA SAMBAR MIX 1X250G,g,2.73,0,Frozen Foods,Frozen Vegetables
+47,FROZEN FOODS,Frozen Vegetables,UFS7153,BROAD BEANS FROZEN 12X500G,g,26.5,0,Frozen Foods,Frozen Vegetables
+48,FROZEN FOODS,Frozen Vegetables,80021558,CHOPPED SPINACH 1X1KG,kg,1.89,0,Frozen Foods,Frozen Vegetables
+49,FROZEN FOODS,Frozen Vegetables,8002938,FROZEN CHOPPED SPINACH 1X10KG,kg,16.49,0,Frozen Foods,Frozen Vegetables
+50,FROZEN FOODS,Frozen Vegetables,8002761,FROZEN GARDEN PEAS (GREEN PEAS) 1X1KG,kg,1.89,0,Frozen Foods,Frozen Vegetables
+51,FROZEN FOODS,Frozen Vegetables,8002762,FROZEN MIXED VEGETABLES 1X900G,g,1.55,0,Frozen Foods,Frozen Vegetables
+52,FROZEN FOODS,Frozen Vegetables,8002932,FROZEN SPINACH LEAF 1X1KG,kg,1.89,0,Frozen Foods,Frozen Vegetables
+53,FROZEN FOODS,Frozen Vegetables,8002356,LEAF SPINACH BLOCK 4X2.5KG,kg,18.45,0,Frozen Foods,Frozen Vegetables
+54,FROZEN FOODS,Frozen Vegetables,8002626,SHANA DRUMSTICK (SARAGAWA) 12X300G,g,19.99,0,Frozen Foods,Frozen Vegetables
+55,FROZEN FOODS,Frozen Vegetables,8002415,SHANA DRUMSTICK 1X300G,g,1.89,0,Frozen Foods,Frozen Vegetables
+56,FROZEN FOODS,Frozen Vegetables,8002810,TAJ-CUT OKRA 1X1KG,kg,3.6,0,Frozen Foods,Frozen Vegetables
+57,FROZEN FOODS,Frozen Vegetables,8002341,VISWAS AVIAL MIX 1X400G,g,2.55,0,Frozen Foods,Frozen Vegetables
+58,FROZEN FOODS,Frozen Vegetables,80021476,VISWAS CHINESE POTATO 1X400G,g,2.89,0,Frozen Foods,Frozen Vegetables
+59,FROZEN FOODS,Frozen Vegetables,UFS15,VISWAS DRUMSTICK 12X400G,g,27.99,0,Frozen Foods,Frozen Vegetables
+60,FROZEN FOODS,Frozen Vegetables,UFS14,VISWAS GREEN MANGO CUT 12X400G,g,27.99,0,Frozen Foods,Frozen Vegetables
+61,FROZEN FOODS,Frozen Vegetables,80021446,VISWAS RED ONION 12X400G,g,33.0,0,Frozen Foods,Frozen Vegetables
+62,FROZEN FOODS,Frozen Vegetables,UFS211,VISWAS RED ONION 1X400G,g,2.75,0,Frozen Foods,Frozen Vegetables
+63,FROZEN FOODS,Frozen Vegetables,8002565,VS-AVIAL MIX 1X400G,g,2.45,0,Frozen Foods,Frozen Vegetables
+64,FROZEN FOODS,Frozen Vegetables,8002564,VS-DRUMSTICK 1X400G,g,2.44,0,Frozen Foods,Frozen Vegetables
+65,FROZEN FOODS,Frozen Vegetables,8002566,VS-SAMBAR MIX 1X400G,g,2.49,0,Frozen Foods,Frozen Vegetables
+66,FROZEN FOODS,"Parathas, Roti & Bread",8002344,DAILY DELIGHT HOME MADE CHAPATHI 36X330G,g,1.69,0,Frozen Foods,Frozen Indian Breads
+67,FROZEN FOODS,"Parathas, Roti & Bread",8002345,DAILY DELIGHT MALABAR POROTTA 1X330G,g,1.65,0,Frozen Foods,Frozen Indian Breads
+68,FROZEN FOODS,"Parathas, Roti & Bread",8002342,DAILY DELIGHT MALABAR POROTTA 36X330G,g,57.6,0,Frozen Foods,Frozen Indian Breads
+69,FROZEN FOODS,"Parathas, Roti & Bread",8002343,DAILY DELIGHT TAPIOCA SLICE 18X908GM,g,55.8,0,Frozen Foods,Frozen Indian Breads
+70,FROZEN FOODS,"Parathas, Roti & Bread",8002349,ID MALABAR POROTTA FAMILY 1X906G,g,45.89,0,Frozen Foods,Frozen Indian Breads
+71,FROZEN FOODS,"Parathas, Roti & Bread",80021507,ID MALABAR POROTTA FAMILY 1X906G,g,3.89,0,Frozen Foods,Frozen Indian Breads
+72,FROZEN FOODS,"Parathas, Roti & Bread",8002374,MALABAR POROTTA 36X330G,g,54.99,0,Frozen Foods,Frozen Indian Breads
+73,FROZEN FOODS,"Parathas, Roti & Bread",80021536,SHANKAR KOTHU ROTTI BULK (CUT ROTTI) 1X1KG,kg,2.79,0,Frozen Foods,Frozen Indian Breads
+74,FROZEN FOODS,"Parathas, Roti & Bread",8002894,VISWAS KOOTHU PARATHA 1X2KG,kg,7.49,0,Frozen Foods,Frozen Indian Breads
+75,FROZEN FOODS,"Parathas, Roti & Bread",80021475,VISWAS KOTHUROTTI 8X2KG,kg,59.49,0,Frozen Foods,Frozen Indian Breads
+76,FROZEN FOODS,"Parathas, Roti & Bread",8002575,VISWAS MALABAR POROTTA 1X330G,g,1.55,0,Frozen Foods,Frozen Indian Breads
+77,FROZEN FOODS,"Parathas, Roti & Bread",UFS351,VISWAS MALABAR POROTTA 36X330G,g,39.99,0,Frozen Foods,Frozen Indian Breads
+78,FROZEN FOODS,"Parathas, Roti & Bread",8002348,VISWAS MALABAR POROTTA 36X330G (BULK),kg,59.99,0,Frozen Foods,Frozen Indian Breads
+79,FROZEN FOODS,"Parathas, Roti & Bread",UFS18,VISWAS RESTAURANT POROTTA 16X908G,g,54.99,0,Frozen Foods,Frozen Indian Breads
+80,FROZEN FOODS,"Parathas, Roti & Bread",8002347,VISWAS RESTAURANT POROTTA 1X2KG,kg,6.87,0,Frozen Foods,Frozen Indian Breads
+81,FROZEN FOODS,"Parathas, Roti & Bread",8002346,VISWAS RESTAURANT POROTTA 1X908G,g,3.44,0,Frozen Foods,Frozen Indian Breads
+82,FROZEN FOODS,"Parathas, Roti & Bread",8002351,VISWAS TAPIOCA SLICE 16X908G,g,43.99,0,Frozen Foods,Frozen Indian Breads
+83,FROZEN FOODS,"Parathas, Roti & Bread",8002350,VISWAS TAPIOCA SLICE 1X908G,g,2.74,0,Frozen Foods,Frozen Indian Breads
+84,FROZEN FOODS,"Parathas, Roti & Bread",8002576,VS-RESTAURANT POROTTA 1X2KG,kg,7.75,0,Frozen Foods,Frozen Indian Breads
+85,FROZEN FOODS,"Parathas, Roti & Bread",8002577,VS-RESTAURANT POROTTA 8X2KG,kg,56.99,0,Frozen Foods,Frozen Indian Breads
+86,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002620,KING FISH (BULK) 1X15KG,kg,173.25,0,Frozen Foods,Frozen Fish & Seafood
+87,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002743,KING FISH STEAKS (IQF) LOOSE 1X1KG,kg,12.25,0,Frozen Foods,Frozen Fish & Seafood
+88,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002613,MACKEREL WHOLE 6/8 (INDIAN) 1X1KG,kg,4.89,0,Frozen Foods,Frozen Fish & Seafood
+89,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002764,MARINE ANCHOVY DRESSED BIG 15X600G,g,53.49,0,Frozen Foods,Frozen Fish & Seafood
+90,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002765,MARINE ANCHOVY DRESSED BIG 1X600G,g,3.7,0,Frozen Foods,Frozen Fish & Seafood
+91,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002766,MARINE INDIAN MACKEREL WHOLE 15X600G,g,47.48,0,Frozen Foods,Frozen Fish & Seafood
+92,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002785,MARINE INDIAN MACKEREL WHOLE 1X600G,g,3.35,0,Frozen Foods,Frozen Fish & Seafood
+93,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002886,MARINE SARDINE DRESSED 1X600GM,g,3.75,0,Frozen Foods,Frozen Fish & Seafood
+94,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002767,MARINE SARDINE WHOLE 15X600GM,g,45.99,0,Frozen Foods,Frozen Fish & Seafood
+95,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002768,MARINE SARDINE WHOLE 1X600GM,g,3.46,0,Frozen Foods,Frozen Fish & Seafood
+96,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002541,SILVER POMFRET 1X800G,g,8.99,0,Frozen Foods,Frozen Fish & Seafood
+97,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002888,TILAPIA FILLETS (SKINLESS) IQF 1X1KG (800G NET),kg,5.49,0,Frozen Foods,Frozen Fish & Seafood
+98,FROZEN FISH & SEAFOOD,Fish - Whole & Fillets,8002612,TILAPIA STEAK (BLACK) 1X700G,g,3.99,0,Frozen Foods,Frozen Fish & Seafood
+99,FROZEN FISH & SEAFOOD,Prawns & Crabs,80021473,BLUE SWIMMING CUT CRAB 1X1KG,kg,6.75,0,Frozen Foods,Frozen Fish & Seafood
+100,FROZEN FISH & SEAFOOD,Prawns & Crabs,8002863,KING IQF PRAWNS 8-12 1X1KG (700G NET),kg,11.25,0,Frozen Foods,Frozen Fish & Seafood
+101,FROZEN FISH & SEAFOOD,Prawns & Crabs,8002516,PRAWNS IQF 26-30 10X1KG (700G NET),BOX,76.0,0,Frozen Foods,Frozen Fish & Seafood
+102,FROZEN FISH & SEAFOOD,Prawns & Crabs,8002517,PRAWNS IQF 26-30 1X1KG (700G NET),kg,8.49,0,Frozen Foods,Frozen Fish & Seafood
+103,FROZEN FISH & SEAFOOD,Prawns & Crabs,8002836,SOFT SHELL CRABS 1X18S,NOS,24.99,0,Frozen Foods,Frozen Fish & Seafood
+104,CANNED FOODS,Canned Fish,UFS dried,DRIED SHRIMP 1X100G,g,5.59,0,Canned & Packaged Foods,Canned Fish
+105,CANNED FOODS,Canned Fish,UFS SHRIP,DRY SHRIMPS (PRAWNS) 1X100G,g,3.69,0,Canned & Packaged Foods,Canned Fish
+106,CANNED FOODS,Canned Fish,8002527,MALDIVE FISH 1X100G,g,1.3,0,Canned & Packaged Foods,Canned Fish
+107,CANNED FOODS,Canned Fish,UFSMACK,TROPICAL SUN MACKEREL TIN 6X400G,g,24.99,0,Canned & Packaged Foods,Canned Fish
+108,CANNED FOODS,Canned Fish,8002584,TUNA CHUNKS IN BRINE 1X1.7KG,kg,13.89,0,Canned & Packaged Foods,Canned Fish
+109,CANNED FOODS,Canned Fruits & Tropical,UFS335,CIRIO SWEETCORN 6X2.1KG,kg,34.99,0,Canned & Packaged Foods,Canned Fruits & Tropical
+110,CANNED FOODS,Canned Fruits & Tropical,8002849,HEERA-MANGO PULP (KESAR) 6X850G,g,14.89,0,Canned & Packaged Foods,Canned Fruits & Tropical
+111,CANNED FOODS,Canned Fruits & Tropical,UFS367,HEERA-MANGO PULP (KESAR) 6X850G,g,14.49,0,Canned & Packaged Foods,Canned Fruits & Tropical
+112,CANNED FOODS,Canned Fruits & Tropical,80021478,LYCHEES IN SYRUP 24X567G,g,43.99,0,Canned & Packaged Foods,Canned Fruits & Tropical
+113,CANNED FOODS,Canned Fruits & Tropical,UFS384,LYCHEES IN SYRUP 24X567G,item,39.99,0,Canned & Packaged Foods,Canned Fruits & Tropical
+114,CANNED FOODS,Canned Fruits & Tropical,8002505,MANGO SLICE 6X850G,g,26.99,0,Canned & Packaged Foods,Canned Fruits & Tropical
+115,CANNED FOODS,Canned Fruits & Tropical,8002657,PINEAPPLE PIECES 1X3KG,kg,7.29,0,Canned & Packaged Foods,Canned Fruits & Tropical
+116,CANNED FOODS,Canned Fruits & Tropical,UFS50,TRS-BREADFRUIT 24X540G,g,43.99,0,Canned & Packaged Foods,Canned Fruits & Tropical
+117,CANNED FOODS,Canned Fruits & Tropical,UFS225,TRS-GREEN JACKFRUIT TIN 12X565G,g,15.0,0,Canned & Packaged Foods,Canned Fruits & Tropical
+118,CANNED FOODS,Canned Fruits & Tropical,8002490,TRS-MANGO PULP (KESAR) 6X850G,g,15.49,0,Canned & Packaged Foods,Canned Fruits & Tropical
+119,CANNED FOODS,Canned Vegetables & Pulses,80021490,CHOPPED TOMATO 1X2.5KG,kg,3.65,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+120,CANNED FOODS,Canned Vegetables & Pulses,8002494,CHOPPED TOMATO TINS 400GX12,g,8.89,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+121,CANNED FOODS,Canned Vegetables & Pulses,UFS77,CHOPPED TOMATOES 6X2.5KG,kg,17.99,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+122,CANNED FOODS,Canned Vegetables & Pulses,80021480,GARDEN PEAS (LOCAL LIVING) 12X560G,g,13.27,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+123,CANNED FOODS,Canned Vegetables & Pulses,UFS340,JOSH-BOILED CHICK PEAS WHITE 6X2.5KG,kg,18.49,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+124,CANNED FOODS,Canned Vegetables & Pulses,8002649,JOSH-PLUM PEELED TOMATO 1X2.5KG,kg,3.75,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+125,CANNED FOODS,Canned Vegetables & Pulses,8002609,PEELED PLUM TOMATOES (ITALIAN) 12X400GM,g,8.49,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+126,CANNED FOODS,Canned Vegetables & Pulses,UFS387,PLUM TOMATOES (PEELED TOMATOES) 6X2.5KG,kg,18.25,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+127,CANNED FOODS,Canned Vegetables & Pulses,UFS7129,TRS CANNED CHICK PEAS 12X400G,item,7.8,0,Canned & Packaged Foods,Canned Vegetables & Pulses
+128,DAIRY & GHEE,Butter Ghee,UFS7116,DALDA BANASPATI VEG GHEE 1X1KG,item,6.5,0,Oils & Fats,Ghee & Butter
+129,DAIRY & GHEE,Butter Ghee,80021531,KHANUM BUTTER GHEE 1X2KG,g,18.99,0,Oils & Fats,Ghee & Butter
+130,DAIRY & GHEE,Butter Ghee,80021028,KTC PURE BUTTER GHEE 1X2KG,kg,19.89,0,Oils & Fats,Ghee & Butter
+131,DAIRY & GHEE,Butter Ghee,80021448,KTC PURE BUTTER GHEE 4X2KG,kg,77.92,0,Oils & Fats,Ghee & Butter
+132,DAIRY & GHEE,Butter Ghee,80021483,LAILA PURE BUTTER GHEE 1X2KG,kg,18.99,0,Oils & Fats,Ghee & Butter
+133,DAIRY & GHEE,Butter Ghee,80021484,LAILA PURE BUTTER GHEE 6X2KG,kg,111.49,0,Oils & Fats,Ghee & Butter
+134,DAIRY & GHEE,Butter Ghee,8002757,PRIDE PURE BUTTER GHEE 1X2KG,kg,19.99,0,Oils & Fats,Ghee & Butter
+135,DAIRY & GHEE,Butter Ghee,UFS7054,VEG KHANUM PURE GHEE 1X12.5KG,kg,32.5,0,Oils & Fats,Ghee & Butter
+136,DAIRY & GHEE,Milk & Cream,UFS7105,CARNATION CONDENSED MILK 12X397G,g,18.99,0,Dairy & Eggs,Milk & Cream
+137,DAIRY & GHEE,Milk & Cream,UFS7106,CARNATION EVAPORATED MILK CAN 12X410GM,g,16.99,0,Dairy & Eggs,Milk & Cream
+138,DAIRY & GHEE,Milk & Cream,8002913,RAINBOW EVAPORATED MILK (CARDAMOM) 1X170G,ml,0.89,0,Dairy & Eggs,Milk & Cream
+139,DAIRY & GHEE,Milk & Cream,8002912,RAINBOW EVAPORATED MILK (CARDAMOM) 48X170G,g,37.85,0,Dairy & Eggs,Milk & Cream
+140,DAIRY & GHEE,Milk & Cream,UFS244,TROPICAL SUN CONDENSED MILK 12X397G,g,18.98,0,Dairy & Eggs,Milk & Cream
+141,DAIRY & GHEE,Milk Powder,80021425,MAGGI COCONUT MILK POWDER 12X1KG,kg,132.0,0,Dairy & Eggs,Milk Powder
+142,DAIRY & GHEE,Milk Powder,UFS33,MAGGI COCONUT MILK POWDER 1X1KG,kg,11.25,0,Dairy & Eggs,Milk Powder
+143,DAIRY & GHEE,Yogurt,80021550,HENNA NATURAL YOGURT 1X5LTR,kg,8.43,0,Dairy & Eggs,Yogurt
+144,DAIRY & GHEE,Yogurt,80021556,MC CURD CHILLI 1X100G,g,1.99,0,Dairy & Eggs,Yogurt
+145,DAIRY & GHEE,Yogurt,UFS390,YOGURT 1X10LTR,item,12.99,0,Dairy & Eggs,Yogurt
+146,EGGS,Eggs,80021557,EGG 1X30S,nos,5.75,0,Dairy & Eggs,Eggs
+147,EDIBLE OILS,Coconut Oil,8002632,COCONUT OIL 1X1L,g,8.25,0,Oils & Fats,Coconut Oil
+148,EDIBLE OILS,Coconut Oil,8002754,KTC COCONUT OIL 1X500G,g,3.3,0,Oils & Fats,Coconut Oil
+149,EDIBLE OILS,Coconut Oil,UFS52,TRS-COCONUT OIL 1X2KG,kg,12.99,0,Oils & Fats,Coconut Oil
+150,EDIBLE OILS,Coconut Oil,8002404,TRS-COCONUT OIL 4X2L,BOX,48.2,0,Oils & Fats,Coconut Oil
+151,EDIBLE OILS,Mustard & Sesame Oil,UFS36,IDAYAM SESAME OIL 1X1L,kg,5.99,0,Oils & Fats,Mustard & Sesame Oil
+152,EDIBLE OILS,Mustard & Sesame Oil,UFS7072,MUSTARD OIL 1X1L,kg,5.99,0,Oils & Fats,Mustard & Sesame Oil
+153,EDIBLE OILS,Mustard & Sesame Oil,Mustard ufs,PRID MUSTARD OIL 1X4L,item,14.0,0,Oils & Fats,Mustard & Sesame Oil
+154,EDIBLE OILS,Mustard & Sesame Oil,UFS7016,TRS-MUSTARD OIL (EXTRA) 1X4L,drm,16.24,0,Oils & Fats,Mustard & Sesame Oil
+155,EDIBLE OILS,Rapeseed & Olive Oil,UFS7060,KTC POMACE OLIVE OIL 1X5L,drm,17.99,0,Oils & Fats,Rapeseed & Olive Oil
+156,EDIBLE OILS,Rapeseed & Olive Oil,UFS7145,OLIVE POMACE OIL BLEND 1X5LTR (NATCO),drm,15.99,0,Oils & Fats,Rapeseed & Olive Oil
+157,EDIBLE OILS,Vegetable & Sunflower Oils,8002340,KTC RAPESEED OIL 1X20L,DRM,30.89,0,Oils & Fats,Vegetable & Sunflower Oils
+158,EDIBLE OILS,Vegetable & Sunflower Oils,8002800,KTC VEGETABLE OIL (PLASTIC CAN) 1X20L,DRM,27.3,0,Oils & Fats,Vegetable & Sunflower Oils
+159,EDIBLE OILS,Vegetable & Sunflower Oils,8002642,PRIDE SUNFLOWER OIL 1X15L,DRM,24.89,0,Oils & Fats,Vegetable & Sunflower Oils
+160,EDIBLE OILS,Vegetable & Sunflower Oils,UFS7041,PRIDE VEGETABLE OIL 1X20L,DRM,28.99,0,Oils & Fats,Vegetable & Sunflower Oils
+161,EDIBLE OILS,Vegetable & Sunflower Oils,UFS7006,TROPICAL SUN RAPESEED OIL 1X20L,DRM,29.99,0,Oils & Fats,Vegetable & Sunflower Oils
+162,EDIBLE OILS,Vegetable & Sunflower Oils,8002845,TROPICAL SUN SUNFLOWER OIL 1X5LTR,ml,9.24,0,Oils & Fats,Vegetable & Sunflower Oils
+163,EDIBLE OILS,Vegetable & Sunflower Oils,8002801,TROPICAL SUN VEGETABLE OIL (PLASTIC CAN) 1X20L,DRM,27.3,0,Oils & Fats,Vegetable & Sunflower Oils
+164,EDIBLE OILS,Vegetable & Sunflower Oils,8002579,TROPICAL SUN VEGETABLE OIL 1X20L,DRM,26.99,0,Oils & Fats,Vegetable & Sunflower Oils
+165,EDIBLE OILS,Vegetable & Sunflower Oils,80021549,TROPICAL SUN VEGETABLE OIL 1X5LTR,item,8.43,0,Oils & Fats,Vegetable & Sunflower Oils
+166,EDIBLE OILS,Vegetable & Sunflower Oils,8002842,WHITE PEARL VEGETABLE OIL 1X20L,DRM,28.39,0,Oils & Fats,Vegetable & Sunflower Oils
+167,COCONUT PRODUCTS,Coconut Milk,8002814,AROY-D COCONUT MILK 1X1LTR,kg,2.99,0,Grocery,Coconut Products
+168,COCONUT PRODUCTS,Coconut Milk,UFS62,CHAOKOH COCONUT MILK 1X400ML,item,1.99,0,Grocery,Coconut Products
+169,COCONUT PRODUCTS,Coconut Milk,UFS339,CHAOKOH COCONUT MILK 6X2.9L,item,49.49,0,Grocery,Coconut Products
+170,COCONUT PRODUCTS,Coconut Milk,8002338,CHAOKOH COCONUT MILK 6X2900ML,item,49.49,0,Grocery,Coconut Products
+171,COCONUT PRODUCTS,Coconut Milk,8002372,CHAOKOH COCONUT MILK 6X400ML,g,11.99,0,Grocery,Coconut Products
+172,COCONUT PRODUCTS,Coconut Milk,UFS388,KTC COCONUT MILK 12X400ML,item,11.99,0,Grocery,Coconut Products
+173,COCONUT PRODUCTS,Coconut Milk,UFS7026,TRS COCONUT MILK 12X400ML,item,13.11,0,Grocery,Coconut Products
+174,COCONUT PRODUCTS,Coconut Milk,80021396,VVR COCONUT MILK 1X400ML,ml,0.85,0,Grocery,Coconut Products
+175,COCONUT PRODUCTS,Desiccated & Creamed Coconut,8002540,COCONUT CHIPS 1X100G,g,1.45,0,Grocery,Coconut Products
+176,COCONUT PRODUCTS,Desiccated & Creamed Coconut,8002420,DESICCATED COCONUT FINE 1X1KG,g,6.65,0,Grocery,Coconut Products
+177,COCONUT PRODUCTS,Desiccated & Creamed Coconut,8002419,DESICCATED COCONUT FINE 6X1KG,kg,39.13,0,Grocery,Coconut Products
+178,COCONUT PRODUCTS,Desiccated & Creamed Coconut,8002798,HEERA DESICCATED COCONUT MEDIUM 1X25KG,kg,104.0,0,Grocery,Coconut Products
+179,COCONUT PRODUCTS,Desiccated & Creamed Coconut,8002476,TROPICAL SUN CREAMED COCONUT 12X200G,g,17.53,0,Grocery,Coconut Products
+180,COCONUT PRODUCTS,Desiccated & Creamed Coconut,8002867,TROPICAL SUN DESICCATED COCONUT 1X1KG,kg,4.35,0,Grocery,Coconut Products
+181,COCONUT PRODUCTS,Desiccated & Creamed Coconut,UFS76,TROPICAL SUN DESICCATED COCONUT 1X1KG MEDIUM,kg,6.53,0,Grocery,Coconut Products
+182,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS7029,AMD PLAIN FLOUR 1X16KG,item,14.99,0,Flour & Baking,Maida & Specialty Flour
+183,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS69,BALA GRAM FLOUR 1X2KG,kg,2.99,0,Flour & Baking,Maida & Specialty Flour
+184,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",8002592,BALA GRAM FLOUR 6X2KG,BOX,15.99,0,Flour & Baking,Maida & Specialty Flour
+185,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS7150,CORNFLOUR 1X3KG,item,6.86,0,Flour & Baking,Maida & Specialty Flour
+186,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS7084,ELEPHANT SELF RAISING FLOUR 1X25KG,item,15.99,0,Flour & Baking,Maida & Specialty Flour
+187,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS7089,HEERA CORNFLOUR 1X3KG,item,8.99,0,Flour & Baking,Maida & Specialty Flour
+188,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",Ufsself,HEERA SELF RAISING FLOUR 1X25KG,kg,18.99,0,Flour & Baking,Maida & Specialty Flour
+189,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",8002549,MIX N BAKE PLAIN FLOUR 1X25KG,kg,19.99,0,Flour & Baking,Maida & Specialty Flour
+190,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS166,NAGA MAIDA 1X10KG,kg,15.89,0,Flour & Baking,Maida & Specialty Flour
+191,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",8002557,NAGA MAIDA 1X1KG,kg,2.65,0,Flour & Baking,Maida & Specialty Flour
+192,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",8002556,NAGA MAIDA 6X1KG,kg,13.99,0,Flour & Baking,Maida & Specialty Flour
+193,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS PLAIN,PLAIN FLOUR 1X25KG,kg,22.75,0,Flour & Baking,Maida & Specialty Flour
+194,FLOUR & GRAINS,"Maida, Plain & Specialty Flour",UFS7149,SELF RAISING FLOUR 1X25KG,item,17.0,0,Flour & Baking,Maida & Specialty Flour
+195,FLOUR & GRAINS,Rice Flour & Mixes,8002547,DH-APPAM IDIYAPPAM PODI 1X1KG,kg,2.69,0,Flour & Baking,Rice Flour & Mixes
+196,FLOUR & GRAINS,Rice Flour & Mixes,8002379,GROUND RICE 6X1.5KG,kg,17.88,0,Flour & Baking,Rice Flour & Mixes
+197,FLOUR & GRAINS,Rice Flour & Mixes,UFS348,HEERA RICE FLOUR 1X1.5KG,kg,3.2,0,Flour & Baking,Rice Flour & Mixes
+198,FLOUR & GRAINS,Rice Flour & Mixes,UFSSTRING,INDUSRI STRING HOPPER POWDER 1X1KG,kg,2.49,0,Flour & Baking,Rice Flour & Mixes
+199,FLOUR & GRAINS,Rice Flour & Mixes,UFS7030,TROPICAL SUN RICE FLOUR 1X25KG,item,26.99,0,Flour & Baking,Rice Flour & Mixes
+200,FLOUR & GRAINS,Rice Flour & Mixes,8002548,VISWAS PUTTU PODI 1X1KG,kg,2.55,0,Flour & Baking,Rice Flour & Mixes
+201,FLOUR & GRAINS,Wheat Flour & Atta,217,AASHIRVAAD CHAKKI ATTA 1X10KG,kg,16.99,0,Flour & Baking,Wheat Flour & Atta
+202,FLOUR & GRAINS,Wheat Flour & Atta,UFS7076,ELEPHANT ATTA (MEDIUM) 1X25KG,kg,21.89,0,Flour & Baking,Wheat Flour & Atta
+203,FLOUR & GRAINS,Wheat Flour & Atta,UFS7095,ELEPHANT ATTA CHAPATTIS 1X8SX12,item,16.99,0,Flour & Baking,Wheat Flour & Atta
+204,FLOUR & GRAINS,Wheat Flour & Atta,8002447,ELEPHANT ATTA FINE (WHITE CHAPATTI FLOUR) 1X25KG,kg,23.39,0,Flour & Baking,Wheat Flour & Atta
+205,FLOUR & GRAINS,Wheat Flour & Atta,UFS7152,ELEPHANT ATTA SELF RAISING 1X25KG,kg,26.89,0,Flour & Baking,Wheat Flour & Atta
+206,FLOUR & GRAINS,Wheat Flour & Atta,UFS7101,ELEPHANT CHAKKI GOLD 1X10KG,kg,12.49,0,Flour & Baking,Wheat Flour & Atta
+207,FLOUR & GRAINS,Wheat Flour & Atta,8002574,NAGA ATTA 1X5KG,kg,7.89,0,Flour & Baking,Wheat Flour & Atta
+208,FLOUR & GRAINS,Wheat Flour & Atta,8002357,NAGA CHAKKI ATTA 1X10KG,kg,13.55,0,Flour & Baking,Wheat Flour & Atta
+209,RICE & GRAINS,Rice,UFS7066,IDLY RICE 1X20KG,NOS,19.99,0,Rice & Cereals,Rice
+210,RICE & GRAINS,"Semolina, Poha & Grains",ufs364,HEERA SEMOLINA COARSE 1X1.5KG,kg,2.89,0,Rice & Cereals,Semolina & Grains
+211,RICE & GRAINS,"Semolina, Poha & Grains",8002627,MTR VERMICELLI ROASTED 1X900G,g,2.79,0,Rice & Cereals,Semolina & Grains
+212,RICE & GRAINS,"Semolina, Poha & Grains",8002546,RICE ADA 1X200G,g,1.99,0,Rice & Cereals,Semolina & Grains
+213,RICE & GRAINS,"Semolina, Poha & Grains",8002533,RICE NOODLES 1X200G,g,1.35,0,Rice & Cereals,Semolina & Grains
+214,RICE & GRAINS,"Semolina, Poha & Grains",UFS366,SAGO SEEDS 1X1.5KG,kg,4.1,0,Rice & Cereals,Semolina & Grains
+215,RICE & GRAINS,"Semolina, Poha & Grains",8002804,SEMOLINA COARSE 1X16KG,kg,23.49,0,Rice & Cereals,Semolina & Grains
+216,RICE & GRAINS,"Semolina, Poha & Grains",UFS7028,TROPICAL SUN SEMOLINA COARSE 1X16KG,kg,21.88,0,Rice & Cereals,Semolina & Grains
+217,RICE & GRAINS,"Semolina, Poha & Grains",UFS7118,TRS-SEMOLINA FINE 1X5KG,kg,8.99,0,Rice & Cereals,Semolina & Grains
+218,RICE & GRAINS,"Semolina, Poha & Grains",8002829,WHITE POHA MEDIUM 1X1KG,kg,2.49,0,Rice & Cereals,Semolina & Grains
+219,DALS & PULSES,Lentils & Dal,UFS386,HEERA CHANA DAL 1X2KG,kg,4.38,0,Pulses & Lentils,Dals & Lentils
+220,DALS & PULSES,Lentils & Dal,8002445,MASOOR DAL 1X20KG,kg,29.99,0,Pulses & Lentils,Dals & Lentils
+221,DALS & PULSES,Lentils & Dal,UFS359,RED MASOOR DAL SPLIT 1X2KG,kg,3.3,0,Pulses & Lentils,Dals & Lentils
+222,DALS & PULSES,Lentils & Dal,8002918,SHREE KRISHNA DARIA DAL 1X750G,g,2.61,0,Pulses & Lentils,Dals & Lentils
+223,DALS & PULSES,Lentils & Dal,UFS369,TOOR DAL OILY 1X5KG,kg,13.99,0,Pulses & Lentils,Dals & Lentils
+224,DALS & PULSES,Lentils & Dal,UFS75,TOOR DAL PLAIN 1X2KG,kg,5.5,0,Pulses & Lentils,Dals & Lentils
+225,DALS & PULSES,Lentils & Dal,80021445,VVR DARIA DAL 6X750G,g,14.99,0,Pulses & Lentils,Dals & Lentils
+226,DALS & PULSES,Lentils & Dal,80021517,VVR-DARIA DAL 1X400G,g,1.35,0,Pulses & Lentils,Dals & Lentils
+227,DALS & PULSES,Lentils & Dal,80021515,VVR-TOOR DAL 1X1KG,kg,2.89,0,Pulses & Lentils,Dals & Lentils
+228,DALS & PULSES,Pulses & Beans,ufs323,BROWN SOYA CHUNKS SMALL 1X250G,g,1.99,0,Pulses & Lentils,Pulses & Beans
+229,DALS & PULSES,Pulses & Beans,80021444,HEERA URID GOTA 1X25KG,kg,49.89,0,Pulses & Lentils,Pulses & Beans
+230,DALS & PULSES,Pulses & Beans,UFS7055,KALA CHANA (BROWN IN TIN) 12X400G,g,7.3,0,Pulses & Lentils,Pulses & Beans
+231,DALS & PULSES,Pulses & Beans,8002656,KT SOYA CHUNKS NANO 1X200G,g,1.35,0,Pulses & Lentils,Pulses & Beans
+232,DALS & PULSES,Pulses & Beans,UFS7022,PL DRY CHICKPEAS 1X12.5KG,kg,26.99,0,Pulses & Lentils,Pulses & Beans
+233,DALS & PULSES,Pulses & Beans,UFS7035,RED COWPEAS 1X2KG,kg,7.49,0,Pulses & Lentils,Pulses & Beans
+234,DALS & PULSES,Pulses & Beans,8002472,RED KIDNEY BEANS 1X2KG,kg,5.65,0,Pulses & Lentils,Pulses & Beans
+235,DALS & PULSES,Pulses & Beans,UFS300,SHANKAR URID WHOLE GOTA 1X20KG,kg,42.99,0,Pulses & Lentils,Pulses & Beans
+236,DALS & PULSES,Pulses & Beans,UFS7159,SHANKER URID DHAL WHOLE 1X20KG,item,44.0,0,Pulses & Lentils,Pulses & Beans
+237,DALS & PULSES,Pulses & Beans,UFS7094,TRS CANNED BLACK EYE BEANS 12X400G,item,7.7,0,Pulses & Lentils,Pulses & Beans
+238,DALS & PULSES,Pulses & Beans,8002568,TRS SOYA CHUNKS 1X500G,g,2.69,0,Pulses & Lentils,Pulses & Beans
+239,DALS & PULSES,Pulses & Beans,8002567,TRS SOYA CHUNKS 6X500G,g,15.8,0,Pulses & Lentils,Pulses & Beans
+240,DALS & PULSES,Pulses & Beans,UFS7146,TRS SOYA MINCE 1X250G,g,1.59,0,Pulses & Lentils,Pulses & Beans
+241,DALS & PULSES,Pulses & Beans,8002465,TRS-BLACK BEANS 12X400G,g,8.59,0,Pulses & Lentils,Pulses & Beans
+242,DALS & PULSES,Pulses & Beans,80021470,TRS-BUTTER BEANS 12X400G,g,9.2,0,Pulses & Lentils,Pulses & Beans
+243,DALS & PULSES,Pulses & Beans,UFS7073,TRS-CHICKPEAS WHITE 1X5KG,kg,13.2,0,Pulses & Lentils,Pulses & Beans
+244,DALS & PULSES,Pulses & Beans,8002450,TRS-RED KIDNEY BEANS 12X400G,g,8.75,0,Pulses & Lentils,Pulses & Beans
+245,DALS & PULSES,Pulses & Beans,80021479,TRS-RED KIDNEY BEANS 6X2.5KG,kg,26.6,0,Pulses & Lentils,Pulses & Beans
+246,DALS & PULSES,Pulses & Beans,8002484,VISWAS SOYA CHUNK NANO 1X100G,g,0.95,0,Pulses & Lentils,Pulses & Beans
+247,DALS & PULSES,Pulses & Beans,8002500,WHITE KIDNEY BEANS 12X397G,g,8.99,0,Pulses & Lentils,Pulses & Beans
+248,HERBS & SPICES,Fresh & Dried Herbs,UFS B LEAVS,BANANA LEAVES KING 1X1 EACH BOX,NOS,0.85,0,Fresh Produce,Herbs & Leaves
+249,HERBS & SPICES,Fresh & Dried Herbs,UFS7158,TRS MINT SAUCE 1X2.27KG,kg,6.75,0,Fresh Produce,Herbs & Leaves
+250,HERBS & SPICES,Ground Spices & Masalas,UFS7154,AACHI RASAM POWDER 5X165G,item,11.45,0,Spices & Seasonings,Ground Spices & Masalas
+251,HERBS & SPICES,Ground Spices & Masalas,UFS7154,AACHI RASAM POWDER 5X165G,item,11.45,0,Spices & Seasonings,Ground Spices & Masalas
+252,HERBS & SPICES,Ground Spices & Masalas,80021447,AANI CUMIN POWDER 6X1KG,kg,45.99,0,Spices & Seasonings,Ground Spices & Masalas
+253,HERBS & SPICES,Ground Spices & Masalas,8002791,BALA KASOORI METHI 1X1KG,kg,11.79,0,Spices & Seasonings,Ground Spices & Masalas
+254,HERBS & SPICES,Ground Spices & Masalas,UFS54,KINGS CURRY POWDER 1X900G,g,8.99,0,Spices & Seasonings,Ground Spices & Masalas
+255,HERBS & SPICES,Ground Spices & Masalas,UFS7144,MDH CHANA MASALA 1X100GM,g,1.2,0,Spices & Seasonings,Ground Spices & Masalas
+256,HERBS & SPICES,Ground Spices & Masalas,8002387,MDH CHUNKY CHAT MASALA 1X500G,g,5.99,0,Spices & Seasonings,Ground Spices & Masalas
+257,HERBS & SPICES,Ground Spices & Masalas,UFS7092,MDH CHUNKY CHAT MASALA 4X500G,g,22.84,0,Spices & Seasonings,Ground Spices & Masalas
+258,HERBS & SPICES,Ground Spices & Masalas,UFS7020,MDH DEGGI MIRCHI 1X500G,g,8.24,0,Spices & Seasonings,Ground Spices & Masalas
+259,HERBS & SPICES,Ground Spices & Masalas,8002363,MDH GARAM MASALA 1X500G,g,7.59,0,Spices & Seasonings,Ground Spices & Masalas
+260,HERBS & SPICES,Ground Spices & Masalas,8002501,MDH KASOORI METHI 1X100G,g,1.35,0,Spices & Seasonings,Ground Spices & Masalas
+261,HERBS & SPICES,Ground Spices & Masalas,UFS106,SAKTHI CHUTNEY POWDER 1X200G,g,1.98,0,Spices & Seasonings,Ground Spices & Masalas
+262,HERBS & SPICES,Ground Spices & Masalas,Ufslemon achi,SAKTHI LEMON RICE POWDER 1X200G,g,2.35,0,Spices & Seasonings,Ground Spices & Masalas
+263,HERBS & SPICES,Ground Spices & Masalas,8002361,SAMBAR POWDER 12X160G,g,26.99,0,Spices & Seasonings,Ground Spices & Masalas
+264,HERBS & SPICES,Ground Spices & Masalas,8002409,TRS-AMCHUR POWDER 1X100G,kg,1.15,0,Spices & Seasonings,Ground Spices & Masalas
+265,HERBS & SPICES,Ground Spices & Masalas,8002408,TRS-AMCHUR POWDER 20X100G,g,19.99,0,Spices & Seasonings,Ground Spices & Masalas
+266,HERBS & SPICES,Ground Spices & Masalas,8002896,VISWAS SAMBAR POWDER 1X160G,g,2.16,0,Spices & Seasonings,Ground Spices & Masalas
+267,HERBS & SPICES,Whole Spices & Seeds,8002890,BLACK SALT 1X400G,g,1.65,0,Spices & Seasonings,Whole Spices & Seeds
+268,HERBS & SPICES,Whole Spices & Seeds,8002530,BLACK SESAME SEEDS 20X100G,g,15.99,0,Spices & Seasonings,Whole Spices & Seeds
+269,HERBS & SPICES,Whole Spices & Seeds,UFS63,COOKING SALT 1X12.5KG,kg,8.4,0,Spices & Seasonings,Whole Spices & Seeds
+270,HERBS & SPICES,Whole Spices & Seeds,UFS333,HEERA FENNEL SEEDS 1X800GM,g,4.2,0,Spices & Seasonings,Whole Spices & Seeds
+271,HERBS & SPICES,Whole Spices & Seeds,8002961,HEERA KALONJI 1X1KG,kg,5.2,0,Spices & Seasonings,Whole Spices & Seeds
+272,HERBS & SPICES,Whole Spices & Seeds,UFS7139,HEERA SUGAR COATED FENNEL SEEDS 1X1KG,g,2.95,0,Spices & Seasonings,Whole Spices & Seeds
+273,HERBS & SPICES,Whole Spices & Seeds,8002367,LG ASAFOETIDA (HING) 10X100G,g,24.8,0,Spices & Seasonings,Whole Spices & Seeds
+274,HERBS & SPICES,Whole Spices & Seeds,UFS55,LG ASAFOETIDA 10X100G,g,23.0,0,Spices & Seasonings,Whole Spices & Seeds
+275,HERBS & SPICES,Whole Spices & Seeds,8002884,LG ASAFOETIDA BLOCK 1X50G,g,1.4,0,Spices & Seasonings,Whole Spices & Seeds
+276,HERBS & SPICES,Whole Spices & Seeds,UFS358,METHI SEEDS 1X1KG,kg,2.8,0,Spices & Seasonings,Whole Spices & Seeds
+277,HERBS & SPICES,Whole Spices & Seeds,8002661,PEGASUS SEA SALT COARSE 1X750G,g,1.4,0,Spices & Seasonings,Whole Spices & Seeds
+278,HERBS & SPICES,Whole Spices & Seeds,8002421,POPPY SEEDS WHITE 10X250G,g,21.99,0,Spices & Seasonings,Whole Spices & Seeds
+279,HERBS & SPICES,Whole Spices & Seeds,8002422,POPPY SEEDS WHITE 1X250G,item,2.3,0,Spices & Seasonings,Whole Spices & Seeds
+280,HERBS & SPICES,Whole Spices & Seeds,8002923,ROUND RED CHILLI (GUNDU MULAKU) 1X100G,g,1.68,0,Spices & Seasonings,Whole Spices & Seeds
+281,HERBS & SPICES,Whole Spices & Seeds,8002660,SAXA ROCK SALT 1X350G,g,1.58,0,Spices & Seasonings,Whole Spices & Seeds
+282,HERBS & SPICES,Whole Spices & Seeds,UFS7018,TRS BASIL SEED (TUKMARIA) 1X100G,g,1.23,0,Spices & Seasonings,Whole Spices & Seeds
+283,HERBS & SPICES,Whole Spices & Seeds,8002407,TRS BLACK SALT (KALA NAMAK) 10X100G,g,10.29,0,Spices & Seasonings,Whole Spices & Seeds
+284,HERBS & SPICES,Whole Spices & Seeds,80021029,TRS NUTMEG 1X100GM,g,2.99,0,Spices & Seasonings,Whole Spices & Seeds
+285,HERBS & SPICES,Whole Spices & Seeds,UFS7103,VANDEVI HING 1X500G,g,6.75,0,Spices & Seasonings,Whole Spices & Seeds
+286,HERBS & SPICES,Whole Spices & Seeds,80021481,VANDEVI HING 5X100G,g,8.99,0,Spices & Seasonings,Whole Spices & Seeds
+287,HERBS & SPICES,Whole Spices & Seeds,8002606,WHITE SESAME SEEDS 1X300G,g,1.99,0,Spices & Seasonings,Whole Spices & Seeds
+288,HERBS & SPICES,Whole Spices & Seeds,8002510,WHITE SESAME SEEDS 1X400G,g,3.59,0,Spices & Seasonings,Whole Spices & Seeds
+289,HERBS & SPICES,Whole Spices & Seeds,8002539,WHOLE MELON SEEDS 1X200G,g,3.1,0,Spices & Seasonings,Whole Spices & Seeds
+290,BAKING ESSENTIALS,Baking Aids,80021471,BAKING POWDER 1X1KG,kg,5.99,0,Baking & Desserts,Baking Essentials
+291,BAKING ESSENTIALS,Baking Aids,8002678,BAKING POWDER 1X3.5KG,kg,9.1,0,Baking & Desserts,Baking Essentials
+292,BAKING ESSENTIALS,Baking Aids,UFS7005,BAKING POWDER WEIKFIELD 1X1KG,kg,5.99,0,Baking & Desserts,Baking Essentials
+293,BAKING ESSENTIALS,Baking Aids,UFS337,DRIED YEAST 1X125G,g,2.38,0,Baking & Desserts,Baking Essentials
+294,BAKING ESSENTIALS,Baking Aids,UFS7048,FRESH DOSA BATTER 1X1KG,kg,3.5,0,Baking & Desserts,Baking Essentials
+295,BAKING ESSENTIALS,Baking Aids,UFS350,NATURAL BREADCRUMBS 1X3KG,kg,8.59,0,Baking & Desserts,Baking Essentials
+296,BAKING ESSENTIALS,Baking Aids,108,TROPICAL SUN GOLDEN BREADCRUMBS 1X3KG,kg,8.49,0,Baking & Desserts,Baking Essentials
+297,SUGAR & SWEETENERS,Sugar & Jaggery,UFS345,HEERA JAGGERY (GOOR) 1X900G,g,2.85,0,Grocery,Sugar & Sweeteners
+298,SUGAR & SWEETENERS,Sugar & Jaggery,UFS368,MARAYOOR JAGGERY 1X1KG,kg,3.6,0,Grocery,Sugar & Sweeteners
+299,SUGAR & SWEETENERS,Sugar & Jaggery,8002523,PALM SUGAR 1X500G,g,2.25,0,Grocery,Sugar & Sweeteners
+300,SUGAR & SWEETENERS,Sugar & Jaggery,UFS7002,SHARAKARA VARATTI 1X150G,g,1.89,0,Grocery,Sugar & Sweeteners
+301,SUGAR & SWEETENERS,Sugar & Jaggery,8002526,SUGAR 1X1KG,kg,1.15,0,Grocery,Sugar & Sweeteners
+302,SUGAR & SWEETENERS,Sugar & Jaggery,80021030,T&L LIGHT BROWN SUGAR 1X3KG,kg,7.89,0,Grocery,Sugar & Sweeteners
+303,SUGAR & SWEETENERS,Sugar & Jaggery,UFSSUGAR STK,T&L SUGAR STICKS 1000X2.5G,g,8.89,0,Grocery,Sugar & Sweeteners
+304,SUGAR & SWEETENERS,Sugar & Jaggery,8002889,TATE & LYLE ICING SUGAR 1X1KG,kg,2.2,0,Grocery,Sugar & Sweeteners
+305,SUGAR & SWEETENERS,Sugar & Jaggery,UFSCASTORS,TL CASTER SUGAR 1X25KG,kg,35.99,0,Grocery,Sugar & Sweeteners
+306,SUGAR & SWEETENERS,Sugar & Jaggery,UFS7114,TL SUGAR 1X5KG,kg,8.69,0,Grocery,Sugar & Sweeteners
+307,SUGAR & SWEETENERS,Sugar & Jaggery,UFSSUGAR,TL SUGAR WHITE 15X1KG,kg,15.89,0,Grocery,Sugar & Sweeteners
+308,SUGAR & SWEETENERS,Sugar & Jaggery,UFS78,TL SUGAR WHITE 1X25KG,kg,19.98,0,Grocery,Sugar & Sweeteners
+309,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,8002618,BURGER SAUCE 1X1L,kg,2.99,0,Condiments & Sauces,Chilli Sauces & Pastes
+310,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,8002551,H-BOY SWEET CHILLI SAUCE 1X2390G,g,8.99,0,Condiments & Sauces,Chilli Sauces & Pastes
+311,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,UFS7085,MAGGI CHILLI SAUCE EXTRA HOT 6X320G,item,11.99,0,Condiments & Sauces,Chilli Sauces & Pastes
+312,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,8002926,MAGGI CHILLI SAUCE WITH GARLIC 6X305G,ml,11.99,0,Condiments & Sauces,Chilli Sauces & Pastes
+313,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,80021492,MEA POLY SWEET CHILLI SAUCE 6X750ML,ml,18.97,0,Condiments & Sauces,Chilli Sauces & Pastes
+314,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,8002594,MR NAGA CHILLI PASTE 1X190G,g,2.25,0,Condiments & Sauces,Chilli Sauces & Pastes
+315,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,80021535,TIGER THAI SWEET CHILLI SAUCE 1X2950ML,ml,6.99,1,Condiments & Sauces,Chilli Sauces & Pastes
+316,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,UFS7121,TROPICAL SUN THAI SWEET CHILLI SAUCE 1X1L,kg,3.89,0,Condiments & Sauces,Chilli Sauces & Pastes
+317,CONDIMENTS & SAUCES,Chilli Sauces & Pastes,8002758,TROPICAL SUN THAI SWEET CHILLI SAUCE 6X1LTR,kg,20.49,0,Condiments & Sauces,Chilli Sauces & Pastes
+318,CONDIMENTS & SAUCES,Chutneys,UFS385,BALA SWEET MANGO CHUTNEY 1X40KG,kg,58.49,0,Condiments & Sauces,Chutneys
+319,CONDIMENTS & SAUCES,Chutneys,8002359,GEETA'S MANGO CHUTNEY 1X14KG,kg,42.99,0,Condiments & Sauces,Chutneys
+320,CONDIMENTS & SAUCES,Chutneys,UFS7086,PAPA SWEET MANGO CHUTNEY 1X40KG,item,57.48,0,Condiments & Sauces,Chutneys
+321,CONDIMENTS & SAUCES,Chutneys,UFS7069,SATCO PLASTICS CHUTNEY B 4OZX800S,NOS,25.99,0,Condiments & Sauces,Chutneys
+322,CONDIMENTS & SAUCES,Chutneys,UFS380,SWEET MANGO CHUTNEY 1X5KG,kg,11.99,0,Condiments & Sauces,Chutneys
+323,CONDIMENTS & SAUCES,Cooking Pastes & Marinades,8002772,PATAK-BALTI PASTE 1X2.3KG,kg,13.49,0,Condiments & Sauces,Cooking Pastes & Marinades
+324,CONDIMENTS & SAUCES,Cooking Pastes & Marinades,8002456,PATAK-TANDOORI MASALA 1X2.3KG,kg,13.99,0,Condiments & Sauces,Cooking Pastes & Marinades
+325,CONDIMENTS & SAUCES,Cooking Pastes & Marinades,8002455,PATAK-TIKKA PASTE 1X2.3KG,kg,13.89,0,Condiments & Sauces,Cooking Pastes & Marinades
+326,CONDIMENTS & SAUCES,Mayonnaise & Salad Dressings,8002488,HELLMANNS MAYONNAISE 1X5KG,kg,26.99,0,Condiments & Sauces,Mayonnaise & Salad Dressings
+327,CONDIMENTS & SAUCES,Mayonnaise & Salad Dressings,8002487,LION SALAD CREAM 1X2.27L,g,7.99,0,Condiments & Sauces,Mayonnaise & Salad Dressings
+328,CONDIMENTS & SAUCES,Mayonnaise & Salad Dressings,UFS7056,VEGAN MAYONNAISE 1X5LTR,kg,17.56,0,Condiments & Sauces,Mayonnaise & Salad Dressings
+329,CONDIMENTS & SAUCES,Mayonnaise & Salad Dressings,8002562,ZAFRON MAYONNAISE 1X5L,kg,11.49,0,Condiments & Sauces,Mayonnaise & Salad Dressings
+330,CONDIMENTS & SAUCES,Mustard & Condiments,8002457,COLMAN'S ENGLISH MUSTARD 1X2.15LTR,kg,14.39,0,Condiments & Sauces,Mustard & Condiments
+331,CONDIMENTS & SAUCES,Mustard & Condiments,80021504,COLMAN'S ENGLISH MUSTARD 1X2.25LTR,ml,19.46,0,Condiments & Sauces,Mustard & Condiments
+332,CONDIMENTS & SAUCES,Mustard & Condiments,UFSKASU,KASUNDI MUSTARD SAUCE 1X525G,g,3.6,0,Condiments & Sauces,Mustard & Condiments
+333,CONDIMENTS & SAUCES,Other Sauces & Condiments,8002827,FRIED ONION 1X2.5KG,g,13.69,0,Condiments & Sauces,Other Sauces & Condiments
+334,CONDIMENTS & SAUCES,Other Sauces & Condiments,8002563,KITHUL TREACLE 1X750ML,g,4.75,0,Condiments & Sauces,Other Sauces & Condiments
+335,CONDIMENTS & SAUCES,Other Sauces & Condiments,UFS355,KITHUL TREACLE 1X750ML,item,4.75,0,Condiments & Sauces,Other Sauces & Condiments
+336,CONDIMENTS & SAUCES,Other Sauces & Condiments,UFSTAH,TAHINA 1X454G,g,3.75,0,Condiments & Sauces,Other Sauces & Condiments
+337,CONDIMENTS & SAUCES,Other Sauces & Condiments,8002513,TROPICAL SUN HONEY 1X1KG (PREMIUM),kg,7.55,0,Condiments & Sauces,Other Sauces & Condiments
+338,CONDIMENTS & SAUCES,Other Sauces & Condiments,UFS229,TROPICAL SUN HONEY 1X4.5KG,kg,21.55,0,Condiments & Sauces,Other Sauces & Condiments
+339,CONDIMENTS & SAUCES,Pickles & Olives,8002477,AHMED MANGO PICKLE 1X1KG,kg,2.99,0,Condiments & Sauces,Pickles & Olives
+340,CONDIMENTS & SAUCES,Pickles & Olives,8002795,ASHOKA CHILLI PICKLE 1X480G,g,1.99,0,Condiments & Sauces,Pickles & Olives
+341,CONDIMENTS & SAUCES,Pickles & Olives,8002689,EASTERN LIME PICKLE 1X400G,g,2.4,0,Condiments & Sauces,Pickles & Olives
+342,CONDIMENTS & SAUCES,Pickles & Olives,8002393,GOMO MIX PIT OLIVES 1X3.1KG,kg,24.99,0,Condiments & Sauces,Pickles & Olives
+343,CONDIMENTS & SAUCES,Pickles & Olives,UFS375,HEERA LIME PICKLE 1X4KG,kg,11.55,0,Condiments & Sauces,Pickles & Olives
+344,CONDIMENTS & SAUCES,Pickles & Olives,UFS374,HEERA MANGO PICKLE 1X4KG,kg,11.49,0,Condiments & Sauces,Pickles & Olives
+345,CONDIMENTS & SAUCES,Pickles & Olives,UFS7064,HEERA MIXED PICKLE 1X4KG,kg,11.99,0,Condiments & Sauces,Pickles & Olives
+346,CONDIMENTS & SAUCES,Pickles & Olives,8002852,PACHRANGA RED CHILLI STUFFED PICKLE IN OIL 1X750ML,g,3.49,0,Condiments & Sauces,Pickles & Olives
+347,CONDIMENTS & SAUCES,Pickles & Olives,8002853,PACHRANGA SWEET CARROT PICKLE IN OIL 1X750ML,g,3.99,0,Condiments & Sauces,Pickles & Olives
+348,CONDIMENTS & SAUCES,Pickles & Olives,UFS7155,PASCALI PITTED BLACK OLIVE 6X665GM,item,14.84,0,Condiments & Sauces,Pickles & Olives
+349,CONDIMENTS & SAUCES,Pickles & Olives,UFS7156,PASCALI PITTED BLACK OLIVE 6X665GM,item,14.84,0,Condiments & Sauces,Pickles & Olives
+350,CONDIMENTS & SAUCES,Pickles & Olives,UFS7157,PASCALI PITTED GREEN OLIVE 6X665GM,item,15.84,0,Condiments & Sauces,Pickles & Olives
+351,CONDIMENTS & SAUCES,Pickles & Olives,80021394,PRIYA GONGURA PICKLE 12X300G,g,24.99,0,Condiments & Sauces,Pickles & Olives
+352,CONDIMENTS & SAUCES,Pickles & Olives,80021395,PRIYA GONGURA PICKLE 1X300G,g,2.3,0,Condiments & Sauces,Pickles & Olives
+353,CONDIMENTS & SAUCES,Soya & Oriental Sauces,8002639,AMOY DARK SOYA SAUCE 1X500G,g,2.65,0,Condiments & Sauces,Soya & Oriental Sauces
+354,CONDIMENTS & SAUCES,Soya & Oriental Sauces,8002511,AMOY SUPREME LIGHT SOYA SAUCE 1X500ML,g,2.49,0,Condiments & Sauces,Soya & Oriental Sauces
+355,CONDIMENTS & SAUCES,Soya & Oriental Sauces,8002802,PRB SOY SAUCE (SUPERIOR DARK) 1X8L,kg,13.99,0,Condiments & Sauces,Soya & Oriental Sauces
+356,CONDIMENTS & SAUCES,Soya & Oriental Sauces,8002803,PRB SOY SAUCE (SUPERIOR LIGHT) 1X8L,kg,13.89,0,Condiments & Sauces,Soya & Oriental Sauces
+357,CONDIMENTS & SAUCES,"Stock, Seasonings & Flavour Enhancers",80021482,JUMBO CHICKEN STOCK POWDER 1X1KG,kg,5.75,0,Spices & Seasonings,Stock & Flavour Enhancers
+358,CONDIMENTS & SAUCES,"Stock, Seasonings & Flavour Enhancers",80021539,KNORR CHICKEN POWDER 1X990GM,g,9.1,0,Spices & Seasonings,Stock & Flavour Enhancers
+359,CONDIMENTS & SAUCES,"Stock, Seasonings & Flavour Enhancers",8002878,MAGGI CHICKEN CUBES 1X60X10G,g,4.89,0,Spices & Seasonings,Stock & Flavour Enhancers
+360,CONDIMENTS & SAUCES,"Stock, Seasonings & Flavour Enhancers",UFS7013,MAGGI SAUCE MASALA CHILLI 6X400G,g,12.29,0,Spices & Seasonings,Stock & Flavour Enhancers
+361,CONDIMENTS & SAUCES,"Stock, Seasonings & Flavour Enhancers",UFS7123,MSG AJINO MOTO 1X1KG,item,6.99,0,Spices & Seasonings,Stock & Flavour Enhancers
+362,CONDIMENTS & SAUCES,"Stock, Seasonings & Flavour Enhancers",8002542,TROPICAL SUN CHICKEN CUBES 12X8S,NOS,13.5,0,Spices & Seasonings,Stock & Flavour Enhancers
+363,CONDIMENTS & SAUCES,"Stock, Seasonings & Flavour Enhancers",80021560,TROPICAL SUN VEGETABLE STOCK POWDER 1X1KG,kg,4.49,0,Spices & Seasonings,Stock & Flavour Enhancers
+364,CONDIMENTS & SAUCES,Tomato Products & Ketchup,8002638,BALA TOMATO KETCHUP 1X4KG,kg,5.99,0,Condiments & Sauces,Tomato Products & Ketchup
+365,CONDIMENTS & SAUCES,Tomato Products & Ketchup,80021552,CL TOMATO KETCHUP 1X4.5LTR,ml,7.99,0,Condiments & Sauces,Tomato Products & Ketchup
+366,CONDIMENTS & SAUCES,Tomato Products & Ketchup,UFS71,KTC TOMATO KETCHUP 1X4KG,kg,6.5,0,Condiments & Sauces,Tomato Products & Ketchup
+367,CONDIMENTS & SAUCES,Tomato Products & Ketchup,8002489,PEGASUS TOMATO PASTE 1X4.5KG,kg,10.43,0,Condiments & Sauces,Tomato Products & Ketchup
+368,CONDIMENTS & SAUCES,Tomato Products & Ketchup,UFS7165,PIZZA CHEESE AND TOMATO 1X314GM,item,2.0,0,Condiments & Sauces,Tomato Products & Ketchup
+369,CONDIMENTS & SAUCES,Tomato Products & Ketchup,8002528,TOMATO PASTE 12X800G,BOX,26.49,0,Condiments & Sauces,Tomato Products & Ketchup
+370,CONDIMENTS & SAUCES,Tomato Products & Ketchup,8002839,TOMATO PASTE 1X800G,g,2.99,0,Condiments & Sauces,Tomato Products & Ketchup
+371,CONDIMENTS & SAUCES,Tomato Products & Ketchup,UFS67,TOMATO PASTE 6X800G,g,16.6,0,Condiments & Sauces,Tomato Products & Ketchup
+372,CONDIMENTS & SAUCES,Vinegar & Souring Agents,80021547,AROY D TAMARIND PASTE (CONCENTRATE) 6X454G,g,15.99,0,Condiments & Sauces,Vinegar & Souring Agents
+373,CONDIMENTS & SAUCES,Vinegar & Souring Agents,80021464,BUENAS PALM VINEGAR 1X750ML,ml,2.1,0,Condiments & Sauces,Vinegar & Souring Agents
+374,CONDIMENTS & SAUCES,Vinegar & Souring Agents,8002391,DH VINEGAR 12X1LTR,kg,29.98,0,Condiments & Sauces,Vinegar & Souring Agents
+375,CONDIMENTS & SAUCES,Vinegar & Souring Agents,8002392,DH VINEGAR 1X1LTR,kg,3.49,0,Condiments & Sauces,Vinegar & Souring Agents
+376,CONDIMENTS & SAUCES,Vinegar & Souring Agents,8002358,GEETA'S TAMARIND CHUTNEY 1X15KG,kg,43.99,0,Condiments & Sauces,Vinegar & Souring Agents
+377,CONDIMENTS & SAUCES,Vinegar & Souring Agents,UFS7130,HEERA TAMARIND SAUCE 1X1LTR,kg,3.3,0,Condiments & Sauces,Vinegar & Souring Agents
+378,CONDIMENTS & SAUCES,Vinegar & Souring Agents,8002583,MD COCONUT VINEGAR 1X750ML,g,2.1,0,Condiments & Sauces,Vinegar & Souring Agents
+379,CONDIMENTS & SAUCES,Vinegar & Souring Agents,8002452,PALM VINEGAR 1X750ML,g,2.1,0,Condiments & Sauces,Vinegar & Souring Agents
+380,CONDIMENTS & SAUCES,Vinegar & Souring Agents,UFS7102,RS WHITE VINEGAR 1X5LTR,item,4.99,0,Condiments & Sauces,Vinegar & Souring Agents
+381,CONDIMENTS & SAUCES,Vinegar & Souring Agents,UFS7001,TAMARIND 1X200G,g,0.76,0,Condiments & Sauces,Vinegar & Souring Agents
+382,CONDIMENTS & SAUCES,Vinegar & Souring Agents,UFS82,TAMARIND PASTE NIRU 6X454G,g,15.99,0,Condiments & Sauces,Vinegar & Souring Agents
+383,CONDIMENTS & SAUCES,Vinegar & Souring Agents,80021463,TOP-OP TAMARIND CONCENTRATE 12X227G,g,18.99,0,Condiments & Sauces,Vinegar & Souring Agents
+384,BEVERAGES,Juices & Cordials,8002430,BEV LEMON JUICE 1X4LTR,NOS,7.99,0,Condiments & Sauces,Juices & Cordials
+385,BEVERAGES,Juices & Cordials,8002775,KTC LEMON JUICE 1X1LTR,kg,2.45,0,Condiments & Sauces,Juices & Cordials
+386,BEVERAGES,Juices & Cordials,8002789,KTC LEMON JUICE 6X1LTR,g,14.49,0,Condiments & Sauces,Juices & Cordials
+387,BEVERAGES,Juices & Cordials,80021495,KTC LIME JUICE 1X250ML,ml,0.85,0,Condiments & Sauces,Juices & Cordials
+388,BEVERAGES,Juices & Cordials,80021494,KTC LIME JUICE 4X250ML,ml,8.89,0,Condiments & Sauces,Juices & Cordials
+389,BEVERAGES,Juices & Cordials,8002443,LEMON DRESSING 1X4LTR,DRM,7.2,0,Condiments & Sauces,Juices & Cordials
+390,BEVERAGES,Juices & Cordials,UFS7133,LEMON JUICE 12X250ML,item,7.79,0,Condiments & Sauces,Juices & Cordials
+391,BEVERAGES,Juices & Cordials,8002776,LIME JUICE 1X1LTR,kg,1.99,0,Condiments & Sauces,Juices & Cordials
+392,BEVERAGES,Juices & Cordials,80021154,MD NELLI CORDIAL 1X750ML,ml,4.89,0,Condiments & Sauces,Juices & Cordials
+393,BEVERAGES,Tea & Coffee,8002781,BRU COFFEE POWDER (INSTANT) 1X100G,g,6.29,0,Beverages,Tea & Coffee
+394,BEVERAGES,Tea & Coffee,8002883,BRU COFFEE POWDER (INSTANT) 1X100G,g,6.29,0,Beverages,Tea & Coffee
+395,BEVERAGES,Tea & Coffee,8002780,BRU COFFEE POWDER (INSTANT) 1X200G,g,7.49,0,Beverages,Tea & Coffee
+396,BEVERAGES,Tea & Coffee,UFS376,HORLICKS 1X2KG,kg,15.99,0,Beverages,Tea & Coffee
+397,BEVERAGES,Tea & Coffee,8002459,MASALA TEA BAG 1X240S,NOS,12.49,0,Beverages,Tea & Coffee
+398,BEVERAGES,Tea & Coffee,ufsNgold,NESCAFE COFFEE GOLD 1X750G,g,29.88,0,Beverages,Tea & Coffee
+399,BEVERAGES,Tea & Coffee,UFSNORI,NESCAFE COFFEE ORIGINAL 1X1KG,kg,26.89,0,Beverages,Tea & Coffee
+400,BEVERAGES,Tea & Coffee,UFS245,NESTLE MILO 1X400G,g,5.24,0,Beverages,Tea & Coffee
+401,BEVERAGES,Tea & Coffee,UFS227,PG TEA BAGS 1X1100S,item,22.56,0,Beverages,Tea & Coffee
+402,BEVERAGES,Tea & Coffee,8002778,TETLEY TEA BAGS 1X1100S,NOS,22.0,0,Beverages,Tea & Coffee
+403,SNACKS & NAMKEEN,Indian Snacks & Namkeen,80021538,FAR FAR POTATO CRINKLE 1X250G,g,2.66,0,Snacks & Confectionery,Indian Snacks & Namkeen
+404,SNACKS & NAMKEEN,Indian Snacks & Namkeen,8002524,FRIED GREEN PEAS 1X175G,g,1.75,0,Snacks & Confectionery,Indian Snacks & Namkeen
+405,SNACKS & NAMKEEN,Indian Snacks & Namkeen,8002559,GARLIC MURUKKU 1X150G,g,1.35,0,Snacks & Confectionery,Indian Snacks & Namkeen
+406,SNACKS & NAMKEEN,Indian Snacks & Namkeen,8002403,GOL GAPPA FRY 10X200G,g,17.2,0,Snacks & Confectionery,Indian Snacks & Namkeen
+407,SNACKS & NAMKEEN,Indian Snacks & Namkeen,UFS7164,GOLGAPPA FRY 10X200G,g,18.99,0,Snacks & Confectionery,Indian Snacks & Namkeen
+408,SNACKS & NAMKEEN,Indian Snacks & Namkeen,80021359,HEERA GOL GAPPA FRY (PANI PURI) 1X250G,g,2.48,0,Snacks & Confectionery,Indian Snacks & Namkeen
+409,SNACKS & NAMKEEN,Indian Snacks & Namkeen,80021358,HEERA GOL GAPPA FRY 10X250G (PANI PURI),g,23.89,0,Snacks & Confectionery,Indian Snacks & Namkeen
+410,SNACKS & NAMKEEN,Indian Snacks & Namkeen,80021544,JAIMIN GREEN CHILLI KITCHIYA 1X200G,g,1.89,0,Snacks & Confectionery,Indian Snacks & Namkeen
+411,SNACKS & NAMKEEN,Indian Snacks & Namkeen,80021543,JAIMIN JEERA KITCHIYA 1X200G,g,1.89,0,Snacks & Confectionery,Indian Snacks & Namkeen
+412,SNACKS & NAMKEEN,Indian Snacks & Namkeen,8002473,NYLON SEV 1X1KG,kg,5.55,0,Snacks & Confectionery,Indian Snacks & Namkeen
+413,SNACKS & NAMKEEN,Indian Snacks & Namkeen,UFS20,RICH TEA BISCUITS 1X300G,g,1.6,0,Snacks & Confectionery,Indian Snacks & Namkeen
+414,SNACKS & NAMKEEN,Indian Snacks & Namkeen,8002560,THATTA MURUKKU 1X135G,g,1.29,0,Snacks & Confectionery,Indian Snacks & Namkeen
+415,SNACKS & NAMKEEN,Pani Puri & Golgappa,8002550,CHANDRA PANI PURI 40SX16X1BOX,NOS,51.89,0,Snacks & Confectionery,Pani Puri & Golgappa
+416,SNACKS & NAMKEEN,Pappadam & Papad,8002742,BALA MADRAS PLAIN PAPADAM 60X200G,BOX,59.99,0,Snacks & Confectionery,Pappadam & Papad
+417,SNACKS & NAMKEEN,Pappadam & Papad,8002360,MINI PAPAD 1X200G,g,1.49,0,Snacks & Confectionery,Pappadam & Papad
+418,SNACKS & NAMKEEN,Pappadam & Papad,UFS100,PAPPADAM MALABAR 1X150G,g,1.45,0,Snacks & Confectionery,Pappadam & Papad
+419,SNACKS & NAMKEEN,Pappadam & Papad,8002598,RAGGI SPICY PAPADAM 1X200G,g,2.75,0,Snacks & Confectionery,Pappadam & Papad
+420,SNACKS & NAMKEEN,Pappadam & Papad,UFS382,SHANKAR MADRAS PLAIN PAPPADOMS 8X60X200G,g,51.89,0,Snacks & Confectionery,Pappadam & Papad
+421,SNACKS & NAMKEEN,Pappadam & Papad,UFS7087,TRS PAPPADAM MADRAS BUNDLE 8X60X200GM,g,51.99,0,Snacks & Confectionery,Pappadam & Papad
+422,SNACKS & NAMKEEN,Pappadam & Papad,UFS7031,TRS-PAPADAM 10X200GM,g,8.66,0,Snacks & Confectionery,Pappadam & Papad
+423,SNACKS & NAMKEEN,Samosa & Spring Roll Wrappers,UFS7081,TAJ SAMOSA PADS 25X30S,item,35.98,0,Snacks & Confectionery,Samosa & Spring Roll Wrappers
+424,SNACKS & NAMKEEN,Samosa & Spring Roll Wrappers,UFS7115,TAJ SAMOSA PADS 5X30S,item,9.89,0,Snacks & Confectionery,Samosa & Spring Roll Wrappers
+425,SNACKS & NAMKEEN,Samosa & Spring Roll Wrappers,UFS7079,TAJ SPRING ROLL PASTRY VEGAN 10X30,item,76.78,0,Snacks & Confectionery,Samosa & Spring Roll Wrappers
+426,SNACKS & NAMKEEN,Samosa & Spring Roll Wrappers,UFS7080,TYJ SPRING ROLL PASTRY 10 INCH 30X20,item,59.99,0,Snacks & Confectionery,Samosa & Spring Roll Wrappers
+427,CHOCOLATES & SWEETS,Chocolates,80021361,QUALITY STREET TUB 1X550G,g,5.2,20,Snacks & Confectionery,Chocolates & Sweets
+428,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002797,BOONDI 1X200G,g,1.09,0,Baking & Desserts,Indian Sweets & Desserts
+429,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002555,FROZEN HALVA BLACK 1X400G,g,3.59,0,Baking & Desserts,Indian Sweets & Desserts
+430,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002846,GITS-KHAMAN DHOKLA 1X100G,g,1.65,0,Baking & Desserts,Indian Sweets & Desserts
+431,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002945,GULAB JAMUN 1X100EACH (BUCKET),nos,65.0,0,Baking & Desserts,Indian Sweets & Desserts
+432,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002602,GULAB JAMUN 1X200EACH (BUCKET),nos,128.99,0,Baking & Desserts,Indian Sweets & Desserts
+433,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002760,HEERA MUKHWAS 1X1KG,kg,6.25,0,Baking & Desserts,Indian Sweets & Desserts
+434,CHOCOLATES & SWEETS,Indian Sweets & Desserts,80021548,HEERA RED PAN MASALA MUKHWAS 1X300G,g,3.28,0,Baking & Desserts,Indian Sweets & Desserts
+435,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002462,LAZIZA KHEER MIX STANDARD 6X155G,g,13.99,0,Baking & Desserts,Indian Sweets & Desserts
+436,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002887,LAZZIZA GULAB JAMUN MIX 6X80GM,g,12.85,0,Baking & Desserts,Indian Sweets & Desserts
+437,CHOCOLATES & SWEETS,Indian Sweets & Desserts,80021418,NATCO CANDY SUGAR 1X100G,g,0.69,0,Baking & Desserts,Indian Sweets & Desserts
+438,CHOCOLATES & SWEETS,Indian Sweets & Desserts,80021417,NATCO SUGAR CANDY 20X100G,g,11.89,0,Baking & Desserts,Indian Sweets & Desserts
+439,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002825,ROYAL RASSOMALAI 1X450G,g,4.45,0,Baking & Desserts,Indian Sweets & Desserts
+440,CHOCOLATES & SWEETS,Indian Sweets & Desserts,UFS7138,SUGAR CANDY 1X375G,g,2.79,0,Baking & Desserts,Indian Sweets & Desserts
+441,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002753,SUGAR COATED FENNEL SEEDS (PAN MASALA) 1X1KG,kg,4.98,20,Baking & Desserts,Indian Sweets & Desserts
+442,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002828,TOP-OP CHINA GRASS 1X250G,g,2.1,0,Baking & Desserts,Indian Sweets & Desserts
+443,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002525,TUTTI FRUTTI 1X300G,g,2.99,0,Baking & Desserts,Indian Sweets & Desserts
+444,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002704,VISWAS JILEBI 1X227G,g,2.35,0,Baking & Desserts,Indian Sweets & Desserts
+445,CHOCOLATES & SWEETS,Indian Sweets & Desserts,8002702,VISWAS LADDU 1X350G,g,3.3,0,Baking & Desserts,Indian Sweets & Desserts
+446,NOODLES & PASTA,Noodles,8002897,JB LONG LIFE EGG NOODLES 6X400G,g,8.89,0,Grocery,Noodles & Pasta
+447,NOODLES & PASTA,Noodles,8002787,KOLEE EGG NOODLES 1X375G,g,2.1,0,Grocery,Noodles & Pasta
+448,NOODLES & PASTA,Noodles,8002788,KOLEE EGG NOODLES 8X375G,g,16.4,0,Grocery,Noodles & Pasta
+449,NOODLES & PASTA,Noodles,8002830,LONG LIFE EGG NOODLES 6X400G,g,17.49,0,Grocery,Noodles & Pasta
+450,NOODLES & PASTA,Pasta,8002451,ITALIANA PASTA 1X2KG,kg,5.89,0,Grocery,Noodles & Pasta
+451,DRY FRUITS & NUTS,Nuts & Dry Fruits,8002585,BLANCHED PEANUTS 1X500G,g,1.89,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+452,DRY FRUITS & NUTS,Nuts & Dry Fruits,80021537,CASHEW NUTS SPLIT 1X1KG,kg,7.8,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+453,DRY FRUITS & NUTS,Nuts & Dry Fruits,80021563,FUDCO WALNUT 1X600G,g,10.49,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+454,DRY FRUITS & NUTS,Nuts & Dry Fruits,80021477,GOLDEN SULTANA 1X1KG,kg,5.2,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+455,DRY FRUITS & NUTS,Nuts & Dry Fruits,8002906,HEERA ALMOND POWDER 1X1KG,g,12.1,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+456,DRY FRUITS & NUTS,Nuts & Dry Fruits,8002558,HEERA PISTACHIO KERNELS 1X700G,g,16.62,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+457,DRY FRUITS & NUTS,Nuts & Dry Fruits,8002382,PEANUTS 1X1.5KG,kg,6.33,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+458,DRY FRUITS & NUTS,Nuts & Dry Fruits,UFS7068,PEANUTS RED 6X1KG,kg,32.48,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+459,DRY FRUITS & NUTS,Nuts & Dry Fruits,8002411,PISTACHIO KERNELS 1X750G,g,18.25,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+460,DRY FRUITS & NUTS,Nuts & Dry Fruits,8002410,TROPICAL SUN PEANUTS PINK 6X1.5KG,kg,37.99,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+461,DRY FRUITS & NUTS,Nuts & Dry Fruits,UFS342,UFS BROKEN CASHEW NUT 1X700G,g,5.1,0,Nuts & Dry Fruits,Nuts & Dry Fruits
+462,SPECIALTY INGREDIENTS,Specialty & Exotic Items,BOIRON,BOIRON WATERMELON PUREE 1X1KG,kg,11.25,0,Grocery,Specialty & Exotic Items
+463,SPECIALTY INGREDIENTS,Specialty & Exotic Items,8002631,GF PINK ROSE PETAL DRY 1X20G,g,1.58,0,Grocery,Specialty & Exotic Items
+464,SPECIALTY INGREDIENTS,Specialty & Exotic Items,8002630,GF PINK ROSE PETAL DRY 8X20G,g,11.58,0,Grocery,Specialty & Exotic Items
+465,ESSENCES & FOOD COLOURS,Essences & Flavourings,UFS360,KEWRA WATER 1X190ML,item,0.69,0,Baking & Desserts,Essences & Flavourings
+466,ESSENCES & FOOD COLOURS,Essences & Flavourings,8002504,PINEAPPLE ESSENCE 12X28ML,g,4.99,0,Baking & Desserts,Essences & Flavourings
+467,ESSENCES & FOOD COLOURS,Essences & Flavourings,UFS362,ROSE WATER 1X190ML,g,0.85,0,Baking & Desserts,Essences & Flavourings
+468,ESSENCES & FOOD COLOURS,Essences & Flavourings,8002746,VANILLA ESSENCE 1X480ML,g,2.99,0,Baking & Desserts,Essences & Flavourings
+469,ESSENCES & FOOD COLOURS,Food Colours,80021527,BALA DEEP ORANGE FOOD COLOUR 1X400G,g,2.49,20,Baking & Desserts,Food Colours
+470,ESSENCES & FOOD COLOURS,Food Colours,8002599,FOOD COLOUR GREEN 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+471,ESSENCES & FOOD COLOURS,Food Colours,UFS7083,FOOD COLOUR ORANGE 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+472,ESSENCES & FOOD COLOURS,Food Colours,8002486,TROPICAL SUN FOOD COLOUR BRIGHT RED 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+473,ESSENCES & FOOD COLOURS,Food Colours,8002898,TRS DEEP ORANGE COLOUR 1X500G,g,3.75,20,Baking & Desserts,Food Colours
+474,CLEANING PRODUCTS,Bin Bags & Liners,8002371,BIN BAG HERCULES BLACK REFUSE 18X29X39,NOS,27.89,20,Packaging & Disposables,Bin Bags & Liners
+475,CLEANING PRODUCTS,Bin Bags & Liners,8002911,JUMBO BLACK COMPACTOR BIN BAG OTTO 1X100S,nos,14.99,20,Packaging & Disposables,Bin Bags & Liners
+476,CLEANING PRODUCTS,Bin Bags & Liners,8002458,RM PEDAL BIN LINERS (BIN BAG) 10X100S,ROL,13.59,20,Packaging & Disposables,Bin Bags & Liners
+477,CLEANING PRODUCTS,Bleach & Disinfectants,8002755,CAUSTIC SODA 1X500G,g,3.2,20,Cleaning & Household,Bleach & Disinfectants
+478,CLEANING PRODUCTS,Bleach & Disinfectants,8002835,CAUSTIC SODA 1X5KG,kg,18.99,20,Cleaning & Household,Bleach & Disinfectants
+479,CLEANING PRODUCTS,Bleach & Disinfectants,8002461,CAUSTIC SODA 6X500G,g,18.99,20,Cleaning & Household,Bleach & Disinfectants
+480,CLEANING PRODUCTS,Bleach & Disinfectants,8002385,CLEANUX THICK BLEACH 1X5L,kg,4.49,20,Cleaning & Household,Bleach & Disinfectants
+481,CLEANING PRODUCTS,Bleach & Disinfectants,8002384,CLEANUX THICK BLEACH 4X5L,kg,13.49,20,Cleaning & Household,Bleach & Disinfectants
+482,CLEANING PRODUCTS,Bleach & Disinfectants,UFS7071,CLEANUX THICK BLEACH 4X5L,item,19.89,0,Cleaning & Household,Bleach & Disinfectants
+483,CLEANING PRODUCTS,Bleach & Disinfectants,8002405,FLASH SPRAY BLEACH 10X500ML,BOX,20.5,20,Cleaning & Household,Bleach & Disinfectants
+484,CLEANING PRODUCTS,Cleaning Tools & Equipment,UFS7128,BROOM HEAD 1X EACH,item,4.0,0,Cleaning & Household,Cleaning Tools & Equipment
+485,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002862,COCO BROOM HEAD (MEDIUM) 1X EACH,NOS,3.45,20,Cleaning & Household,Cleaning Tools & Equipment
+486,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002396,COCO BROOM HEAD 1X EACH,NOS,3.45,20,Cleaning & Household,Cleaning Tools & Equipment
+487,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002647,COCO BROOM HEAD SOFT 11 INCH 1X EACH,NOS,3.55,20,Cleaning & Household,Cleaning Tools & Equipment
+488,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002851,DLUX DUSTPAN & BRUSH SET 1X EACH,nos,2.1,20,Cleaning & Household,Cleaning Tools & Equipment
+489,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002389,GREEN SCOURING WASHING PAD 1X10S,NOS,2.75,20,Cleaning & Household,Cleaning Tools & Equipment
+490,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002826,JUMBO MOP HEAD 1X10S 18PY,nos,16.89,20,Cleaning & Household,Cleaning Tools & Equipment
+491,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002891,KP 12 INCH CREAM SYNTHETIC BROOM HEAD 1X EACH,NOS,4.35,20,Cleaning & Household,Cleaning Tools & Equipment
+492,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002850,PLASTIC MOP BUCKET & WRINGER 13LTR 1X EACH,nos,5.49,20,Cleaning & Household,Cleaning Tools & Equipment
+493,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002428,PREEMA SPONGE 1X6S,NOS,4.1,20,Cleaning & Household,Cleaning Tools & Equipment
+494,CLEANING PRODUCTS,Cleaning Tools & Equipment,8002903,STEEL WOOL 1X10S 48G,PKT,4.99,20,Cleaning & Household,Cleaning Tools & Equipment
+495,CLEANING PRODUCTS,Dishwashing,8002424,CLEANUX WASHING UP LIQUID 1X5L,NOS,4.49,20,Cleaning & Household,Dishwashing
+496,CLEANING PRODUCTS,Dishwashing,8002425,CLEANUX WASHING UP LIQUID 4X5L,item,13.99,20,Cleaning & Household,Dishwashing
+497,CLEANING PRODUCTS,Dishwashing,80021416,CRYSTALE EASY POUR DISHWASHER SALT 1X2KG,kg,3.5,20,Cleaning & Household,Dishwashing
+498,CLEANING PRODUCTS,Dishwashing,8002426,DEEPIO DEGREASER SPRAY 6X750ML,BOX,18.99,20,Cleaning & Household,Dishwashing
+499,CLEANING PRODUCTS,Dishwashing,8002383,DEEPIO POWDER 1X5.5KG,kg,16.99,20,Cleaning & Household,Dishwashing
+500,CLEANING PRODUCTS,Dishwashing,UFS7070,DEEPIO POWDER 1X6KG,item,15.99,0,Cleaning & Household,Dishwashing
+501,CLEANING PRODUCTS,Dishwashing,UFS7065,FAIRY LIQUID ORIGINAL 2X5LTR,kg,26.49,20,Cleaning & Household,Dishwashing
+502,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002429,BIG OVEN CLEANER 6X300ML,BOX,11.99,20,Cleaning & Household,Disinfectants & Surface Cleaners
+503,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002901,CLEANUX FAST DRYING ANTIBACTERIAL CLEANER SPRAY 1X1LTR,NOS,2.75,20,Cleaning & Household,Disinfectants & Surface Cleaners
+504,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002902,CLEANUX FAST DRYING ANTIBACTERIAL CLEANER SPRAY 6X1LTR,NOS,15.99,20,Cleaning & Household,Disinfectants & Surface Cleaners
+505,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,UFS7141,CLEANUX HAND SOAP 1X5L,item,8.99,0,Cleaning & Household,Disinfectants & Surface Cleaners
+506,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002908,CLEANUX HARD SURFACE CLEANER (SANITIZER) 1X5LTR,DRM,5.65,20,Cleaning & Household,Disinfectants & Surface Cleaners
+507,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002400,CLEANUX LEMON FLOOR GEL 1X5L,NOS,5.6,20,Cleaning & Household,Disinfectants & Surface Cleaners
+508,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,UFS7142,CLEANUX LEMON GEL 1X5L,item,5.6,0,Cleaning & Household,Disinfectants & Surface Cleaners
+509,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002399,CLEANUX LIQUID HAND SOAP PEACH AND PAPAYA 1X5L,NOS,4.89,20,Cleaning & Household,Disinfectants & Surface Cleaners
+510,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,80021497,DETTOL SURFACE CLEANSER 4X750ML,ml,9.99,20,Cleaning & Household,Disinfectants & Surface Cleaners
+511,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002401,DETTOL SURFACE CLEANSER 6X1LTR,BOX,25.89,20,Cleaning & Household,Disinfectants & Surface Cleaners
+512,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002398,DUCK PINE FRESH FOREST TOILET CLEANER 8X750ML,g,12.39,20,Cleaning & Household,Disinfectants & Surface Cleaners
+513,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,80021559,ELBOW GREASE ORIGINAL SPRAY 12X1LTR,ml,22.89,20,Cleaning & Household,Disinfectants & Surface Cleaners
+514,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002370,FLASH ALL PURPOSE LEMON 2X5L,kg,24.25,20,Cleaning & Household,Disinfectants & Surface Cleaners
+515,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,80021545,HARPIC ACTIVE FRESH PINE 12X750ML,ml,18.08,20,Cleaning & Household,Disinfectants & Surface Cleaners
+516,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,80021546,HARPIC ACTIVE FRESH PINE 1X750ML,ml,1.89,20,Cleaning & Household,Disinfectants & Surface Cleaners
+517,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002369,HEAVY DUTY CLEANER DEGREASER 1X5LTR,kg,4.99,20,Cleaning & Household,Disinfectants & Surface Cleaners
+518,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002545,NILCO ANTI BACTERIAL CLEANER 1X1L,nos,5.75,20,Cleaning & Household,Disinfectants & Surface Cleaners
+519,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002847,NILCO HEAVY DUTY CLEANER DEGREASER 1X1LTR,ml,3.85,20,Cleaning & Household,Disinfectants & Surface Cleaners
+520,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,8002794,NILCO WASHROOM & BATHROOM CLEANER 6X1LTR,BOX,20.49,20,Cleaning & Household,Disinfectants & Surface Cleaners
+521,CLEANING PRODUCTS,Disinfectants & Surface Cleaners,80021357,WOODEN MOP AND BRUSH STICK 1X EACH,NOS,1.1,20,Cleaning & Household,Disinfectants & Surface Cleaners
+522,CLEANING PRODUCTS,Paper & Tissues,8002397,FEATHER SOFT TOILET ROLLS 12X4SX1EACH,ROL,12.99,20,Packaging & Disposables,Paper & Tissues
+523,CLEANING PRODUCTS,Paper & Tissues,8002684,PALOMA 2PLY WHITE NAPKINS (TISSUE) 40X40CM BOX (10X50S),NOS,12.69,20,Packaging & Disposables,Paper & Tissues
+524,CLEANING PRODUCTS,Paper & Tissues,8002436,PANDA CUDDLET TOILET ROLL WHITE 9ROLLSX5PKT,ROL,9.99,20,Packaging & Disposables,Paper & Tissues
+525,CLEANING PRODUCTS,Protective Wear & Disposables,8002811,ALL PURPOSE CLOTH (BLUE) 1X50S,NOS,6.75,20,Cleaning & Household,Protective Wear & Disposables
+526,CLEANING PRODUCTS,Protective Wear & Disposables,8002597,CHEF APRON (CLOTH) 1X EACH,NOS,5.3,20,Cleaning & Household,Protective Wear & Disposables
+527,CLEANING PRODUCTS,Protective Wear & Disposables,8002904,DISPOSABLE GLOVE (L) POWDER FREE 1X100S (BLUE),PKT,3.85,20,Cleaning & Household,Protective Wear & Disposables
+528,CLEANING PRODUCTS,Protective Wear & Disposables,8002905,DISPOSABLE GLOVE (M) POWDER FREE 1X100S (BLUE),PKT,3.85,20,Cleaning & Household,Protective Wear & Disposables
+529,CLEANING PRODUCTS,Protective Wear & Disposables,UFS7100,DISPOSABLE GLOVE 1X100S (BLUE),NOS,4.89,20,Cleaning & Household,Protective Wear & Disposables
+530,CLEANING PRODUCTS,Protective Wear & Disposables,8002812,MOB CAPS (DISPOSABLE HAIR NET BLUE) 1X100S,NOS,7.85,20,Cleaning & Household,Protective Wear & Disposables
+531,CLEANING PRODUCTS,Protective Wear & Disposables,8002596,WATERPROOF APRON 1X EACH,NOS,5.3,20,Cleaning & Household,Protective Wear & Disposables
+532,PACKING & CONTAINERS,"Bags, Wraps & Foil",8002381,BLUE VEST CARRIER BAG GIANT 10X100S,NOS,17.49,20,Packaging & Disposables,"Bags, Wraps & Foil"
+533,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS226,BROWN CARRIER BAG LARGE (260X140X290MM) 250SX1 EACH,BOX,17.99,20,Packaging & Disposables,"Bags, Wraps & Foil"
+534,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS7047,CASTLEVIEW ALUMINIUM FOIL 1X450MX75,ROL,12.99,20,Packaging & Disposables,"Bags, Wraps & Foil"
+535,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS7160,CASTLEVIEW CLING FILM 1X300MMX1000FT,item,6.49,0,Packaging & Disposables,"Bags, Wraps & Foil"
+536,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS389,FOIL BAGS 7X9X12 INCH 1X500S,NOS,22.3,20,Packaging & Disposables,"Bags, Wraps & Foil"
+537,PACKING & CONTAINERS,"Bags, Wraps & Foil",8002432,MATCHES BOX 1X12PK,PKT,6.99,20,Packaging & Disposables,"Bags, Wraps & Foil"
+538,PACKING & CONTAINERS,"Bags, Wraps & Foil",8002431,PROWRAP CLING FILM PREMIUM 1X300MX300MM,ROL,7.1,20,Packaging & Disposables,"Bags, Wraps & Foil"
+539,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS7125,PROWRAP CLING FILM PREMIUM 1X450MM,item,9.49,0,Packaging & Disposables,"Bags, Wraps & Foil"
+540,PACKING & CONTAINERS,"Bags, Wraps & Foil",8002395,PROWRAP CLING FILM PREMIUM 1X450MM,ROL,9.49,20,Packaging & Disposables,"Bags, Wraps & Foil"
+541,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS7120,SATCO PLASTIC CONTAINERS & LIDS 250SX650ML,NOS,31.99,20,Packaging & Disposables,"Bags, Wraps & Foil"
+542,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS109,SATCO PLASTIC CONTAINERS & LIDS 250X500ML,NOS,31.89,20,Packaging & Disposables,"Bags, Wraps & Foil"
+543,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS7032,SATCO PLASTIC CONTAINERS WITH LIDS 250X500CC,item,31.99,0,Packaging & Disposables,"Bags, Wraps & Foil"
+544,PACKING & CONTAINERS,"Bags, Wraps & Foil",UFS7122,SATCO PLASTIC CUPS 8OZ 225X1 EACH,NOS,22.49,20,Packaging & Disposables,"Bags, Wraps & Foil"
+545,PACKING & CONTAINERS,"Bags, Wraps & Foil",8002460,WHITE CARRIER BAG SMALL 20X100S,PKT,0.0,20,Packaging & Disposables,"Bags, Wraps & Foil"
+546,KITCHEN & HOUSEHOLD,Kitchen Accessories,8002900,GSD UTILITY LIGHTERS 1X EACH,nos,1.25,20,Packaging & Disposables,Kitchen Accessories
+547,CHARCOAL & BBQ,Charcoal,8002864,BIG K CHARCOAL 1X15KG,kg,23.99,5,BBQ & Outdoor,Charcoal & Fuels
+548,CHARCOAL & BBQ,Charcoal,8002922,BIG-K CHARCOAL BRIQUETTE 1X5KG,kg,5.1,5,BBQ & Outdoor,Charcoal & Fuels
+549,FRAGRANCE & HOME,Incense & Fragrance,80021360,CYCLE BRAND - AGARBAT1XEACH PACK,item,0.5,20,General,Incense & Fragrance
+550,OFFICE ACCESSORIES,Printing Rolls,8002819,VEGA TILL ROLLS (80MMX80M) 1X5S,ROL,6.39,20,Packaging & Disposables,Packaging Rolls
+569,GROCERY 2,SEV ITEMS,8002858,SEV-GUJURATI THIN 1X200G,g,1.3,0,Snacks & Confectionery,Indian Snacks & Namkeen
+570,GROCERY 2,SEV ITEMS,8002861,ALOO BHUJIA 1X200G,g,2.49,0,Snacks & Confectionery,Indian Snacks & Namkeen
+571,GROCERY 2,SEV ITEMS,8002862s,MIXTURE 1X200G,g,1.75,0,Snacks & Confectionery,Indian Snacks & Namkeen
+572,GROCERY 2,FOOD COLOUR,8002863f,T-S FOOD COLOUR EGG YELLOW 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+573,GROCERY 2,FOOD COLOUR,8002864f,T-S FOOD COLOUR DEEP ORANGE 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+574,GROCERY 2,FOOD COLOUR,8002865f,T-S FOOD COLOUR BRIGHT RED 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+575,GROCERY 2,FOOD COLOUR,8002866f,FOOD COLOUR GREEN 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+576,GROCERY 2,FOOD COLOUR,UFS7083f,FOOD COLOUR ORANGE 1X500G,g,3.49,20,Baking & Desserts,Food Colours
+577,GROCERY 2,Others,8002867g,SHAN GULAB JAMUN MIX 6X100GM,g,7.49,0,Baking & Desserts,Indian Sweets & Desserts
+578,GROCERY 2,Others,8002868m,KITCHEN KING MASALA MDH 10X100G,g,14.49,0,Spices & Seasonings,Ground Spices & Masalas
+579,GROCERY 2,Others,8002869b,T/S BICARBONATE OF SODA 1X1KG,kg,2.49,0,Baking & Desserts,Baking Essentials
+580,GROCERY 2,Others,8002870s,HEERA WHITE SESAME SEEDS 1X1KG,kg,6.5,0,Spices & Seasonings,Whole Spices & Seeds
+628,PACKING,Containers,8002534p,PROWRAP NON-STICK BAKING PARCHMENT 450MM,ROL,5.99,20,Packaging & Disposables,Containers & Packaging
+629,PACKING,Containers,8002554p,SWIFT WHITE SERVICE NAPKINS 10X500S,PKT,22.99,20,Packaging & Disposables,Containers & Packaging
+630,PACKING,Containers,8002586p,BROWN BAG SMALL 1X250S,BOX,11.89,20,Packaging & Disposables,Containers & Packaging
+631,PACKING,Containers,8002595p,BIO BAGASSE DISPOSABLE PLATES 10INCH 1X25S,nos,4.75,20,Packaging & Disposables,Containers & Packaging
+632,PACKING,Containers,8002624p,BROWN BAGS MEDIUM 1X250S,BOX,15.99,20,Packaging & Disposables,Containers & Packaging
+633,PACKING,Containers,8002625p,KRAFT PAPADUM BAG 10X10 INCH 1X1000S,nos,10.2,20,Packaging & Disposables,Containers & Packaging
+634,PACKING,Containers,8002628p,PPS BAGASSE TALI PLATE 5 COMP 1X50S,NOS,8.59,20,Packaging & Disposables,Containers & Packaging
+635,PACKING,Containers,8002629p,METHANOL GEL CHAFING FUEL 1X12S,nos,13.59,20,Packaging & Disposables,Containers & Packaging
+636,PACKING,Containers,8002655p,SATCO 2OZ CHUTNEY CUPS 1X800S,NOS,23.99,20,Packaging & Disposables,Containers & Packaging
+637,PACKING,Containers,8002748p,PPS-WOODEN SPOON BIO 1X100S,nos,2.1,20,Packaging & Disposables,Containers & Packaging
+638,PACKING,Containers,8002790p,KRAFT PAPADUM BAG 12X12 INCH 1X500S,nos,7.99,20,Packaging & Disposables,Containers & Packaging
+639,PACKING,Containers,8002796p,JUTE THREAD SET 10M 1X3ROLL,ROL,2.55,20,Packaging & Disposables,Containers & Packaging
+640,PACKING,Containers,8002813p,RIPPLE TRIPLE WALL CUPS LIDS 8OZ 1X25S,nos,3.2,20,Packaging & Disposables,Containers & Packaging
+641,PACKING,Containers,8002818p,SATCO 16OZ FOOD CUPS 1X150S,nos,18.99,20,Packaging & Disposables,Containers & Packaging
+642,PACKING,Containers,8002832p,SATCO 12OZ FOOD CUPS 1X150S,nos,17.99,20,Packaging & Disposables,Containers & Packaging
+643,PACKING,Containers,8002833p,WHITE PAPER BAGS MEDIUM 1X250S,nos,18.75,20,Packaging & Disposables,Containers & Packaging
+644,PACKING,Containers,8002837p,ALUMINUM FOIL TRAY WITH LID XXL 1X2S,nos,5.89,20,Packaging & Disposables,Containers & Packaging
+645,PACKING,Containers,8002856p,HERCULES BLACK REFUSE BAG 1X50S,NOS,7.2,20,Packaging & Disposables,Containers & Packaging
+646,PACKING,Containers,8002879p,28OZ RECTANGLE BLACK BASE WITH LIDS 1X150S,NOS,32.99,20,Packaging & Disposables,Containers & Packaging
+647,PACKING,Containers,8002880p,16OZ ROUND BLACK BASE WITH LIDS 1X150S,NOS,25.99,20,Packaging & Disposables,Containers & Packaging
+648,PACKING,Containers,8002881p,12OZ ROUND BLACK BASE WITH LIDS 1X150S,NOS,21.89,20,Packaging & Disposables,Containers & Packaging
+649,PACKING,Containers,8002882p,BIRCHWOOD 4IN1 CUTLERY+NAPKIN 1X250S,NOS,19.99,20,Packaging & Disposables,Containers & Packaging
+650,PACKING,Containers,8002907p,MAJESTIC JUMBO CLING FILM 450MMX300M,ROL,6.27,20,Packaging & Disposables,Containers & Packaging
+651,PACKING,Containers,8002909p,LARGE WHITE PAPER BAG 1X250S,nos,19.99,20,Packaging & Disposables,Containers & Packaging
+652,PACKING,Containers,8002910p,JUMBO CATERING ALUMINIUM FOIL 450MMX75M,ROL,6.38,20,Packaging & Disposables,Containers & Packaging
+653,PACKING,Containers,8002914p,750ML ROUND KRAFT MULTI-FOOD BOWLS 1X300S,NOS,36.89,20,Packaging & Disposables,Containers & Packaging
+654,PACKING,Containers,8002915p,750ML KRAFT BOWL CLEAR LIDS 1X300S,nos,16.99,20,Packaging & Disposables,Containers & Packaging
+655,PACKING,Containers,8002916p,2OZ HINGED SAUCE CUPS 1X1000S,nos,19.48,20,Packaging & Disposables,Containers & Packaging
+656,PACKING,Containers,8002917p,4OZ HINGED SAUCE CUPS 1X500S,nos,19.99,20,Packaging & Disposables,Containers & Packaging
+657,PACKING,Containers,8002919p,RECTANGULAR KRAFT BOWL 500ML 1X300S,nos,28.0,20,Packaging & Disposables,Containers & Packaging
+658,PACKING,Containers,8002920p,RECTANGULAR KRAFT BOWL CLEAR LIDS 1X300S,nos,21.0,20,Packaging & Disposables,Containers & Packaging
+659,PACKING,Containers,8002940p,250ML CLEAR ROUND JUICE BOTTLE 1X10S,nos,4.2,20,Packaging & Disposables,Containers & Packaging
+660,PACKING,Containers,8002941p,250ML JUICE BOTTLE LID 1X1EACH,nos,1.2,20,Packaging & Disposables,Containers & Packaging
+661,PACKING,Containers,8002942p,1OZ HINGED SAUCE CUPS 1X1000S,nos,17.49,20,Packaging & Disposables,Containers & Packaging
+662,PACKING,Containers,8002946p,PAPER STRAWS RED STRIPE 1X200S,nos,2.99,20,Packaging & Disposables,Containers & Packaging
+663,PACKING,Containers,8002947p,SATCO 4OZ SOUFFLE CUP 1X1000S,nos,12.49,20,Packaging & Disposables,Containers & Packaging
+664,PACKING,Containers,8002948p,SATCO 4OZ SOUFFLE LID 1X1000S,nos,10.99,20,Packaging & Disposables,Containers & Packaging
+665,PACKING,Containers,8002949p,SATCO 6.5OZ FOOD CUPS 1X150S,nos,14.99,20,Packaging & Disposables,Containers & Packaging
+666,PACKING,Containers,8002950p,WHITE PAPER CARRIER BAG TWIST HANDLE 1X250S,nos,15.99,20,Packaging & Disposables,Containers & Packaging
+667,PACKING,Containers,80021358,SATCO CONT+LID 250X1000CC,item,42.99,20,Packaging & Disposables,Containers & Packaging
+668,PACKING,Containers,80021359,SATCO CONT+LID 250X500CC,item,31.99,20,Packaging & Disposables,Containers & Packaging
+669,PICKLES,Others,8002920pk,ASHOKA BRINJAL PICKLE 1X400G,g,2.25,0,Condiments & Sauces,Pickles & Olives
+670,PICKLES,Others,8002921pk,PATAK MANGO PICKLE 1X2.3KG,kg,13.89,0,Condiments & Sauces,Pickles & Olives
+671,PICKLES,Others,8002923pk,EASTERN MANGO PICKLE 1X400G,g,2.25,0,Condiments & Sauces,Pickles & Olives
+672,PICKLES,Others,8002924pk,ASHOKA MIXED PICKLE 1X400G,g,1.99,0,Condiments & Sauces,Pickles & Olives
+673,RICE & CEREALS,Rice,UFS7034,HEERA BASMATI RICE 1X20KG,kg,34.99,0,Rice & Cereals,Rice
+674,RICE & CEREALS,Rice,UFS7036,TOLLY BOY LONG GRAIN RICE 1X20KG,kg,33.99,0,Rice & Cereals,Rice
+675,RICE & CEREALS,Rice,UFS7037,HEERA LONG GRAIN RICE 1X20KG,kg,29.99,0,Rice & Cereals,Rice
+676,RICE & CEREALS,Rice,UFS7038,HEERA BASMATI RICE 1X10KG,kg,17.99,0,Rice & Cereals,Rice
+677,RICE & CEREALS,Rice,UFS7042,KOHINOOR BASMATI RICE 1X20KG,kg,38.99,0,Rice & Cereals,Rice
+678,RICE & CEREALS,Rice,UFS7043,INDIA GATE CLASSIC BASMATI 1X20KG,kg,39.99,0,Rice & Cereals,Rice
+679,RICE & CEREALS,Rice,UFS7044,LAILA LONG GRAIN PARBOILED RICE 1X20KG,kg,28.99,0,Rice & Cereals,Rice
+680,RICE & CEREALS,Rice,UFS7066,SELLA BASMATI RICE 1X20KG,kg,35.99,0,Rice & Cereals,Rice
+681,RICE & CEREALS,Rice,UFS7067,IDLY RICE 1X25KG,kg,28.99,0,Rice & Cereals,Rice
+682,RICE & CEREALS,Rice,UFS7069,PONNI PARBOILED RICE 1X25KG,kg,26.99,0,Rice & Cereals,Rice
+683,RICE & CEREALS,Rice,UFS7074,SONA MASOORI RICE 1X25KG,kg,29.99,0,Rice & Cereals,Rice
+684,RICE & CEREALS,Rice,8002378,TOLLY BOY LONG GRAIN RICE 1X20KG,kg,33.49,0,Rice & Cereals,Rice
+685,RICE & CEREALS,Rice,8002390,VEETEE BROKEN BASMATHI RICE 1X20KG,kg,17.99,0,Rice & Cereals,Rice
+686,RICE & CEREALS,Rice,8002495,TROPICAL SUN LONG GRAIN RICE 1X20KG,kg,28.99,0,Rice & Cereals,Rice
+687,RICE & CEREALS,Rice,8002519,T/S GOLDEN SELLA BASMATHI 1X20KG,kg,36.99,0,Rice & Cereals,Rice
+688,RICE & CEREALS,Rice,8002520,T/S GOLDEN SELLA BASMATHI 1X10KG,kg,20.99,0,Rice & Cereals,Rice
+689,RICE & CEREALS,Rice,8002529,T/S LONG GRAIN EASY COOK RICE 1X20KG,kg,16.5,0,Rice & Cereals,Rice
+690,RICE & CEREALS,Rice,8002679,DAAWAT EXTRA LONG BASMATI RICE 1X20KG,kg,36.99,0,Rice & Cereals,Rice
+691,RICE & CEREALS,Rice,8002680,DAAWAT EXTRA LONG BASMATI RICE 1X20KG ALT,kg,35.99,0,Rice & Cereals,Rice
+692,RICE & CEREALS,Rice,8002782,VEETEE MEGA EXTRA LONG BASMATI RICE 1X20KG,kg,35.99,0,Rice & Cereals,Rice
+693,RICE & CEREALS,Rice,8002809,SONA MASOORI 1X5KG,kg,10.2,0,Rice & Cereals,Rice
+694,RICE & CEREALS,Rice,8002860,PUFFED RICE 1X400G,g,3.5,0,Rice & Cereals,Rice
+695,RICE & CEREALS,Rice,80021095,KEERI SAMBA RICE 1X1KG,kg,2.2,0,Rice & Cereals,Rice
+696,RICE & CEREALS,Rice,80021362,MC-JAYA RICE 4X5KG,kg,8.49,0,Rice & Cereals,Rice
+697,RICE & CEREALS,Rice,80021529,IDLY RICE 1X20KG,kg,25.98,0,Rice & Cereals,Rice
+698,RICE & CEREALS,Rice,80021551,TROPICAL SUN BULGUR WHEAT 1X1.5KG,kg,3.67,0,Rice & Cereals,Semolina & Grains
+699,SPICES,Spices,Ufspeacock,MDH KASOORI METHI 1X1KG,kg,12.49,0,Spices & Seasonings,Whole Spices & Seeds
+700,SPICES,Spices,UFS346,WHOLE JEERA CUMIN SEEDS 700G,g,4.49,0,Spices & Seasonings,Whole Spices & Seeds
+701,SPICES,Spices,UFSCORI S,TRS CORIANDER SEEDS 1X3KG,kg,16.99,0,Spices & Seasonings,Whole Spices & Seeds
+702,SPICES,Spices,UFS381,CORIANDER SEEDS 700G,g,3.49,0,Spices & Seasonings,Whole Spices & Seeds
+703,SPICES,Spices,UFS356,MUSTARD SEEDS 1KG,kg,3.1,0,Spices & Seasonings,Whole Spices & Seeds
+704,SPICES,Spices,UFS383,WHOLE BLACK PEPPER 1X1KG,kg,14.99,0,Spices & Seasonings,Whole Spices & Seeds
+705,SPICES,Spices,UFS379,BLACK PEPPER COARSE 1X1KG,kg,11.99,0,Spices & Seasonings,Whole Spices & Seeds
+706,SPICES,Spices,UFS46,MC-GREEN CARDAMOM 80G,g,4.35,0,Spices & Seasonings,Whole Spices & Seeds
+707,SPICES,Spices,UFS39,NIRU DRY RED CHILLI WHOLE 1X1KG,kg,9.89,0,Spices & Seasonings,Whole Spices & Seeds
+708,SPICES,Spices,UFS370,TRS-CLOVES 800G,g,16.99,0,Spices & Seasonings,Whole Spices & Seeds
+709,SPICES,Spices,UFS47,KASHMIRI CHILLI WHOLE 35X100G,g,59.15,0,Spices & Seasonings,Whole Spices & Seeds
+710,SPICES,Spices,UFS334,HEERA CRUSHED CHILLI 1X700GM,g,5.76,0,Spices & Seasonings,Whole Spices & Seeds
+711,SPICES,Spices,UFS343,CINNAMON STICKS 1X50G,g,1.99,0,Spices & Seasonings,Whole Spices & Seeds
+712,SPICES,Spices,UFS378,HEERA BLACK PEPPER CROSS 1KG,kg,11.53,0,Spices & Seasonings,Whole Spices & Seeds
+713,SPICES,Spices,UFS7009,TRS TAMARIND INDIA 50X200G,g,36.25,0,Spices & Seasonings,Whole Spices & Seeds
+714,SPICES,Spices,UFS7010,TRS TAMARIND INDIA 10X200G,g,7.54,0,Spices & Seasonings,Whole Spices & Seeds
+715,SPICES,Spices,UFS7021,MDH GARAM MASALA 1X500G,g,7.59,0,Spices & Seasonings,Whole Spices & Seeds
+716,SPICES,Spices,UFS7051,TRS GARAM MASALA 1X5KG,kg,33.89,0,Spices & Seasonings,Whole Spices & Seeds
+717,SPICES,Spices,UFS7052,TRS JEERA WHOLE CUMIN 1X4KG,kg,32.49,0,Spices & Seasonings,Whole Spices & Seeds
+718,SPICES,Spices,UFS7053,SK-FENNEL SEED 1X750G,g,5.99,0,Spices & Seasonings,Whole Spices & Seeds
+719,SPICES,Spices,UFS7057,COLMANS ENGLISH MUSTARD 1X2.25LTR,kg,34.29,0,Spices & Seasonings,Whole Spices & Seeds
+720,SPICES,Spices,UFS7058,COLMAN WHOLEGRAIN MUSTARD 2X2.2LTR,kg,18.69,0,Spices & Seasonings,Whole Spices & Seeds
+721,SPICES,Spices,UFS7062,HEERA GREEN CARDAMOM 1X700G,g,31.99,0,Spices & Seasonings,Whole Spices & Seeds
+722,SPICES,Spices,UFS7075,HEERA CINNAMON STICK 1X1.5KG,kg,10.75,0,Spices & Seasonings,Whole Spices & Seeds
+723,SPICES,Spices,UFS7090,HEERA MACE JAVANDRY 1X50G,item,2.85,0,Spices & Seasonings,Whole Spices & Seeds
+724,SPICES,Spices,UFS7091,TRS TAMARIND WET THAI 10X400G,g,9.99,0,Spices & Seasonings,Whole Spices & Seeds
+725,SPICES,Spices,UFS7093,SHAN GARAM MASALA ZAFRANI 12X50G,item,14.1,0,Spices & Seasonings,Whole Spices & Seeds
+726,SPICES,Spices,KALA JEERA,CUMIN SHAHI KALA JEERA 1X700GM,kg,13.89,0,Spices & Seasonings,Whole Spices & Seeds
+727,SPICES,Spices,UFS7119,TRS CRUSHED CHILLIES 1X3KG,kg,21.99,0,Spices & Seasonings,Whole Spices & Seeds
+728,SPICES,Spices,UFS7127,HEERA KASHMIRI RED CHILLI WHOLE 1X200G,g,4.8,0,Spices & Seasonings,Whole Spices & Seeds
+729,SPICES,Spices,UFS7132,HEERA PUNCHPURAN 1X800G,item,8.75,0,Spices & Seasonings,Whole Spices & Seeds
+730,SPICES,Spices,UFS7134,SKN JEERA WHOLE CUMIN SEEDS 1X750G,g,5.2,0,Spices & Seasonings,Whole Spices & Seeds
+731,SPICES,Spices,UFS7135,STAR ANISEED 1X500G,g,10.99,0,Spices & Seasonings,Whole Spices & Seeds
+732,SPICES,Spices,UFS7136,HEERA BLACK SESAME SEEDS 10X400G,item,29.29,0,Spices & Seasonings,Whole Spices & Seeds
+733,SPICES,Spices,UFS7198,RED PEPPER 1X5KG,item,17.99,0,Spices & Seasonings,Whole Spices & Seeds
+734,SPICES,Spices,UFS7199,GREEN PEPPER 1X5KG,item,12.49,0,Spices & Seasonings,Whole Spices & Seeds
+735,SPICES,Spices,8002437,SCHWARTZ MIXED SPICE 1X1KG,g,5.99,0,Spices & Seasonings,Whole Spices & Seeds
+736,SPICES,Spices,8002471,LEMON RICE POWDER 1X200G,g,2.1,0,Spices & Seasonings,Whole Spices & Seeds
+737,SPICES,Spices,8002536,TRS POPPY SEEDS WHITE 20X100G,NOS,19.99,0,Spices & Seasonings,Whole Spices & Seeds
+738,SPICES,Spices,8002537,AJWAIN 1X700GM,kg,5.35,0,Spices & Seasonings,Whole Spices & Seeds
+739,SPICES,Spices,8002552,BLACK CARDAMOM 1X200GM,g,6.95,0,Spices & Seasonings,Whole Spices & Seeds
+740,SPICES,Spices,8002553,VIS MUSTARD SEEDS BLACK 1X200G,g,1.29,0,Spices & Seasonings,Whole Spices & Seeds
+741,VEGETABLES,Vegitables,UFS7166,BEETROOT LOOSE 1X5KG,kg,6.49,0,Fresh Produce,Fresh Vegetables
+742,VEGETABLES,Vegitables,UFS7167,CASSAVA ROOT 1X5KG,kg,12.99,0,Fresh Produce,Fresh Vegetables
+743,VEGETABLES,Vegitables,UFS7168,SWEET POTATO 1X1EACH,kg,1.99,0,Fresh Produce,Fresh Vegetables
+744,VEGETABLES,Vegitables,UFS7172,GARLIC LOOSE 1X1KG,kg,3.49,0,Fresh Produce,Fresh Vegetables
+745,VEGETABLES,Vegitables,UFS7173,GINGER LOOSE 1X1KG,kg,3.49,0,Fresh Produce,Fresh Vegetables
+746,VEGETABLES,Vegitables,UFS7174,GREEN CHILLI 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+747,VEGETABLES,Vegitables,UFS7175,RED CHILLI 1X1KG,kg,3.49,0,Fresh Produce,Fresh Vegetables
+748,VEGETABLES,Vegitables,UFS7177,FRESH DRUMSTICK 1X1KG,kg,4.99,0,Fresh Produce,Fresh Vegetables
+749,VEGETABLES,Vegitables,UFS7178,WHITE ONION 1X25KG,kg,12.99,0,Fresh Produce,Fresh Vegetables
+750,VEGETABLES,Vegitables,UFS7179,RED ONION 1X25KG,kg,14.99,0,Fresh Produce,Fresh Vegetables
+751,VEGETABLES,Vegitables,UFS7180,POTATO 1X25KG,kg,11.99,0,Fresh Produce,Fresh Vegetables
+752,VEGETABLES,Vegitables,UFS7181,COURGETTE 1X5KG,kg,7.99,0,Fresh Produce,Fresh Vegetables
+753,VEGETABLES,Vegitables,UFS7182,LEEKS 1X5KG,kg,8.49,0,Fresh Produce,Fresh Vegetables
+754,VEGETABLES,Vegitables,UFS7183,CELERY 1X1EACH,nos,0.85,0,Fresh Produce,Fresh Vegetables
+755,VEGETABLES,Vegitables,UFS7188,YUKA CASSAVA 1X1KG,kg,3.49,0,Fresh Produce,Fresh Vegetables
+756,VEGETABLES,Vegitables,UFS7189,TARO ROOT 1X1KG,kg,3.99,0,Fresh Produce,Fresh Vegetables
+757,VEGETABLES,Vegitables,UFS7190,DASHEEN 1X1KG,kg,3.99,0,Fresh Produce,Fresh Vegetables
+758,VEGETABLES,Vegitables,UFS7191,YAM 1X1KG,kg,4.49,0,Fresh Produce,Fresh Vegetables
+759,VEGETABLES,Vegitables,UFS7192,PLANTAIN 1X1KG,kg,2.99,0,Fresh Produce,Fresh Vegetables
+760,VEGETABLES,Vegitables,UFS7193,OKRA FRESH 1X1KG,kg,3.99,0,Fresh Produce,Fresh Vegetables
+761,VEGETABLES,Vegitables,UFS7194,BITTER GOURD SMALL 1X1KG,kg,4.49,0,Fresh Produce,Fresh Vegetables
+762,VEGETABLES,Vegitables,UFS7195,MOOLI RADISH 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+763,VEGETABLES,Vegitables,UFS7197,DRUMSTICK 1X1EACH,nos,0.65,0,Fresh Produce,Fresh Vegetables
+764,VEGETABLES,Vegitables,8002414,FRESH GINGER LOOSE 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+765,VEGETABLES,Vegitables,8002416,FRESH GREEN CHILLI 1X1KG,kg,2.99,0,Fresh Produce,Fresh Vegetables
+766,VEGETABLES,Vegitables,8002417,RED ONION LOOSE 1X1KG,kg,1.49,0,Fresh Produce,Fresh Vegetables
+767,VEGETABLES,Vegitables,8002418,SHALLOTS 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+768,VEGETABLES,Vegitables,8002431,MOOLI WHITE 1X1EACH,nos,1.25,0,Fresh Produce,Fresh Vegetables
+769,VEGETABLES,Vegitables,8002432,BITTER GOURD LARGE 1X1KG,kg,4.49,0,Fresh Produce,Fresh Vegetables
+770,VEGETABLES,Vegitables,8002434,SWEET POTATO LOOSE 1X1KG,kg,1.69,0,Fresh Produce,Fresh Vegetables
+771,VEGETABLES,Vegitables,8002435v,CASSAVA ROOT LOOSE 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+772,VEGETABLES,Vegitables,8002438,SPRING ONION 1X1 BUNCH,BNH,0.75,0,Fresh Produce,Fresh Vegetables
+773,VEGETABLES,Vegitables,8002439,LEEKS 1X1 BUNCH,BNH,0.85,0,Fresh Produce,Fresh Vegetables
+774,VEGETABLES,Vegitables,8002440,MUSHROOM WHITE 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+775,VEGETABLES,Vegitables,8002441,GARLIC LOOSE 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+776,VEGETABLES,Vegitables,8002446,COURGETTE LOOSE 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+777,VEGETABLES,Vegitables,8002448,CELERY 1X1EACH,nos,0.85,0,Fresh Produce,Fresh Vegetables
+778,VEGETABLES,Vegitables,8002449,BROCCOLI 1X1EACH,nos,1.25,0,Fresh Produce,Fresh Vegetables
+779,VEGETABLES,Vegitables,8002453v,CHERRY TOMATOES 1X200G,kg,0.99,0,Fresh Produce,Fresh Vegetables
+780,VEGETABLES,Vegitables,8002460,SPINACH LOOSE 1X500G,kg,1.49,0,Fresh Produce,Fresh Vegetables
+781,VEGETABLES,Vegitables,8002463,LONG BEANS 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+782,VEGETABLES,Vegitables,8002464,CLUSTER BEANS GAVAR 1X500G,kg,3.49,0,Fresh Produce,Fresh Vegetables
+783,VEGETABLES,Vegitables,8002466,SNAKE GOURD 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+784,VEGETABLES,Vegitables,8002467v,RAW BANANA 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+785,VEGETABLES,Vegitables,8002469v,BREADFRUIT FRESH 1X1EACH,nos,3.99,0,Fresh Produce,Fresh Vegetables
+786,VEGETABLES,Vegitables,8002470v,YUCA FRESH 1X1KG,kg,2.99,0,Fresh Produce,Fresh Vegetables
+787,VEGETABLES,Vegitables,8002474,TARO ROOT COCO YAM 1X1KG,kg,2.99,0,Fresh Produce,Fresh Vegetables
+788,VEGETABLES,Vegitables,8002475,PLANTAIN GREEN 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+789,VEGETABLES,Vegitables,8002476v,GREEN PLANTAIN EACH,nos,0.55,0,Fresh Produce,Fresh Vegetables
+790,VEGETABLES,Vegitables,8002478,CAPSICUM GREEN 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+791,VEGETABLES,Vegitables,8002479,CAPSICUM RED 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+792,VEGETABLES,Vegitables,8002480,CAPSICUM YELLOW 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+793,VEGETABLES,Vegitables,8002481,CAPSICUM MIX 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+794,VEGETABLES,Vegitables,8002483,TOMATOES LOOSE 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+795,VEGETABLES,Vegitables,8002496,POTATO LOOSE 1X1KG,kg,1.49,0,Fresh Produce,Fresh Vegetables
+796,VEGETABLES,Vegitables,8002498,LEMONS LOOSE 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+797,VEGETABLES,Vegitables,8002499,LIMES LOOSE 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+798,VEGETABLES,Vegitables,8002500v,ONION WHITE LOOSE 1X1KG,kg,0.99,0,Fresh Produce,Fresh Vegetables
+799,VEGETABLES,Vegitables,8002506,BRINJAL LARGE 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+800,VEGETABLES,Vegitables,8002507,BRINJAL SMALL 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+801,VEGETABLES,Vegitables,8002508,DRUMSTICK FRESH 1X1KG,kg,4.99,0,Fresh Produce,Fresh Vegetables
+802,VEGETABLES,Vegitables,8002509,LADIES FINGER OKRA 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+803,VEGETABLES,Vegitables,8002512v,CARROT LOOSE 1X1KG,kg,1.49,0,Fresh Produce,Fresh Vegetables
+804,VEGETABLES,Vegitables,8002518v,GREEN CHILLI FINGER 1X250G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+805,VEGETABLES,Vegitables,8002521,PUMPKIN PIECE 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+806,VEGETABLES,Vegitables,8002522,CUCUMBER LOOSE 1X1EACH,nos,0.55,0,Fresh Produce,Fresh Vegetables
+807,VEGETABLES,Vegitables,8002532,FRESH COCONUT 1X1EACH,nos,1.25,0,Fresh Produce,Fresh Vegetables
+808,VEGETABLES,Vegitables,8002535v,RED PEPPERS LOOSE 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+809,VEGETABLES,Vegitables,8002538v,FRESH TURMERIC ROOT 1X250G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+810,VEGETABLES,Vegitables,8002543,BOTTLE GOURD LAUKI 1X1KG,kg,2.49,0,Fresh Produce,Fresh Vegetables
+811,VEGETABLES,Vegitables,8002544,POINTED GOURD PARWAL 1X500G,kg,3.49,0,Fresh Produce,Fresh Vegetables
+812,VEGETABLES,Vegitables,8002561,CORN ON THE COB 1X1EACH,nos,0.55,0,Fresh Produce,Fresh Vegetables
+813,VEGETABLES,Vegitables,8002569,SPRING GREENS 1X200G,kg,1.49,0,Fresh Produce,Fresh Vegetables
+814,VEGETABLES,Vegitables,8002572,CHINESE BROCCOLI 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+815,VEGETABLES,Vegitables,8002573,PAK CHOI 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+816,VEGETABLES,Vegitables,8002580,MORNING GLORY WATER SPINACH 1X250G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+817,VEGETABLES,Vegitables,8002581v,GALANGAL ROOT 1X200G,kg,3.99,0,Fresh Produce,Fresh Vegetables
+818,VEGETABLES,Vegitables,8002582v,LOTUS ROOT 1X500G,kg,4.99,0,Fresh Produce,Fresh Vegetables
+819,VEGETABLES,Vegitables,8002588,JACKFRUIT FRESH 1X1KG,kg,5.99,0,Fresh Produce,Fresh Vegetables
+820,VEGETABLES,Vegitables,8002590,JICAMA 1X500G,kg,3.49,0,Fresh Produce,Fresh Vegetables
+821,VEGETABLES,Vegitables,8002591,LONG AUBERGINE 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+822,VEGETABLES,Vegitables,8002593v,MIXED HERBS 1X25G,g,0.89,0,Fresh Produce,Fresh Vegetables
+823,VEGETABLES,Vegitables,8002600,SHISO LEAVES 1X30G,g,2.99,0,Fresh Produce,Fresh Vegetables
+824,VEGETABLES,Vegitables,8002601v,GARDEN CRESS 1X30G,g,1.99,0,Fresh Produce,Fresh Vegetables
+825,VEGETABLES,Vegitables,8002603,RADISH SPROUTING 1X30G,g,2.49,0,Fresh Produce,Fresh Vegetables
+826,VEGETABLES,Vegitables,8002604,YELLOW PEPPER 1X1KG,kg,2.99,0,Fresh Produce,Fresh Vegetables
+827,VEGETABLES,Vegitables,8002605,ORANGE PEPPER 1X1KG,kg,2.99,0,Fresh Produce,Fresh Vegetables
+828,VEGETABLES,Vegitables,8002621v,SURAN YAM 1X1KG,kg,3.99,0,Fresh Produce,Fresh Vegetables
+829,VEGETABLES,Vegitables,8002622,PADVAL POINTED GOURD 1X500G,kg,3.49,0,Fresh Produce,Fresh Vegetables
+830,VEGETABLES,Vegitables,8002623v,RIDGE GOURD TORAI 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+831,VEGETABLES,Vegitables,8002633,YARD LONG BEANS 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+832,VEGETABLES,Vegitables,8002634,KANG KONG 1X250G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+833,VEGETABLES,Vegitables,8002635,WATER CRESS 1X100G,g,1.49,0,Fresh Produce,Fresh Vegetables
+834,VEGETABLES,Vegitables,8002636v,DILL 1X40G,g,0.85,0,Fresh Produce,Fresh Vegetables
+835,VEGETABLES,Vegitables,8002640v,TENDERSTEM BROCCOLI 1X200G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+836,VEGETABLES,Vegitables,8002641,RADISH WHITE MOOLI 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+837,VEGETABLES,Vegitables,8002643,ASPARAGUS 1X250G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+838,VEGETABLES,Vegitables,8002644,FLAT BEANS 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+839,VEGETABLES,Vegitables,8002645,MINI SWEET PEPPERS 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+840,VEGETABLES,Vegitables,8002646,MIXED SALAD LEAVES 1X200G,g,1.49,0,Fresh Produce,Fresh Vegetables
+841,VEGETABLES,Vegitables,8002650,FENNEL BULB 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+842,VEGETABLES,Vegitables,8002651,AUBERGINE SMALL THAI 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+843,VEGETABLES,Vegitables,8002652,CELERIAC 1X1EACH,nos,2.49,0,Fresh Produce,Fresh Vegetables
+844,VEGETABLES,Vegitables,8002653,TURNIP 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+845,VEGETABLES,Vegitables,8002658v,ARTICHOKE 1X1EACH,nos,1.99,0,Fresh Produce,Fresh Vegetables
+846,VEGETABLES,Vegitables,8002659,ROMANESCO 1X1EACH,nos,2.49,0,Fresh Produce,Fresh Vegetables
+847,VEGETABLES,Vegitables,8002662,KOHLRABI 1X1EACH,nos,1.49,0,Fresh Produce,Fresh Vegetables
+848,VEGETABLES,Vegitables,8002663,ENDIVE 1X1EACH,nos,1.49,0,Fresh Produce,Fresh Vegetables
+849,VEGETABLES,Vegitables,8002664,CAVOLO NERO 1X200G,g,1.99,0,Fresh Produce,Fresh Vegetables
+850,VEGETABLES,Vegitables,8002665,SALAD ONION 1X1 BUNCH,BNH,0.79,0,Fresh Produce,Fresh Vegetables
+851,VEGETABLES,Vegitables,8002666,CURLY KALE 1X200G,g,1.49,0,Fresh Produce,Fresh Vegetables
+852,VEGETABLES,Vegitables,8002667,SAVOY CABBAGE 1X1EACH,nos,1.49,0,Fresh Produce,Fresh Vegetables
+853,VEGETABLES,Vegitables,8002668,WHITE CABBAGE 1X1EACH,nos,1.49,0,Fresh Produce,Fresh Vegetables
+854,VEGETABLES,Vegitables,8002669,POINTED CABBAGE 1X1EACH,nos,1.99,0,Fresh Produce,Fresh Vegetables
+855,VEGETABLES,Vegitables,8002670,RED CABBAGE 1X1EACH,nos,1.49,0,Fresh Produce,Fresh Vegetables
+856,VEGETABLES,Vegitables,8002671,CELERY HEART 1X1EACH,nos,1.25,0,Fresh Produce,Fresh Vegetables
+857,VEGETABLES,Vegitables,8002672,ROMAINE LETTUCE 1X1EACH,nos,0.89,0,Fresh Produce,Fresh Vegetables
+858,VEGETABLES,Vegitables,8002673,ICEBERG LETTUCE 1X1EACH,nos,0.79,0,Fresh Produce,Fresh Vegetables
+859,VEGETABLES,Vegitables,8002674,LITTLE GEM LETTUCE 1X3EACH,nos,1.25,0,Fresh Produce,Fresh Vegetables
+860,VEGETABLES,Vegitables,8002675,BUTTERHEAD LETTUCE 1X1EACH,nos,0.79,0,Fresh Produce,Fresh Vegetables
+861,VEGETABLES,Vegitables,8002676,RADICCHIO 1X1EACH,nos,1.99,0,Fresh Produce,Fresh Vegetables
+862,VEGETABLES,Vegitables,8002677,WATERCRESS 1X85G,g,1.25,0,Fresh Produce,Fresh Vegetables
+863,VEGETABLES,Vegitables,8002681,CHILLI GREEN BIRD EYE 1X100G,g,0.99,0,Fresh Produce,Fresh Vegetables
+864,VEGETABLES,Vegitables,8002682,CHILLI RED BIRD EYE 1X100G,g,0.99,0,Fresh Produce,Fresh Vegetables
+865,VEGETABLES,Vegitables,8002683,GINGER YOUNG 1X200G,g,1.99,0,Fresh Produce,Fresh Vegetables
+866,VEGETABLES,Vegitables,8002685,LEMONGRASS 1X50G,g,0.99,0,Fresh Produce,Fresh Vegetables
+867,VEGETABLES,Vegitables,8002686,THAI BASIL 1X50G,g,1.25,0,Fresh Produce,Fresh Vegetables
+868,VEGETABLES,Vegitables,8002687,VIETNAMESE MINT 1X50G,g,1.25,0,Fresh Produce,Fresh Vegetables
+869,VEGETABLES,Vegitables,8002688,FRESH TURMERIC 1X200G,g,2.49,0,Fresh Produce,Fresh Vegetables
+870,VEGETABLES,Vegitables,8002690,BEETROOT LOOSE 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+871,VEGETABLES,Vegitables,8002691,PARSNIP LOOSE 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+872,VEGETABLES,Vegitables,8002692,SWEDE LOOSE 1X1KG,kg,1.49,0,Fresh Produce,Fresh Vegetables
+873,VEGETABLES,Vegitables,8002693,BRUSSEL SPROUTS 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+874,VEGETABLES,Vegitables,8002694,MANGE TOUT 1X200G,g,1.49,0,Fresh Produce,Fresh Vegetables
+875,VEGETABLES,Vegitables,8002695,SUGAR SNAP PEAS 1X200G,g,1.49,0,Fresh Produce,Fresh Vegetables
+876,VEGETABLES,Vegitables,8002696,FINE BEANS 1X200G,g,1.49,0,Fresh Produce,Fresh Vegetables
+877,VEGETABLES,Vegitables,8002697,RUNNER BEANS 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+878,VEGETABLES,Vegitables,8002698,BROAD BEANS FRESH 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+879,VEGETABLES,Vegitables,8002699,BABY CORN 1X200G,g,1.49,0,Fresh Produce,Fresh Vegetables
+880,VEGETABLES,Vegitables,8002700,CHILLI HABANERO 1X50G,g,1.25,0,Fresh Produce,Fresh Vegetables
+881,VEGETABLES,Vegitables,8002701,CHILLI SCOTCH BONNET 1X50G,g,1.25,0,Fresh Produce,Fresh Vegetables
+882,VEGETABLES,Vegitables,8002703,KAFFIR LIME LEAVES FRESH 1X20G,g,1.25,0,Fresh Produce,Fresh Vegetables
+883,VEGETABLES,Vegitables,8002705,MUSHROOM CHESTNUT 1X500G,kg,1.99,0,Fresh Produce,Fresh Vegetables
+884,VEGETABLES,Vegitables,8002706,MUSHROOM OYSTER 1X150G,g,1.99,0,Fresh Produce,Fresh Vegetables
+885,VEGETABLES,Vegitables,8002707,MUSHROOM KING OYSTER 1X200G,g,2.49,0,Fresh Produce,Fresh Vegetables
+886,VEGETABLES,Vegitables,8002708,MUSHROOM PORTOBELLO 1X4EACH,nos,1.99,0,Fresh Produce,Fresh Vegetables
+887,VEGETABLES,Vegitables,8002709,MUSHROOM MIXED EXOTIC 1X150G,g,2.49,0,Fresh Produce,Fresh Vegetables
+888,VEGETABLES,Vegitables,8002710,BABY PLUM TOMATOES 1X250G,g,1.25,0,Fresh Produce,Fresh Vegetables
+889,VEGETABLES,Vegitables,8002711,HERITAGE TOMATOES 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+890,VEGETABLES,Vegitables,8002712,GREEN TOMATOES 1X500G,kg,2.49,0,Fresh Produce,Fresh Vegetables
+891,VEGETABLES,Vegitables,8002713,CHERRY TOMATO VINE 1X250G,g,1.49,0,Fresh Produce,Fresh Vegetables
+892,VEGETABLES,Vegitables,8002714,BABY AUBERGINE 1X500G,kg,2.99,0,Fresh Produce,Fresh Vegetables
+893,VEGETABLES,Vegitables,8002715,ROMANESCO BROCCOLI 1X1EACH,nos,2.49,0,Fresh Produce,Fresh Vegetables
+894,VEGETABLES,Vegitables,8002716,PURPLE SPROUTING BROCCOLI 1X200G,g,1.99,0,Fresh Produce,Fresh Vegetables
+895,VEGETABLES,Vegitables,8002717,SWEETHEART CABBAGE 1X1EACH,nos,1.49,0,Fresh Produce,Fresh Vegetables
+896,VEGETABLES,Vegitables,8002718,PAK CHOI BABY 1X200G,g,1.49,0,Fresh Produce,Fresh Vegetables
+897,VEGETABLES,Vegitables,8002719,RAINBOW CHARD 1X200G,g,1.99,0,Fresh Produce,Fresh Vegetables
+898,VEGETABLES,Vegitables,8002720,SWISS CHARD 1X200G,g,1.99,0,Fresh Produce,Fresh Vegetables
+899,VEGETABLES,Vegitables,8002721,SAMPHIRE 1X100G,g,2.49,0,Fresh Produce,Fresh Vegetables
+900,VEGETABLES,Vegitables,8002722,PURPLE BASIL 1X30G,g,1.49,0,Fresh Produce,Fresh Vegetables
+901,VEGETABLES,Vegitables,8002723,OREGANO FRESH 1X30G,g,0.99,0,Fresh Produce,Fresh Vegetables
+902,VEGETABLES,Vegitables,8002724,TARRAGON FRESH 1X30G,g,1.25,0,Fresh Produce,Fresh Vegetables
+903,VEGETABLES,Vegitables,8002725,FLAT LEAF PARSLEY 1X30G,g,0.99,0,Fresh Produce,Fresh Vegetables
+904,VEGETABLES,Vegitables,8002726,CURLY PARSLEY 1X30G,g,0.89,0,Fresh Produce,Fresh Vegetables
+905,VEGETABLES,Vegitables,8002727,THYME FRESH 1X30G,g,0.99,0,Fresh Produce,Fresh Vegetables
+906,VEGETABLES,Vegitables,8002728,ROSEMARY FRESH 1X30G,g,0.99,0,Fresh Produce,Fresh Vegetables
+907,VEGETABLES,Vegitables,8002729,SAGE FRESH 1X30G,g,0.99,0,Fresh Produce,Fresh Vegetables
+908,VEGETABLES,Vegitables,8002730,MARJORAM FRESH 1X30G,g,1.25,0,Fresh Produce,Fresh Vegetables
+909,VEGETABLES,Vegitables,8002731,TAMARIND FRESH PODS 1X250G,g,2.49,0,Fresh Produce,Fresh Vegetables
+910,VEGETABLES,Vegitables,8002732,LOTUS SEEDS 1X100G,g,2.99,0,Fresh Produce,Fresh Vegetables
+911,VEGETABLES,Vegitables,8002895,ONION WHITE 1X10KG,kg,4.49,0,Fresh Produce,Fresh Vegetables
+912,VEGETABLES,Vegitables,8002927,PINK RADISH 1X1 BUNCH,BNH,1.25,0,Fresh Produce,Fresh Vegetables
+913,VEGETABLES,Vegitables,8002928,ENOKI MUSHROOM 1X100G,g,0.85,0,Fresh Produce,Fresh Vegetables
+914,VEGETABLES,Vegitables,8002929,RED DUTCH CHILLI 1X1KG,kg,5.45,0,Fresh Produce,Fresh Vegetables
+915,VEGETABLES,Vegitables,8002934,CAULIFLOWER 1X6 EACH BOX,BOX,9.99,0,Fresh Produce,Fresh Vegetables
+916,VEGETABLES,Vegitables,80021207,RED PEPPER 1X1KG,kg,3.75,0,Fresh Produce,Fresh Vegetables
+917,VEGETABLES,Vegitables,80021469,SLICED ONION 1X1KG,kg,1.99,0,Fresh Produce,Fresh Vegetables
+918,VEGETABLES,Vegitables,80021488,WHITE DICED ONION 1X1KG,kg,2.35,0,Fresh Produce,Fresh Vegetables
+919,VEGETABLES,Vegitables,80021496,BRAZIL GREEN MANGO 1XEACH BOX,BOX,8.5,0,Fresh Produce,Fresh Vegetables
+920,VEGETABLES,Vegitables,80021533,WHOLE GARLIC LOOSE 1X7KG BOX,kg,18.0,0,Fresh Produce,Fresh Vegetables
+921,VEGETABLES,Fruits,UFS392,FRESH AUBERGINE BOX 5KG,kg,13.89,0,Fresh Produce,Fruits
+922,VEGETABLES,Fruits,UFS338,PINEAPPLE EACH BOX,NOS,15.99,0,Fresh Produce,Fruits
+923,VEGETABLES,Fruits,UFS371,GUAVA WHITE 1X2KG,kg,15.0,0,Fresh Produce,Fruits
+924,VEGETABLES,Fruits,UFSBNUT,FRESH BUTTERNUT SQUASH,item,18.99,0,Fresh Produce,Fruits
+925,VEGETABLES,Fruits,UFS7017,SWEET CORN ORIGINAL TIN 340GX12,item,16.89,0,Fresh Produce,Fruits
+926,VEGETABLES,Fruits,UFS7104,INDIAN GOOSEBERRY AMLA 1X3KG,kg,25.4,0,Fresh Produce,Fruits
+927,VEGETABLES,Fruits,UFS7163,GREEN GIANT SWEETCORN 12X340G,g,14.99,0,Fresh Produce,Fruits
+928,VEGETABLES,Fruits,UFS7200,PINEAPPLE 1X1EACH,NOS,2.35,0,Fresh Produce,Fruits
+929,VEGETABLES,Fruits,8002482,WATER MELON 1X1EACH,NOS,4.99,0,Fresh Produce,Fruits
+930,VEGETABLES,Fruits,8002497,FRESH FIGS 1X24EACH,kg,14.6,0,Fresh Produce,Fruits
+931,VEGETABLES,Fruits,8002514,FRESH AVACADO 1X1EACH,NOS,1.2,0,Fresh Produce,Fruits
+932,VEGETABLES,Fruits,8002531,GALIA MELON 1X1EACH,NOS,3.25,0,Fresh Produce,Fruits
+933,VEGETABLES,Fruits,8002607,POMEGRANATE 1X1EACH,nos,1.75,0,Fresh Produce,Fruits
+934,VEGETABLES,Fruits,8002608,RIPE BANANA LOOSE 1X1KG,kg,1.5,0,Fresh Produce,Fruits
+935,VEGETABLES,Fruits,8002610,GREEN APPLE 1X1EACH,NOS,0.42,0,Fresh Produce,Fruits
+936,VEGETABLES,Fruits,8002648,FRESH ORANGE 1X1EACH,NOS,0.39,0,Fresh Produce,Fruits
+937,VEGETABLES,Fruits,8002654,GALA APPLE 1X1BOX,BOX,15.79,0,Fresh Produce,Fruits
+938,VEGETABLES,Fruits,8002777,YELLOW MELON 1X1EACH,nos,2.99,0,Fresh Produce,Fruits
+939,VEGETABLES,Fruits,8002807,PASSION FRUIT 1X1EACH,nos,0.45,0,Fresh Produce,Fruits
+940,VEGETABLES,Fruits,8002821,FRESH STRAWBERRY 1X1KG,kg,8.25,0,Fresh Produce,Fruits
+941,VEGETABLES,Fruits,8002868,GRAPEFRUIT PINK 1X1EACH,NOS,0.65,0,Fresh Produce,Fruits
+942,VEGETABLES,Leaves,UFSPADA,PANDA LEAVES 200G,g,3.25,0,Fresh Produce,Herbs & Leaves
+943,VEGETABLES,Leaves,Mintbunch,FRESH MINT 1X1 BUNCH,g,0.85,0,Fresh Produce,Herbs & Leaves
+944,VEGETABLES,Leaves,UFSCORI,FRESH CORIANDER LEAVES 20 BUNCH,g,15.5,0,Fresh Produce,Herbs & Leaves
+945,VEGETABLES,Leaves,UFS361,CURRY LEAVES 1X50G,g,0.98,0,Fresh Produce,Herbs & Leaves
+946,VEGETABLES,Leaves,UFSLGRASS,LEMON GRASS 12X80G,g,12.2,0,Fresh Produce,Herbs & Leaves
+947,VEGETABLES,Leaves,UFS7063,MDH PEACOCK METHI LEAVES 1X1KG,kg,12.49,0,Fresh Produce,Herbs & Leaves
+948,VEGETABLES,Leaves,UFS7077,TOP-OP BAY LEAVES 1X1KG,kg,12.78,0,Fresh Produce,Herbs & Leaves
+949,VEGETABLES,Leaves,UFS7098,LEAF SPINACH BLOCK 4X2.5KG,item,15.1,0,Fresh Produce,Herbs & Leaves
+950,VEGETABLES,Leaves,UFS7176,CORIANDER LEAVES 1X1 BUNCH,g,1.35,0,Fresh Produce,Herbs & Leaves
+951,VEGETABLES,Leaves,UFS7184,BANANA LEAF 1X1KG,kg,14.9,0,Fresh Produce,Herbs & Leaves
+952,VEGETABLES,Leaves,UFS7185,LEMON GRASS 1X80G,g,1.3,0,Fresh Produce,Herbs & Leaves
+953,VEGETABLES,Leaves,UFS7186,PANDAN LEAF 1XEACH,item,4.99,0,Fresh Produce,Herbs & Leaves
+954,VEGETABLES,Leaves,UFS7196,LEEKS 1X4.5KG,kg,9.25,0,Fresh Produce,Herbs & Leaves
+955,VEGETABLES,Leaves,8002413,FRESH DRUMSTICK LEAVES 1X200G,g,4.79,0,Fresh Produce,Herbs & Leaves
+956,VEGETABLES,Leaves,8002433,BABY SPINACH 1X200G,g,1.65,0,Fresh Produce,Herbs & Leaves
+957,VEGETABLES,Leaves,8002492,CHIVES 1X50G,g,1.25,0,Fresh Produce,Herbs & Leaves
+958,VEGETABLES,Leaves,8002493,SHIITAKE MUSHROOM 1X1.5KG,kg,17.99,0,Fresh Produce,Herbs & Leaves
+959,VEGETABLES,Leaves,8002515,ROCKET LEAVES 1X50G,g,1.6,0,Fresh Produce,Herbs & Leaves
+960,VEGETABLES,Leaves,8002570,CORIANDER CRESS MICRO 1X30G,g,2.65,0,Fresh Produce,Herbs & Leaves
+961,VEGETABLES,Leaves,8002571,MINI PLAIN PAPAD 1X200G,g,1.49,0,Fresh Produce,Herbs & Leaves
+962,VEGETABLES,Leaves,8002578,BASIL LEAVES 1X50G,PKT,1.49,0,Fresh Produce,Herbs & Leaves
+963,VEGETABLES,Leaves,8002770,RED MICRO AMARANTH 1X25G,g,2.69,0,Fresh Produce,Herbs & Leaves
+964,VEGETABLES,Leaves,8002771,PANSIES EDIBLE FLOWERS 1X6GM,g,2.69,0,Fresh Produce,Herbs & Leaves
+965,VEGETABLES,Leaves,8002779,CURRY KALE 1X250G,g,0.89,0,Fresh Produce,Herbs & Leaves
+966,VEGETABLES,Leaves,8002783,CURRY LEAVES 20X50G,g,16.99,0,Fresh Produce,Herbs & Leaves
+967,VEGETABLES,Leaves,8002786,MIXED BABY SALAD LEAVES 1X500G,g,5.49,0,Fresh Produce,Herbs & Leaves
+968,GROCERY 2,Masala,8002890,SHAN MASALA BIRYANI 6X50G,g,8.49,0,Spices & Seasonings,Ground Spices & Masalas
+969,GROCERY 2,Masala,8002891m,SHAN MASALA CHICKEN 6X50G,g,8.49,0,Spices & Seasonings,Ground Spices & Masalas
+970,GROCERY 2,Masala,8002892,SHAN MASALA KORMA 6X50G,g,8.49,0,Spices & Seasonings,Ground Spices & Masalas
+971,GROCERY 2,Masala,8002893,SHAN MASALA TIKKA 6X50G,g,7.49,0,Spices & Seasonings,Ground Spices & Masalas
+972,GROCERY 2,Masala,8002897,SHAN MASALA SEEKH KEBAB 6X50G,g,8.49,0,Spices & Seasonings,Ground Spices & Masalas
+973,GROCERY 2,Masala,8002898,SHAN MASALA CHAAT 6X50G,g,7.49,0,Spices & Seasonings,Ground Spices & Masalas
+974,GROCERY 2,Masala,8002900,SHAN MASALA HALEEM 6X300G,g,21.99,0,Spices & Seasonings,Ground Spices & Masalas
+975,GROCERY 2,Masala,8002906,MDH BIRYANI MASALA 10X65G,g,12.49,0,Spices & Seasonings,Ground Spices & Masalas
+976,GROCERY 2,Masala,8002918,CATCH MASALA CHILLI POWDER 1X500G,g,5.99,0,Spices & Seasonings,Ground Spices & Masalas
+977,GROCERY 2,Masala,8002921,CATCH MASALA CORIANDER POWDER 1X500G,g,5.49,0,Spices & Seasonings,Ground Spices & Masalas
+978,GROCERY 2,Masala,8002922m,CATCH MASALA TURMERIC POWDER 1X500G,g,4.99,0,Spices & Seasonings,Ground Spices & Masalas
+979,GROCERY 2,Masala,8002923,CATCH MASALA GARAM MASALA 1X500G,g,6.99,0,Spices & Seasonings,Ground Spices & Masalas
+980,GROCERY 2,Masala,8002924,CATCH MASALA CUMIN POWDER 1X500G,g,5.99,0,Spices & Seasonings,Ground Spices & Masalas
+981,GROCERY 2,Masala,8002925,CATCH MASALA RASAM POWDER 1X500G,g,5.49,0,Spices & Seasonings,Ground Spices & Masalas
+982,GROCERY 2,Masala,8002926,EVEREST KITCHEN KING MASALA 1X500G,g,8.99,0,Spices & Seasonings,Ground Spices & Masalas
+983,GROCERY 2,Masala,8002933,EVEREST PAV BHAJI MASALA 1X500G,g,8.49,0,Spices & Seasonings,Ground Spices & Masalas
+984,GROCERY 2,Masala,8002935,EVEREST CHAAT MASALA 1X500G,g,7.99,0,Spices & Seasonings,Ground Spices & Masalas
+985,GROCERY 2,Masala,8002943,AACHI BIRYANI MASALA 5X75G,g,6.49,0,Spices & Seasonings,Ground Spices & Masalas
+986,GROCERY 2,Masala,8002944,AACHI CHICKEN MASALA 5X200G,g,9.49,0,Spices & Seasonings,Ground Spices & Masalas
+987,GROCERY 2,Masala,80021398,SAKTHI FISH MASALA 10X200G,g,22.99,0,Spices & Seasonings,Ground Spices & Masalas
+988,GROCERY 2,Masala,80021399,SAKTHI CHICKEN MASALA 10X200G,g,22.99,0,Spices & Seasonings,Ground Spices & Masalas
+989,GROCERY 2,Masala,80021400,SAKTHI MEAT MASALA 10X200G,g,22.99,0,Spices & Seasonings,Ground Spices & Masalas
+990,GROCERY 2,Masala,80021401,SAKTHI BIRYANI MASALA 10X200G,g,22.99,0,Spices & Seasonings,Ground Spices & Masalas
+991,GROCERY 2,Masala,80021402,SAKTHI RASAM POWDER 10X100G,g,12.99,0,Spices & Seasonings,Ground Spices & Masalas
+992,GROCERY 2,Masala,80021403,SAKTHI SAMBAR POWDER 10X200G,g,18.99,0,Spices & Seasonings,Ground Spices & Masalas
+993,GROCERY 2,Masala,80021404,MDH SAMBER MASALA 10X500G,g,69.99,0,Spices & Seasonings,Ground Spices & Masalas
+994,GROCERY 2,Masala,80021405,MDH CHICKEN MASALA 10X500G,g,74.99,0,Spices & Seasonings,Ground Spices & Masalas
+995,GROCERY 2,Masala,80021406,MDH MEAT MASALA 10X500G,g,74.99,0,Spices & Seasonings,Ground Spices & Masalas
+996,GROCERY 2,Masala,80021407,MDH PAYA MASALA 10X100G,g,14.99,0,Spices & Seasonings,Ground Spices & Masalas
+997,GROCERY 2,Masala,80021408,MDH KASOORI METHI 10X100G,g,11.99,0,Spices & Seasonings,Ground Spices & Masalas
+998,GROCERY 2,Masala,80021409,HEERA TURMERIC POWDER 6X1KG,kg,22.99,0,Spices & Seasonings,Ground Spices & Masalas
+999,GROCERY 2,Masala,80021410,HEERA CHILLI POWDER 6X1KG,kg,26.99,0,Spices & Seasonings,Ground Spices & Masalas
+1000,GROCERY 2,Masala,80021411,HEERA CORIANDER POWDER 6X1KG,kg,22.99,0,Spices & Seasonings,Ground Spices & Masalas
+1001,GROCERY 2,Masala,80021412,HEERA CUMIN POWDER 6X1KG,kg,26.99,0,Spices & Seasonings,Ground Spices & Masalas
+1002,GROCERY 2,Masala,80021413,HEERA GARAM MASALA 6X1KG,kg,29.99,0,Spices & Seasonings,Ground Spices & Masalas
