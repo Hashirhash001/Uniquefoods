@@ -609,8 +609,7 @@ $(document).ready(function() {
                         </div>
                         <div class="search-item-price">£${product.price}</div></a>`;
                 });
-            }
-            html += `<a href="{{ route('shop') }}?q=${encodeURIComponent(query)}" class="search-view-all">View All Results <i class="fa-regular fa-arrow-right"></i></a>`;
+            };
         }
         searchResults.html(html);
         searchDropdown.addClass('show');

@@ -395,6 +395,10 @@
                         <span class="ir-val">{{ ucfirst(str_replace('_',' ',$order->payment_method)) }}</span>
                     </div>
                     <div class="ir">
+                        <span class="ir-label">COD Delivery</span>
+                        <span class="ir-val">{{ ucfirst(str_replace('_',' ',$order->cod_delivery_method)) }}</span>
+                    </div>
+                    <div class="ir">
                         <span class="ir-label">Status</span>
                         <span class="ir-val">
                             <span class="sb sb-{{ $order->payment_status }}">{{ ucfirst($order->payment_status) }}</span>

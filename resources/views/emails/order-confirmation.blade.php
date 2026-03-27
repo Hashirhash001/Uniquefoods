@@ -247,10 +247,57 @@
                         @endif
                     </td>
                 </tr>
-                <tr>
-                    <td style="color:#6b7280;">VAT (20%)</td>
-                    <td>£{{ number_format($order->tax, 2) }}</td>
-                </tr>
+
+                {{-- ── Per-rate VAT breakdown from order items ── --}}
+                @php
+                    $taxGroups = [];
+                    foreach ($order->items as $item) {
+                        $rate     = (float) ($item->product->tax_rate ?? 20);
+                        $lineTax  = round($item->subtotal * ($rate / 100), 2);
+                        if ($lineTax <= 0) continue;
+                        if (!isset($taxGroups[$rate])) {
+                            $taxGroups[$rate] = ['amount' => 0, 'names' => []];
+                        }
+                        $taxGroups[$rate]['amount']  += $lineTax;
+                        $taxGroups[$rate]['names'][]  = $item->product_name;
+                    }
+                    ksort($taxGroups);
+                @endphp
+
+                @if(count($taxGroups) === 0)
+                    <tr>
+                        <td style="color:#6b7280;">VAT</td>
+                        <td>£0.00</td>
+                    </tr>
+                @elseif(count($taxGroups) === 1)
+                    @foreach($taxGroups as $rate => $group)
+                        <tr>
+                            <td style="color:#6b7280;">
+                                VAT ({{ (int)$rate }}%)
+                            </td>
+                            <td>£{{ number_format($group['amount'], 2) }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    {{-- Multiple rates — show each with product names --}}
+                    @foreach($taxGroups as $rate => $group)
+                        <tr>
+                            <td style="color:#6b7280; font-size:13px;">
+                                VAT ({{ (int)$rate }}%)
+                                <span style="display:block; font-size:11px; color:#9ca3af; margin-top:2px;">
+                                    {{ implode(', ', array_map(fn($n) => \Illuminate\Support\Str::limit($n, 22), array_unique($group['names']))) }}
+                                </span>
+                            </td>
+                            <td>£{{ number_format($group['amount'], 2) }}</td>
+                        </tr>
+                    @endforeach
+                    {{-- Total VAT row when mixed rates --}}
+                    <tr>
+                        <td style="color:#6b7280; font-weight:700;">Total VAT</td>
+                        <td style="font-weight:700;">£{{ number_format($order->tax, 2) }}</td>
+                    </tr>
+                @endif
+
                 <tr class="total-row">
                     <td>Total Charged</td>
                     <td>£{{ number_format($order->total, 2) }}</td>

@@ -590,41 +590,61 @@
                         </div>
                     @endif
 
-                    {{-- Tax breakdown by rate --}}
                     @php
-                        $taxBreakdown = [];
+                        $taxLines  = [];
+                        $totalTax  = 0;
+
                         foreach ($cart as $item) {
-                            $rate = (float)($item['tax_rate'] ?? 20);
-                            if ($rate <= 0) continue;
+                            $rate          = (float)($item['tax_rate'] ?? 20);
                             $isWeightBased = !empty($item['weight']) && (float)$item['weight'] > 0;
-                            $line = $isWeightBased
+                            $lineSubtotal  = $isWeightBased
                                 ? (float)$item['price'] * (float)$item['weight']
                                 : (float)$item['price'] * (int)$item['quantity'];
-                            $taxBreakdown[$rate] = ($taxBreakdown[$rate] ?? 0) + ($line * $rate / 100);
+                            $lineTax       = round($lineSubtotal * ($rate / 100), 2);
+                            $totalTax     += $lineTax;
+
+                            if ($lineTax > 0) {
+                                $taxLines[] = [
+                                    'name' => $item['name'],
+                                    'rate' => $rate,
+                                    'tax'  => $lineTax,
+                                ];
+                            }
                         }
+                        $totalTax = round($totalTax, 2);
                     @endphp
 
-                    @if(count($taxBreakdown) === 1 && isset($taxBreakdown[20]))
-                        {{-- Simple case: everything at 20% --}}
-                        <div class="unique-order-total-row">
-                            <span>VAT (20%)</span>
-                            <span>£{{ number_format($tax, 2) }}</span>
-                        </div>
-                    @elseif(count($taxBreakdown) > 0)
-                        {{-- Mixed rates: show each --}}
-                        @foreach($taxBreakdown as $rate => $amount)
-                            <div class="unique-order-total-row">
-                                <span>VAT ({{ $rate }}%)</span>
-                                <span>£{{ number_format($amount, 2) }}</span>
-                            </div>
-                        @endforeach
-                    @else
-                        {{-- Zero tax --}}
-                        <div class="unique-order-total-row">
-                            <span>VAT</span>
-                            <span>£0.00</span>
-                        </div>
-                    @endif
+                    <div class="unique-order-total-row">
+                        <span class="vat-total-label">
+                            VAT
+                            @if(count($taxLines) > 0)
+                                <button type="button" class="vat-info-btn" id="vatInfoBtn"
+                                        aria-label="View VAT breakdown">
+                                    <i class="fa-regular fa-circle-info"></i>
+                                </button>
+
+                                {{-- Tooltip --}}
+                                <div class="vat-tooltip-box" id="vatTooltip" role="tooltip">
+                                    <div class="vat-tooltip-arrow"></div>
+                                    <p class="vat-tooltip-title">VAT Breakdown</p>
+                                    <div class="vat-tooltip-rows">
+                                        @foreach($taxLines as $line)
+                                            <div class="vat-tooltip-row">
+                                                <span class="vat-tooltip-name">{{ Str::limit($line['name'], 28) }}</span>
+                                                <span class="vat-tooltip-rate">({{ (int)$line['rate'] }}%)</span>
+                                                <span class="vat-tooltip-amt">£{{ number_format($line['tax'], 2) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="vat-tooltip-total">
+                                        <span>Total VAT</span>
+                                        <span>£{{ number_format($totalTax, 2) }}</span>
+                                    </div>
+                                </div>
+                            @endif
+                        </span>
+                        <span>£{{ number_format($totalTax, 2) }}</span>
+                    </div>
 
                     <div class="unique-order-total-row final">
                         <span>Total:</span>
@@ -768,6 +788,27 @@ $(document).ready(function () {
             }
         }
     });
+
+    // ── VAT tooltip toggle ──
+    const vatBtn     = document.getElementById('vatInfoBtn');
+    const vatTooltip = document.getElementById('vatTooltip');
+
+    if (vatBtn && vatTooltip) {
+        vatBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            vatTooltip.classList.toggle('show');
+        });
+
+        // Close on outside click
+        document.addEventListener('click', function () {
+            vatTooltip.classList.remove('show');
+        });
+
+        // Prevent tooltip self-close
+        vatTooltip.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+    }
 });
 
 // ── Saved address helpers ──

@@ -96,6 +96,8 @@ return [
         ],
     ],
 
+    'order_notification_email' => env('ORDER_NOTIFICATION_EMAIL'),
+
     /*
     |--------------------------------------------------------------------------
     | Global "From" Address

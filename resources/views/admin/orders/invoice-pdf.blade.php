@@ -105,6 +105,10 @@
             <div class="s-cell-val">{{ ucfirst(str_replace('_',' ',$order->payment_method)) }}</div>
         </div>
         <div class="s-cell">
+            <div class="s-cell-lbl">COD Delivery</div>
+            <div class="s-cell-val">{{ ucfirst(str_replace('_',' ',$order->cod_delivery_method)) }}</div>
+        </div>
+        <div class="s-cell">
             <div class="s-cell-lbl">Date</div>
             <div class="s-cell-val">{{ $order->created_at->format('d/m/Y') }}</div>
         </div>

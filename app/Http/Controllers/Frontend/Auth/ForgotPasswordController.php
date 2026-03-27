@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Frontend\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Mail\OtpMail;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ForgotPasswordController extends Controller
@@ -21,19 +22,28 @@ class ForgotPasswordController extends Controller
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
 
-        // Block social-only users
         $user = User::where('email', $request->email)->first();
+
         if ($user->isSocialUser()) {
             return response()->json([
                 'success' => false,
-                'message' => 'This account uses Google login. Please sign in with Google.'
+                'message' => 'This account uses Google login. Please sign in with Google.',
             ], 422);
         }
 
         $otp = rand(100000, 999999);
         Cache::put('pwd_otp_' . $request->email, $otp, now()->addMinutes(10));
 
-        Mail::to($request->email)->send(new OtpMail($otp, 'Reset Your Password'));
+        try {
+            // OTP must be synchronous — user is waiting on screen
+            Mail::to($request->email)->send(new OtpMail($otp, 'Reset Your Password'));
+        } catch (\Exception $e) {
+            Log::error('OTP mail failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send OTP. Please try again.',
+            ], 500);
+        }
 
         return response()->json(['success' => true, 'message' => 'OTP sent to your email.']);
     }
@@ -47,7 +57,7 @@ class ForgotPasswordController extends Controller
 
         $cached = Cache::get('pwd_otp_' . $request->email);
 
-        if (!$cached || $cached != $request->otp) {
+        if (! $cached || $cached != $request->otp) {
             return response()->json(['success' => false, 'message' => 'Invalid or expired OTP.'], 422);
         }
 
@@ -60,14 +70,14 @@ class ForgotPasswordController extends Controller
     public function reset(Request $request)
     {
         $request->validate([
-            'email'                 => 'required|email|exists:users,email',
-            'password'              => 'required|min:6|confirmed',
+            'email'    => 'required|email|exists:users,email',
+            'password' => 'required|min:6|confirmed',
         ]);
 
-        if (!Cache::get('pwd_verified_' . $request->email)) {
+        if (! Cache::get('pwd_verified_' . $request->email)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Session expired. Please start over.'
+                'message' => 'Session expired. Please start over.',
             ], 422);
         }
 
@@ -80,7 +90,7 @@ class ForgotPasswordController extends Controller
         return response()->json([
             'success'  => true,
             'message'  => 'Password reset successfully! Please sign in.',
-            'redirect' => route('login')
+            'redirect' => route('login'),
         ]);
     }
 }

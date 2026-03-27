@@ -3,107 +3,168 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerGroup;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $sort = $request->get('sort', 'latest');
+        $sort      = $request->get('sort', 'latest');
+        $direction = $request->get('direction', 'desc');
 
-        $customers = User::whereHas('orders')
+        $query = User::where('is_admin', 0)
             ->withCount('orders')
             ->withSum('orders', 'total')
-            ->with(['orders' => fn($q) => $q->latest()->limit(1)])
-            ->when($sort === 'most_orders', fn($q) => $q->orderByDesc('orders_count'))
-            ->when($sort === 'most_spent',  fn($q) => $q->orderByDesc('orders_sum_total'))
-            ->when($sort === 'latest',      fn($q) => $q->orderByDesc('created_at'))
-            ->when($sort === 'name',        fn($q) => $q->orderBy('name'))
-            ->paginate(20)
-            ->withQueryString();
+            ->with(['orders' => fn($q) => $q->latest()->limit(1), 'groups'])
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $s = $request->search;
+                $q->where(fn($q2) => $q2
+                    ->where('name',   'like', "%$s%")
+                    ->orWhere('email',  'like', "%$s%")
+                    ->orWhere('mobile', 'like', "%$s%")
+                );
+            })
+            ->when($request->filled('group'), fn($q) =>
+                $q->whereHas('groups', fn($g) =>
+                    $g->where('customer_groups.id', $request->group)
+                )
+            );
 
-        $totalCustomers = User::whereHas('orders')->count();
-        $totalRevenue   = Order::whereIn('user_id', User::whereHas('orders')->pluck('id'))->sum('total');
+        match($sort) {
+            'name'        => $query->orderBy('name', $direction),
+            'most_orders' => $query->orderBy('orders_count', $direction),
+            'most_spent'  => $query->orderBy('orders_sum_total', $direction),
+            default       => $query->orderBy('created_at', $direction),
+        };
+
+        $customers      = $query->paginate(20)->withQueryString();
+        $totalCustomers = User::where('is_admin', 0)->count();
+        $totalRevenue   = Order::where('status', '!=', 'cancelled')->sum('total');
         $avgOrderValue  = Order::avg('total');
+        $groups         = CustomerGroup::where('is_active', 1)->orderBy('name')->get();
 
-        if ($request->ajax() || $request->get('ajax')) {
-            $html = view('admin.customers._table_rows', compact('customers'))->render();
+        // Top spender for badge
+        $topSpenderId = User::where('is_admin', 0)
+            ->withSum('orders', 'total')
+            ->orderByDesc('orders_sum_total')
+            ->value('id');
 
-            // Build pagination HTML manually
-            $pagination = '';
-            if ($customers->hasPages()) {
-                $pagination .= '<ul class="pagination">';
-                // Previous
-                $pagination .= '<li class="page-item ' . ($customers->onFirstPage() ? 'disabled' : '') . '">';
-                $pagination .= '<a class="page-link" data-page="' . ($customers->currentPage() - 1) . '" href="#">&laquo;</a></li>';
-                // Pages
-                foreach (range(1, $customers->lastPage()) as $p) {
-                    $active = $p === $customers->currentPage() ? 'active' : '';
-                    $pagination .= "<li class='page-item {$active}'><a class='page-link' data-page='{$p}' href='#'>{$p}</a></li>";
-                }
-                // Next
-                $pagination .= '<li class="page-item ' . ($customers->hasMorePages() ? '' : 'disabled') . '">';
-                $pagination .= '<a class="page-link" data-page="' . ($customers->currentPage() + 1) . '" href="#">&raquo;</a></li>';
-                $pagination .= '</ul>';
-            }
-
+        if ($request->ajax()) {
             return response()->json([
-                'html'       => $html,
-                'pagination' => $pagination,
+                'html'       => view('admin.customers._table_rows',
+                                    compact('customers', 'sort', 'direction', 'topSpenderId'))->render(),
+                'pagination' => $customers->links('pagination::bootstrap-5')->render(),
                 'total'      => $customers->total(),
+                'from'       => $customers->firstItem() ?? 0,
+                'to'         => $customers->lastItem()  ?? 0,
             ]);
         }
 
         return view('admin.customers.index', compact(
-            'customers', 'sort', 'totalCustomers', 'totalRevenue', 'avgOrderValue'
+            'customers', 'sort', 'direction',
+            'totalCustomers', 'totalRevenue', 'avgOrderValue',
+            'groups', 'topSpenderId'
         ));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'                  => 'required|string|max:255',
+            'email'                 => ['required', 'email', Rule::unique('users')->whereNull('deleted_at')],
+            'mobile'                => 'nullable|string|max:20',
+            'password'              => 'required|string|min:6|confirmed',
+            'groups'                => 'nullable|array',
+            'groups.*'              => 'exists:customer_groups,id',
+        ]);
+
+        $user = User::create([
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'mobile'            => $request->mobile,
+            'password'          => Hash::make($request->password),
+            'is_verified'       => true,
+            'email_verified_at' => now(),
+        ]);
+
+        if ($request->filled('groups')) {
+            $user->groups()->sync($request->groups);
+        } else {
+            $hd = CustomerGroup::where('slug', 'home-delivery')->first();
+            if ($hd) $user->groups()->attach($hd->id);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Customer created successfully']);
+    }
+
+    public function edit(User $user)
+    {
+        $user->load('groups');
+        $groups = CustomerGroup::where('is_active', 1)->orderBy('name')->get();
+
+        return response()->json([
+            'success'        => true,
+            'user'           => $user,
+            'groups'         => $groups,
+            'user_group_ids' => $user->groups->pluck('id'),
+        ]);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => ['required', 'email', Rule::unique('users')->ignore($user->id)->whereNull('deleted_at')],
+            'mobile'   => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6',
+            'groups'   => 'nullable|array',
+            'groups.*' => 'exists:customer_groups,id',
+        ]);
+
+        $data = ['name' => $request->name, 'email' => $request->email, 'mobile' => $request->mobile];
+        if ($request->filled('password')) $data['password'] = Hash::make($request->password);
+
+        $user->update($data);
+        $user->groups()->sync($request->groups ?? []);
+
+        return response()->json(['success' => true, 'message' => 'Customer updated successfully']);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return response()->json(['success' => true, 'message' => 'Customer deleted successfully']);
     }
 
     public function show(User $user)
     {
-        abort_unless($user->orders()->exists(), 404);
+        $user->loadCount('orders')->loadSum('orders', 'total');
 
-        $user->loadCount('orders')
-             ->loadSum('orders', 'total');
+        $orders = $user->orders()->with(['items.product'])->latest()->get();
 
-        // All orders with items
-        $orders = $user->orders()
-            ->with(['items.product'])
-            ->latest()
-            ->get();
-
-        // Favorite products — most frequently ordered
         $favoriteProducts = $user->orders()
             ->join('order_items', 'orders.id', '=', 'order_items.order_id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->selectRaw('
-                products.id,
-                products.name,
-                products.slug,
+            ->selectRaw('products.id, products.name, products.slug,
                 SUM(order_items.quantity) as total_qty,
                 SUM(order_items.subtotal) as total_spent,
-                COUNT(order_items.id) as times_ordered
-            ')
+                COUNT(order_items.id) as times_ordered')
             ->groupBy('products.id', 'products.name', 'products.slug')
-            ->orderByDesc('total_qty')
-            ->limit(5)
-            ->get();
+            ->orderByDesc('total_qty')->limit(5)->get();
 
-        // Order status breakdown
         $statusBreakdown = $user->orders()
             ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status');
+            ->groupBy('status')->pluck('count', 'status');
 
-        // Monthly spend (last 12 months)
         $monthlySpend = $user->orders()
             ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(total) as total")
             ->where('created_at', '>=', now()->subMonths(12))
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('total', 'month');
+            ->groupBy('month')->orderBy('month')->pluck('total', 'month');
 
         return view('admin.customers.show', compact(
             'user', 'orders', 'favoriteProducts', 'statusBreakdown', 'monthlySpend'

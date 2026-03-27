@@ -232,7 +232,7 @@ textarea.unique-form-control {
 }
 
 .unique-order-items {
-    max-height: 380px !important;
+    max-height: 230px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     margin-bottom: 25px !important;
@@ -900,3 +900,124 @@ textarea.unique-form-control {
 }
 
 .addr-confirm-no:hover { background: #e5e7eb; }
+
+/* ── VAT label + info button ── */
+.vat-total-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    position: relative !important;
+}
+
+.vat-info-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+    color: #0f508d !important;
+    font-size: 14px !important;
+    opacity: 0.7 !important;
+    transition: opacity 0.2s !important;
+    flex-shrink: 0 !important;
+}
+
+.vat-info-btn:hover {
+    opacity: 1 !important;
+}
+
+/* ── Tooltip box ── */
+.vat-tooltip-box {
+    display: none;
+    position: absolute !important;
+    bottom: calc(100% + 10px) !important;
+    left: 0 !important;
+    width: 280px !important;
+    background: #1e293b !important;
+    color: white !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+    z-index: 999 !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25) !important;
+    pointer-events: none !important;
+}
+
+.vat-tooltip-box.show {
+    display: block !important;
+}
+
+/* Arrow */
+.vat-tooltip-arrow {
+    position: absolute !important;
+    bottom: -6px !important;
+    left: 20px !important;
+    width: 12px !important;
+    height: 12px !important;
+    background: #1e293b !important;
+    transform: rotate(45deg) !important;
+    border-radius: 2px !important;
+}
+
+.vat-tooltip-title {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    color: #94a3b8 !important;
+    margin: 0 0 10px !important;
+}
+
+/* Each product line */
+.vat-tooltip-rows {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    max-height: 180px !important;
+    overflow-y: auto !important;
+}
+
+.vat-tooltip-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 13px !important;
+}
+
+.vat-tooltip-name {
+    flex: 1 !important;
+    color: #e2e8f0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.vat-tooltip-rate {
+    color: #94a3b8 !important;
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+}
+
+.vat-tooltip-amt {
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    flex-shrink: 0 !important;
+    min-width: 44px !important;
+    text-align: right !important;
+}
+
+/* Total row inside tooltip */
+.vat-tooltip-total {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+}

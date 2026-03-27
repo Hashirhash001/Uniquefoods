@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\brand;
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -22,8 +22,9 @@ class GroupPricingController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // ✅ was compact('group', ...) — fixed
-        return view('admin.group-pricing.discounts', compact('customerGroup', 'discounts'));
+        $group = $customerGroup; // ✅
+
+        return view('admin.group-pricing.discounts', compact('customerGroup', 'group', 'discounts'));
     }
 
     public function storeGroupDiscount(Request $request, CustomerGroup $customerGroup)
@@ -92,8 +93,9 @@ class GroupPricingController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // ✅ was compact('group', ...) — fixed
-        return view('admin.group-pricing.product-prices', compact('customerGroup', 'products', 'groupPrices'));
+        $group = $customerGroup; // ✅ alias so the view can use $group
+
+        return view('admin.group-pricing.product-prices', compact('customerGroup', 'group', 'products', 'groupPrices'));
     }
 
     public function storeProductPrice(Request $request, CustomerGroup $customerGroup)
@@ -145,15 +147,16 @@ class GroupPricingController extends Controller
     {
         $products   = Product::active()->orderBy('name')->get();
         $categories = Category::active()->orderBy('name')->get();
-        $brands     = brand::active()->orderBy('name')->get();
+        $brands     = Brand::active()->orderBy('name')->get();
 
         $offers = GroupProductOffer::where('customer_group_id', $customerGroup->id)
             ->with(['product', 'category', 'brand'])
             ->orderBy('starts_at', 'desc')
             ->get();
 
-        // ✅ was compact('group', ...) — fixed
-        return view('admin.group-pricing.product-offers', compact('customerGroup', 'products', 'categories', 'brands', 'offers'));
+        $group = $customerGroup; // ✅
+
+        return view('admin.group-pricing.product-offers', compact('customerGroup', 'group', 'products', 'categories', 'brands', 'offers'));
     }
 
     public function storeProductOffer(Request $request, CustomerGroup $customerGroup)

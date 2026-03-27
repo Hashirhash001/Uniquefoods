@@ -280,11 +280,20 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            // ── Send confirmation email (queued — never blocks response) ──
+            // ── Send confirmation emails (all queued — never blocks response) ──
             try {
-                $order->load('items');
-                Mail::to($validated['customer_email'])
+                $order->load('items.product');
+
+                $recipients = array_filter([
+                    $validated['customer_email'],                    // customer
+                    config('mail.order_notification_email'),         // company (from .env)
+                    app()->environment('local') ? 'hashmvhashmuhammed007@gmail.com' : null, // dev only
+                ]);
+
+                Mail::to(array_shift($recipients))                   // primary recipient
+                    ->bcc($recipients)                               // company + dev as BCC
                     ->queue(new OrderConfirmation($order));
+
             } catch (\Exception $mailEx) {
                 Log::warning('Order confirmation email failed', [
                     'order_number' => $order->order_number,

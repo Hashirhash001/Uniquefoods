@@ -570,6 +570,66 @@
         }
     }
 
+    .cod-method-badge {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        margin-top: 10px !important;
+        padding: 14px 16px !important;
+        border-radius: 12px !important;
+        border: 1.5px solid #e2e8f0 !important;
+        background: #f8fafc !important;
+    }
+
+    .cod-method-badge i {
+        font-size: 22px !important;
+        color: #0f508d !important;
+        width: 36px !important;
+        height: 36px !important;
+        background: rgba(15, 80, 141, 0.08) !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    .cod-method-text {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+
+    .cod-method-label {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        color: #94a3b8 !important;
+    }
+
+    .cod-method-value {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+    }
+
+    @media (max-width: 767px) {
+        .cod-method-badge {
+            padding: 12px 14px !important;
+        }
+
+        .cod-method-badge i {
+            font-size: 18px !important;
+            width: 30px !important;
+            height: 30px !important;
+        }
+
+        .cod-method-value {
+            font-size: 13px !important;
+        }
+    }
+
 </style>
 @endpush
 
@@ -692,6 +752,25 @@
                     <i class="fa-solid fa-money-bill-wave"></i>
                     {{ $order->payment_status === 'paid' ? 'Payment Completed' : 'Cash on Delivery' }}
                 </div>
+
+                {{-- COD Delivery Method --}}
+                @if($order->payment_method === 'cash_on_delivery' && $order->cod_delivery_method)
+                    <div class="cod-method-badge">
+                        @if($order->cod_delivery_method === 'cash')
+                            <i class="fa-solid fa-money-bills"></i>
+                            <div class="cod-method-text">
+                                <span class="cod-method-label">Pay by</span>
+                                <span class="cod-method-value">Cash on Delivery</span>
+                            </div>
+                        @elseif($order->cod_delivery_method === 'bank_transfer')
+                            <i class="fa-solid fa-building-columns"></i>
+                            <div class="cod-method-text">
+                                <span class="cod-method-label">Pay by</span>
+                                <span class="cod-method-value">Bank Transfer on Delivery</span>
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 @if($order->status === 'pending')
                     <button

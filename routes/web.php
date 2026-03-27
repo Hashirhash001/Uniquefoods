@@ -241,8 +241,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         // Customers
-        Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
-        Route::get('customers/{user}', [CustomerController::class, 'show'])->name('customers.show');
+        Route::prefix('customers')->name('customers.')->group(function () {
+            Route::get('/',              [CustomerController::class, 'index'])->name('index');
+            Route::post('/',             [CustomerController::class, 'store'])->name('store');
+            Route::get('/{user}/edit',   [CustomerController::class, 'edit'])->name('edit');
+            Route::put('/{user}',        [CustomerController::class, 'update'])->name('update');
+            Route::delete('/{user}',     [CustomerController::class, 'destroy'])->name('destroy');
+            Route::put('/{user}/groups', [CustomerController::class, 'updateGroups'])->name('update-groups');
+            Route::get('/{user}',        [CustomerController::class, 'show'])->name('show');
+        });
 
     });
 });

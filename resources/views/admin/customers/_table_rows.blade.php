@@ -1,51 +1,150 @@
-@forelse($customers as $customer)
-    <tr>
-        <td>
-            <div class="d-flex align-items-center gap-2">
-                @if($customer->avatar)
-                    <img src="{{ $customer->avatar }}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;">
-                @else
-                    <div class="avatar-circle">{{ strtoupper(substr($customer->name, 0, 1)) }}</div>
+@php
+    $maxSpent = $customers->max('orders_sum_total') ?: 1;
+    $avatarColors = [
+        ['bg' => '#eff6ff', 'text' => '#1d4ed8', 'border' => '#bfdbfe'],
+        ['bg' => '#f5f3ff', 'text' => '#6d28d9', 'border' => '#ddd6fe'],
+        ['bg' => '#ecfdf5', 'text' => '#065f46', 'border' => '#a7f3d0'],
+        ['bg' => '#fff7ed', 'text' => '#c2410c', 'border' => '#fed7aa'],
+        ['bg' => '#fdf2f8', 'text' => '#9d174d', 'border' => '#fbcfe8'],
+        ['bg' => '#f0fdfa', 'text' => '#0f766e', 'border' => '#99f6e4'],
+    ];
+@endphp
+
+@forelse($customers as $i => $c)
+@php
+    $spent    = $c->orders_sum_total ?? 0;
+    $orders   = $c->orders_count    ?? 0;
+    $isTop    = $c->id === $topSpenderId && $spent > 0;
+    $barWidth = min(100, $maxSpent > 0 ? round(($spent / $maxSpent) * 100) : 0);
+    $ac       = $avatarColors[$i % count($avatarColors)];
+    $lastOrder= $c->orders->first();
+@endphp
+
+<tr class="ctr {{ $isTop ? 'ctr-top' : '' }}" data-id="{{ $c->id }}">
+
+    {{-- ── Customer Info ── --}}
+    <td class="td-customer">
+        <div class="ci-wrap">
+
+            {{-- Avatar --}}
+            <div class="ci-av" style="background:{{ $ac['bg'] }};color:{{ $ac['text'] }};border-color:{{ $ac['border'] }};">
+                {{ strtoupper(substr($c->name, 0, 1)) }}
+                @if($isTop)
+                    <div class="ci-crown">👑</div>
                 @endif
-                <div style="min-width:0;">
-                    <div class="customer-name">{{ $customer->name }}</div>
-                    @if($customer->mobile)
-                        <div class="customer-phone">{{ $customer->mobile }}</div>
+            </div>
+
+            {{-- Info --}}
+            <div class="ci-info">
+                <div class="ci-name-row">
+                    <a href="{{ route('admin.customers.show', $c) }}" class="ci-name">
+                        {{ $c->name }}
+                    </a>
+                    @if($isTop)
+                        <span class="badge-top">Top Customer</span>
+                    @endif
+                    @if($c->created_at->gt(now()->subDays(7)))
+                        <span class="badge-new">New</span>
                     @endif
                 </div>
+                <div class="ci-email">
+                    <i class="fas fa-envelope"></i> {{ $c->email }}
+                </div>
+                @if($c->mobile)
+                <div class="ci-phone">
+                    <i class="fas fa-phone-alt"></i> {{ $c->mobile }}
+                </div>
+                @endif
             </div>
-        </td>
-        <td>
-            <div class="customer-email">{{ $customer->email }}</div>
-        </td>
-        <td style="white-space:nowrap;color:#6b7280;font-size:12px;">
-            {{ $customer->created_at->format('d M Y') }}
-        </td>
-        <td>
-            <span style="font-weight:700;color:#08437b;font-size:15px;">{{ $customer->orders_count }}</span>
-        </td>
-        <td style="font-weight:700;white-space:nowrap;">
-            £{{ number_format($customer->orders_sum_total, 2) }}
-        </td>
-        <td style="color:#6b7280;font-size:12px;white-space:nowrap;">
-            {{ $customer->orders->first()?->created_at->diffForHumans() ?? '—' }}
-        </td>
-        <td>
-            @if($customer->email_verified_at)
-                <span class="badge-status verified">Verified</span>
-            @else
-                <span class="badge-status unverified">Unverified</span>
+        </div>
+    </td>
+
+    {{-- ── Groups ── --}}
+    <td class="td-groups">
+        @forelse($c->groups as $g)
+            @php
+                $gcls = match($g->slug) {
+                    'home-delivery' => 'g-hd',
+                    'shop'          => 'g-sh',
+                    'restaurant'    => 'g-rs',
+                    default         => 'g-df',
+                };
+            @endphp
+            <span class="gbadge {{ $gcls }}">
+                <span class="gbadge-dot"></span>
+                {{ $g->name }}
+            </span>
+        @empty
+            <span class="no-group">Unassigned</span>
+        @endforelse
+    </td>
+
+    {{-- ── Orders Count ── --}}
+    <td class="td-orders">
+        @if($orders > 0)
+            <div class="ord-pill">
+                <span class="ord-num">{{ $orders }}</span>
+                <span class="ord-lbl">order{{ $orders !== 1 ? 's' : '' }}</span>
+            </div>
+            @if($lastOrder)
+                <div class="ord-last">Last {{ $lastOrder->created_at->diffForHumans() }}</div>
             @endif
-        </td>
-        <td>
-            <a href="{{ route('admin.customers.show', $customer) }}" class="view-btn">View</a>
-        </td>
-    </tr>
+        @else
+            <span class="ord-zero">No orders</span>
+        @endif
+    </td>
+
+    {{-- ── Total Spent ── --}}
+    <td class="td-spent">
+        <div class="spent-amt {{ $isTop ? 'spent-top' : ($spent > 0 ? 'spent-has' : 'spent-none') }}">
+            £{{ number_format($spent, 2) }}
+        </div>
+        @if($spent > 0)
+            <div class="spent-bar-track">
+                <div class="spent-bar-fill {{ $isTop ? 'bar-gold' : 'bar-blue' }}"
+                     style="width:{{ $barWidth }}%"></div>
+            </div>
+            <div class="spent-pct">{{ $barWidth }}% of top</div>
+        @endif
+    </td>
+
+    {{-- ── Joined ── --}}
+    <td class="td-joined">
+        <div class="joined-date">{{ $c->created_at->format('d M Y') }}</div>
+        <div class="joined-rel">{{ $c->created_at->diffForHumans() }}</div>
+    </td>
+
+    {{-- ── Actions ── --}}
+    <td class="td-actions">
+        <div class="act-wrap">
+            <a href="{{ route('admin.customers.show', $c) }}"
+               class="act-btn act-view" title="View Profile">
+                <i class="fas fa-eye"></i>
+            </a>
+            <button class="act-btn act-edit btn-edit"
+                    data-id="{{ $c->id }}" title="Edit Customer">
+                <i class="fas fa-pen"></i>
+            </button>
+            <button class="act-btn act-del btn-del"
+                    data-id="{{ $c->id }}"
+                    data-name="{{ $c->name }}"
+                    title="Delete Customer">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </td>
+
+</tr>
 @empty
-    <tr>
-        <td colspan="8" class="text-center py-5" style="color:#9ca3af;">
-            <i class="fas fa-users" style="font-size:36px;opacity:0.2;display:block;margin-bottom:10px;"></i>
-            No customers yet
-        </td>
-    </tr>
+<tr>
+    <td colspan="6">
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="empty-title">No customers found</div>
+            <div class="empty-sub">Try adjusting your search or filters</div>
+        </div>
+    </td>
+</tr>
 @endforelse
