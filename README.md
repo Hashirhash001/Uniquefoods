@@ -26,21 +26,77 @@ A full-featured e-commerce web application built with **Laravel** for selling fo
 - **Shopping Cart** — Add/remove items, update quantities with AJAX — no page reload
 - **Secure Checkout** — Multi-step checkout with address, shipping, and payment
 - **Stripe Payment Integration** — Secure online payments via Stripe
-- **Order Tracking** — Real-time order status tracking powered by Shiprocket
+- **Order Tracking** — Real-time order status tracking
 - **User Authentication** — Register, login, and manage personal accounts
 - **Order History** — View past orders and their statuses
 - **Responsive Design** — Fully mobile-friendly UI across all screen sizes
+- **Group-Based Pricing** — Customers see personalised product catalogues and prices based on their assigned group
 
 ### 🔧 Admin Dashboard
 
 - **Product Management** — Add, edit, delete products with image uploads
-- **Category Management** — Organize products into categories
+- **Category Management** — Organise products into categories
 - **Order Management** — View, update, and manage all customer orders
-- **Shiprocket Integration** — Auto-create shipments and track deliveries
 - **Customer Management** — View registered users and their order history
 - **Inventory Control** — Manage stock availability per product
 - **Sales Analytics** — Dashboard with order stats and revenue overview
-- **Coupon / Discount Management** — Create and manage discount codes
+- **Customer Groups Management** — Create groups with exclusive product catalogues and assigned customers
+- **Discount Management** — Create percentage or fixed-amount discounts with optional minimum order amounts
+- **Time-Limited Offers** — Schedule price offers on individual products, entire categories, or all brand products
+
+---
+
+## 👥 Customer Groups Management
+
+The platform supports a powerful **Customer Groups** system that allows the admin to segment customers and control what they see and pay.
+
+### Group Features
+- Create named customer groups and assign specific customers to each group
+- Each group has its **own exclusive product catalogue** — customers only see products assigned to their group
+- Assign **group-specific pricing** per product, independent of the standard product price
+- Manage group membership — add or remove customers from groups at any time
+- Customers not assigned to any group see the default public catalogue
+
+### Use Cases
+> - **Wholesale vs Retail** — different price tiers for different buyer types
+> - **Region-specific catalogues** — show only products available in a customer’s area
+> - **VIP / Membership pricing** — exclusive discounts for premium customers
+
+---
+
+## 🏷️ Discount & Offers Management
+
+The admin panel includes a full-featured **price management system** with two tools: Discounts and Time-Limited Offers.
+
+### Discounts
+
+Create reusable discount rules applied at checkout:
+
+| Field | Description |
+|---|---|
+| **Discount Type** | `Percentage (%)` or `Fixed Amount (£)` |
+| **Discount Value** | The percentage or fixed amount to deduct |
+| **Minimum Order Amount** | Optional threshold — discount only applies if cart total meets this value |
+| **Status** | `Active` or `Inactive` — toggle discounts on/off without deleting |
+
+**Example:** 15% off all orders above £50, or £10 flat off any order.
+
+---
+
+### Time-Limited Offers
+
+Schedule promotional prices with a defined start and end date:
+
+| Field | Description |
+|---|---|
+| **Scope** | `Single Product`, `Entire Category`, or `All Brand Products` |
+| **Select Product** | Choose the specific product (for single product scope) |
+| **Regular Price** | Displays the current price for reference |
+| **Offer Price** | The discounted price active during the offer window |
+| **Start Date** | Date when the offer becomes active |
+| **End Date** | Date when the offer expires and price reverts |
+
+**Example:** Run a weekend flash sale at £12.99 (regular £19.99) on a specific product from Friday to Sunday. Or apply a 20% reduced offer price across an entire category for a seasonal promotion.
 
 ---
 
@@ -61,13 +117,11 @@ A full-featured e-commerce web application built with **Laravel** for selling fo
 ### Order Management
 ![Order Management](docs/screens/orders.png)
 
-### Categories Mangement
+### Categories Management
 ![Categories management](docs/screens/categories.png)
 
 ### Customers Management
-![Customers Managment](docs/screens/customers.png)
-
-> 💡 **To add screenshots:** Create a `screenshots/` folder in the root of this repository and upload your image files with the matching filenames above.
+![Customers Management](docs/screens/customers.png)
 
 ---
 
@@ -75,9 +129,6 @@ A full-featured e-commerce web application built with **Laravel** for selling fo
 
 ### 💳 Stripe
 Handles secure payment processing for all customer orders. Supports card payments with webhook-based order confirmation.
-
-### 🚚 Shiprocket
-Automates shipping logistics — creates shipment orders, generates AWB numbers, and provides live tracking for customers.
 
 ---
 
@@ -106,7 +157,7 @@ npm install && npm run build
 cp .env.example .env
 php artisan key:generate
 
-# Configure your .env (DB, Stripe, Shiprocket, Mail credentials)
+# Configure your .env (DB, Stripe, Mail credentials)
 
 # Run migrations
 php artisan migrate
@@ -159,12 +210,6 @@ AWS_BUCKET=your_s3_bucket_name
 STRIPE_KEY=your_stripe_publishable_key
 STRIPE_SECRET=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-
-# Shiprocket Shipping
-SHIPROCKET_EMAIL=your_shiprocket_account_email
-SHIPROCKET_PASSWORD=your_shiprocket_account_password
-SHIPROCKET_CHANNEL_ID=your_shiprocket_channel_id
-SHIPROCKET_PICKUP_LOCATION=your_pickup_location_name
 ```
 
 ---
@@ -176,14 +221,13 @@ Uniquefoods/
 ├── app/
 │   ├── Http/Controllers/   # Admin & Frontend Controllers
 │   ├── Models/             # Eloquent Models
-│   └── Services/           # Stripe, Shiprocket Services
+│   └── Services/           # Stripe Services
 ├── database/
 │   └── migrations/         # Database schema
 ├── resources/
 │   └── views/              # Blade templates (frontend + admin)
 ├── routes/
 │   └── web.php             # Application routes
-├── screenshots/            # 📸 Add your screenshots here
 └── public/                 # Assets
 ```
 
