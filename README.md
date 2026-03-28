@@ -115,7 +115,7 @@ Schedule promotional prices with a defined start and end date:
 ![Admin Dashboard](docs/screens/dashboard.webp)
 
 ### Discount & Offers Management
-![Discount & Offers Management](docs/screens/offers1%20(1).webp)
+![Discount & Offers Management](docs/screens/offers1.webp)
 
 ### Discount & Offers Management
 ![Discount & Offers Management](docs/screens/offers2.webp)
