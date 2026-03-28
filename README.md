@@ -114,11 +114,17 @@ Schedule promotional prices with a defined start and end date:
 ### Admin Dashboard
 ![Admin Dashboard](docs/screens/dashboard.png)
 
-### Order Management
-![Order Management](docs/screens/orders.png)
+### Discount & Offers Management
+![Discount & Offers Management](docs/screens/offers1%20(1).png)
+
+### Discount & Offers Management
+![Discount & Offers Management](docs/screens/offers2.png)
 
 ### Categories Management
 ![Categories management](docs/screens/categories.png)
+
+### Order Management
+![Order Management](docs/screens/orders.png)
 
 ### Customers Management
 ![Customers Management](docs/screens/customers.png)
