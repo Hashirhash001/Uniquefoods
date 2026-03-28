@@ -12,7 +12,6 @@ A full-featured e-commerce web application built with **Laravel** for selling fo
 | Frontend | Blade Templates, jQuery, AJAX, Tailwind CSS |
 | Database | MySQL |
 | Payment | Stripe |
-| Shipping | Shiprocket |
 | Storage | AWS S3 / Local |
 | Deployment | Hostinger / AWS |
 
@@ -47,23 +46,26 @@ A full-featured e-commerce web application built with **Laravel** for selling fo
 
 ## 📸 Screenshots
 
-### Home Page
-![Home Page](screenshots/home.png)
-
 ### Product Listing
-![Product Listing](screenshots/products.png)
+![Product Listing](docs/screens/shop.png)
 
 ### Shopping Cart
-![Shopping Cart](screenshots/cart.png)
+![Shopping Cart](docs/screens/cart.png)
 
 ### Checkout Page
-![Checkout](screenshots/checkout.png)
+![Checkout](docs/screens/checkout.png)
 
 ### Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
+![Admin Dashboard](docs/screens/dashboard.png)
 
 ### Order Management
-![Order Management](screenshots/admin-orders.png)
+![Order Management](docs/screens/orders.png)
+
+### Categories Mangement
+![Categories management](docs/screens/categories.png)
+
+### Customers Management
+![Customers Managment](docs/screens/customers.png)
 
 > 💡 **To add screenshots:** Create a `screenshots/` folder in the root of this repository and upload your image files with the matching filenames above.
 
