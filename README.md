@@ -103,31 +103,31 @@ Schedule promotional prices with a defined start and end date:
 ## 📸 Screenshots
 
 ### Product Listing
-![Product Listing](docs/screens/shop.png)
+![Product Listing](docs/screens/shop.webp)
 
 ### Shopping Cart
-![Shopping Cart](docs/screens/cart.png)
+![Shopping Cart](docs/screens/cart.webp)
 
 ### Checkout Page
-![Checkout](docs/screens/checkout.png)
+![Checkout](docs/screens/checkout.webp)
 
 ### Admin Dashboard
-![Admin Dashboard](docs/screens/dashboard.png)
+![Admin Dashboard](docs/screens/dashboard.webp)
 
 ### Discount & Offers Management
-![Discount & Offers Management](docs/screens/offers1%20(1).png)
+![Discount & Offers Management](docs/screens/offers1%20(1).webp)
 
 ### Discount & Offers Management
-![Discount & Offers Management](docs/screens/offers2.png)
+![Discount & Offers Management](docs/screens/offers2.webp)
 
 ### Categories Management
-![Categories management](docs/screens/categories.png)
+![Categories management](docs/screens/categories.webp)
 
 ### Order Management
-![Order Management](docs/screens/orders.png)
+![Order Management](docs/screens/orders.webp)
 
 ### Customers Management
-![Customers Management](docs/screens/customers.png)
+![Customers Management](docs/screens/customers.webp)
 
 ---
 
