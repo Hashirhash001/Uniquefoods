@@ -45,6 +45,30 @@ A full-featured e-commerce web application built with **Laravel** for selling fo
 
 ---
 
+## 📸 Screenshots
+
+### Home Page
+![Home Page](screenshots/home.png)
+
+### Product Listing
+![Product Listing](screenshots/products.png)
+
+### Shopping Cart
+![Shopping Cart](screenshots/cart.png)
+
+### Checkout Page
+![Checkout](screenshots/checkout.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+### Order Management
+![Order Management](screenshots/admin-orders.png)
+
+> 💡 **To add screenshots:** Create a `screenshots/` folder in the root of this repository and upload your image files with the matching filenames above.
+
+---
+
 ## 📦 Integrations
 
 ### 💳 Stripe
@@ -100,18 +124,45 @@ Key variables to configure in your `.env` file:
 
 ```env
 APP_NAME="Unique Foods"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
 APP_URL=http://localhost
 
+# Database
 DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
 DB_DATABASE=uniquefoods
 DB_USERNAME=root
 DB_PASSWORD=
 
+# Mail
+MAIL_MAILER=smtp
+MAIL_HOST=your_mail_host
+MAIL_PORT=587
+MAIL_USERNAME=your_mail_username
+MAIL_PASSWORD=your_mail_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@uniquefoods.com
+MAIL_FROM_NAME="Unique Foods"
+
+# AWS S3 (for image storage)
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_DEFAULT_REGION=ap-south-1
+AWS_BUCKET=your_s3_bucket_name
+
+# Stripe Payment Gateway
 STRIPE_KEY=your_stripe_publishable_key
 STRIPE_SECRET=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 
-SHIPROCKET_EMAIL=your_shiprocket_email
-SHIPROCKET_PASSWORD=your_shiprocket_password
+# Shiprocket Shipping
+SHIPROCKET_EMAIL=your_shiprocket_account_email
+SHIPROCKET_PASSWORD=your_shiprocket_account_password
+SHIPROCKET_CHANNEL_ID=your_shiprocket_channel_id
+SHIPROCKET_PICKUP_LOCATION=your_pickup_location_name
 ```
 
 ---
@@ -130,6 +181,7 @@ Uniquefoods/
 │   └── views/              # Blade templates (frontend + admin)
 ├── routes/
 │   └── web.php             # Application routes
+├── screenshots/            # 📸 Add your screenshots here
 └── public/                 # Assets
 ```
 
