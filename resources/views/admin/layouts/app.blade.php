@@ -983,6 +983,13 @@
                 </a>
             </li>
 
+            <li class="single-menu-item {{ request()->routeIs('admin.shipping.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.shipping.index') }}" data-title="Shipping">
+                    <i class="fas fa-truck icon"></i>
+                    <span>Shipping</span>
+                </a>
+            </li>
+
             <!-- Customers -->
             <li class="single-menu-item {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.customers.index') }}" data-title="Customers">

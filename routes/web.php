@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GroupPricingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Frontend\Auth\AuthController;
 use App\Http\Controllers\Frontend\Auth\ForgotPasswordController;
 use App\Http\Controllers\Frontend\Auth\GoogleController;
@@ -96,6 +97,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.create-payment-intent');
+    Route::post('/checkout/shipping-estimate', [CheckoutController::class, 'shippingEstimate'])
+    ->name('checkout.shipping.estimate');
     Route::post('/checkout/process', [CheckoutController::class, 'processOrder'])->name('checkout.process');
     Route::get('/orders', [CheckoutController::class, 'orders'])->name('orders.index');
     Route::get('/orders/{orderNumber}', [CheckoutController::class, 'orderDetails'])->name('orders.details');
@@ -239,6 +242,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/export/csv', [OrderController::class, 'export'])->name('export');
             Route::get('/{order}/invoice', [OrderController::class, 'invoice'])->name('invoice');
         });
+
+        Route::get('shipping',        [ShippingController::class, 'index'])->name('shipping.index');
+        Route::post('shipping/update',[ShippingController::class, 'update'])->name('shipping.update');
 
         // Customers
         Route::prefix('customers')->name('customers.')->group(function () {

@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Mail\OrderConfirmation;
 use App\Models\Cart;
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\UserAddress;
+use App\Services\ShippingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
 {
+    public function __construct(private ShippingService $shipping) {}
+
     public function index()
     {
         $cart = $this->getCart();
@@ -28,15 +31,23 @@ class CheckoutController extends Controller
         }
 
         $subtotal     = $this->calculateSubtotal($cart);
-        $shippingCost = $this->calculateShipping($subtotal);
-        $tax          = $this->calculateTax($cart);
-        $total        = $subtotal + $shippingCost + $tax;
+        $shippingCost = $this->shipping->calculate($subtotal, $this->getDefaultPostcode());
+
+        // If out of range on index, just show 0 — don't block page load
+        if ($shippingCost < 0) $shippingCost = 0;
+
+        $tax   = $this->calculateTax($cart);
+        $total = $subtotal + $shippingCost + $tax;
+
+        // Delivery message for the UI banner
+        $deliveryMessage    = $this->shipping->getDeliveryMessage($subtotal);
+        $isDistanceBased    = $this->shipping->isDistanceBased();
+        $freeThreshold      = $this->shipping->getFreeThreshold();
 
         $savedAddresses = collect();
         $lastAddress    = null;
 
         if (Auth::check()) {
-            // ✅ Single query — ordered so default is first
             $savedAddresses = UserAddress::where('user_id', Auth::id())
                 ->orderByDesc('is_default')
                 ->orderByDesc('updated_at')
@@ -48,7 +59,8 @@ class CheckoutController extends Controller
 
         return view('frontend.checkout', compact(
             'cart', 'subtotal', 'shippingCost', 'tax', 'total',
-            'savedAddresses', 'lastAddress'
+            'savedAddresses', 'lastAddress',
+            'deliveryMessage', 'isDistanceBased', 'freeThreshold'
         ));
     }
 
@@ -149,7 +161,12 @@ class CheckoutController extends Controller
             }
 
             $subtotal     = $this->calculateSubtotal($cart);
-            $shippingCost = $this->calculateShipping($subtotal);
+            $shippingCost = $this->shipping->calculate($subtotal, $validated['postcode']);
+
+            if ($shippingCost < 0) {
+                throw new \Exception('Sorry, we currently do not deliver to your postcode. Please contact us.');
+            }
+
             $tax          = $this->calculateTax($cart);
             $total        = $subtotal + $shippingCost + $tax;
 
@@ -392,7 +409,6 @@ class CheckoutController extends Controller
         }, 0), 2);
     }
 
-    private function calculateShipping(float $subtotal): float { return $subtotal >= 500 ? 0 : 5.99; }
     private function calculateTax(array $cart): float
     {
         $tax = 0;
@@ -615,6 +631,45 @@ class CheckoutController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Failed to update default.'], 500);
         }
+    }
+
+    // ── New private helper for getting postcode on index page ────────
+    private function getDefaultPostcode(): ?string
+    {
+        if (!Auth::check()) return null;
+
+        return UserAddress::where('user_id', Auth::id())
+            ->where('is_default', true)
+            ->value('postcode');
+    }
+
+    public function shippingEstimate(Request $request): \Illuminate\Http\JsonResponse
+    {
+        // ✅ Add rate limit — 30 estimates per minute per IP
+        $key = 'shipping_estimate:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($key, 30)) {
+            return response()->json(['error' => 'Too many requests.'], 429);
+        }
+        RateLimiter::hit($key, 60);
+
+        $postcode = strtoupper(strip_tags($request->input('postcode', '')));
+        $subtotal = (float) $request->input('subtotal', 0);
+
+        $cost = $this->shipping->calculate($subtotal, $postcode);
+
+        if ($cost < 0) {
+            return response()->json(['out_of_range' => true]);
+        }
+
+        if ($cost === 0.0) {
+            return response()->json(['free' => true, 'cost' => 0]);
+        }
+
+        return response()->json([
+            'free'    => false,
+            'cost'    => $cost,
+            'message' => $this->shipping->getDeliveryMessage($subtotal),
+        ]);
     }
 
 }

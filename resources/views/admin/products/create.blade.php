@@ -326,6 +326,7 @@
                                     <option value="pkt">Packet (pkt)</option>
                                     <option value="rol">Roll (rol)</option>
                                     <option value="drm">Drum (drm)</option>
+                                    <option value="cs">Case (cs)</option>
                                 </optgroup>
                             </select>
                             <small class="form-text">How this product is sold</small>
@@ -379,6 +380,16 @@
                             </div>
                             <small class="form-text">Leave blank if same as selling price</small>
                             <small class="text-danger error-mrp"></small>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Cost Price <span class="form-text d-inline">(optional)</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" step="0.01" name="cost" class="form-control" placeholder="0.00">
+                            </div>
+                            <small class="form-text">Your purchase/cost price</small>
+                            <small class="text-danger error-cost"></small>
                         </div>
 
                         <div class="col-md-3">

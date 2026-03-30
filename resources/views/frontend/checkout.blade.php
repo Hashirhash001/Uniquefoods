@@ -261,6 +261,34 @@
                 flex: 1 1 100%;
             }
         }
+
+        /* Delivery message banner */
+        .delivery-message-banner {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #16a34a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Distance notice under shipping row */
+        .shipping-distance-notice {
+            font-size: 12px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: -6px;
+            margin-bottom: 6px;
+            padding: 0 2px;
+        }
+        .shipping-distance-notice i { color: #08437b; }
     </style>
 @endpush
 
@@ -573,42 +601,63 @@
                     @endforeach
                 </div>
 
+                {{-- ── Delivery Message Banner ── --}}
+                @if($deliveryMessage)
+                <div class="delivery-message-banner" id="deliveryBanner">
+                    {{ $deliveryMessage }}
+                </div>
+                @endif
+
+                {{-- ── Order Totals ── --}}
                 <div class="unique-order-totals">
+
+                    {{-- Subtotal --}}
                     <div class="unique-order-total-row">
-                        <span>Subtotal:</span>
+                        <span>Subtotal</span>
                         <span>£{{ number_format($subtotal, 2) }}</span>
                     </div>
 
-                    <div class="unique-order-total-row">
-                        <span>Shipping:</span>
-                        <span>{{ $shippingCost > 0 ? '£' . number_format($shippingCost, 2) : 'FREE' }}</span>
+                    {{-- Shipping --}}
+                    <div class="unique-order-total-row" id="shippingRow">
+                        <span>Shipping</span>
+                        <span id="shippingDisplay">
+                            @if($shippingCost === 0.0)
+                                <span style="color:#16a34a;font-weight:600;">FREE</span>
+                            @else
+                                £{{ number_format($shippingCost, 2) }}
+                            @endif
+                        </span>
                     </div>
 
-                    @if($shippingCost == 0)
-                        <div class="unique-free-shipping-badge">
-                            <i class="fa-solid fa-truck-fast"></i> Free Shipping!
-                        </div>
+                    {{-- Distance-based notice --}}
+                    @if($isDistanceBased)
+                    <div class="shipping-distance-notice" id="distanceNotice">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Final delivery charge calculated from your postcode.
+                    </div>
                     @endif
 
-                    @php
-                        $taxLines  = [];
-                        $totalTax  = 0;
+                    {{-- Free shipping badge --}}
+                    @if($shippingCost == 0)
+                    <div class="unique-free-shipping-badge" id="freeShippingBadge">
+                        <i class="fa-solid fa-truck-fast"></i> Free Shipping!
+                    </div>
+                    @endif
 
+                    {{-- VAT --}}
+                    @php
+                        $taxLines = [];
+                        $totalTax = 0;
                         foreach ($cart as $item) {
-                            $rate          = (float)($item['tax_rate'] ?? 20);
-                            $isWeightBased = !empty($item['weight']) && (float)$item['weight'] > 0;
+                            $rate          = (float) ($item['tax_rate'] ?? 20);
+                            $isWeightBased = !empty($item['weight']) && (float) $item['weight'] > 0;
                             $lineSubtotal  = $isWeightBased
-                                ? (float)$item['price'] * (float)$item['weight']
-                                : (float)$item['price'] * (int)$item['quantity'];
+                                ? (float) $item['price'] * (float) $item['weight']
+                                : (float) $item['price'] * (int)   $item['quantity'];
                             $lineTax       = round($lineSubtotal * ($rate / 100), 2);
                             $totalTax     += $lineTax;
-
                             if ($lineTax > 0) {
-                                $taxLines[] = [
-                                    'name' => $item['name'],
-                                    'rate' => $rate,
-                                    'tax'  => $lineTax,
-                                ];
+                                $taxLines[] = ['name' => $item['name'], 'rate' => $rate, 'tax' => $lineTax];
                             }
                         }
                         $totalTax = round($totalTax, 2);
@@ -618,22 +667,19 @@
                         <span class="vat-total-label">
                             VAT
                             @if(count($taxLines) > 0)
-                                <button type="button" class="vat-info-btn" id="vatInfoBtn"
-                                        aria-label="View VAT breakdown">
-                                    <i class="fa-regular fa-circle-info"></i>
-                                </button>
-
+                            <button type="button" class="vat-info-btn" id="vatInfoBtn" aria-label="View VAT breakdown">
+                                <i class="fa-regular fa-circle-info"></i>
                                 {{-- Tooltip --}}
                                 <div class="vat-tooltip-box" id="vatTooltip" role="tooltip">
                                     <div class="vat-tooltip-arrow"></div>
                                     <p class="vat-tooltip-title">VAT Breakdown</p>
                                     <div class="vat-tooltip-rows">
                                         @foreach($taxLines as $line)
-                                            <div class="vat-tooltip-row">
-                                                <span class="vat-tooltip-name">{{ Str::limit($line['name'], 28) }}</span>
-                                                <span class="vat-tooltip-rate">({{ (int)$line['rate'] }}%)</span>
-                                                <span class="vat-tooltip-amt">£{{ number_format($line['tax'], 2) }}</span>
-                                            </div>
+                                        <div class="vat-tooltip-row">
+                                            <span class="vat-tooltip-name">{{ Str::limit($line['name'], 28) }}</span>
+                                            <span class="vat-tooltip-rate">{{ (int) $line['rate'] }}%</span>
+                                            <span class="vat-tooltip-amt">£{{ number_format($line['tax'], 2) }}</span>
+                                        </div>
                                         @endforeach
                                     </div>
                                     <div class="vat-tooltip-total">
@@ -641,15 +687,18 @@
                                         <span>£{{ number_format($totalTax, 2) }}</span>
                                     </div>
                                 </div>
+                            </button>
                             @endif
                         </span>
                         <span>£{{ number_format($totalTax, 2) }}</span>
                     </div>
 
+                    {{-- Order Total --}}
                     <div class="unique-order-total-row final">
-                        <span>Total:</span>
+                        <span>Total</span>
                         <span id="order-total">£{{ number_format($total, 2) }}</span>
                     </div>
+
                 </div>
 
                 <button type="button" id="place-order-btn" class="unique-btn-place-order">
@@ -788,6 +837,47 @@ $(document).ready(function () {
             }
         }
     });
+
+    // Live shipping update when postcode changes (distance-based modes)
+    @if($isDistanceBased)
+    const freeThreshold = {{ $freeThreshold }};
+
+    $('#postcode').on('change blur', function () {
+        const postcode  = $(this).val().trim().toUpperCase();
+        const subtotal  = {{ $subtotal }};
+
+        if (!postcode || postcode.length < 5) return;
+
+        $.ajax({
+            url: '{{ route("checkout.shipping.estimate") }}',
+            method: 'POST',
+            data: {
+                _token:   $('meta[name="csrf-token"]').attr('content'),
+                postcode: postcode,
+                subtotal: subtotal,
+            },
+            success: function (res) {
+                const display  = $('#shippingDisplay');
+                const banner   = $('#deliveryBanner');
+                const totalEl  = $('#order-total');
+
+                if (res.free) {
+                    display.html('<span style="color:#16a34a;font-weight:600;">FREE</span>');
+                    banner.text('🎉 Free delivery on this order!').show();
+                } else if (res.out_of_range) {
+                    display.html('<span style="color:#ef4444;font-weight:600;">Not available</span>');
+                    banner.text('⚠️ Sorry, we do not deliver to this postcode.').css('color','#b91c1c').show();
+                } else {
+                    display.html('£' + res.cost.toFixed(2));
+                    banner.text(res.message).css('color','#16a34a').show();
+                }
+
+                // Update order total display
+                totalEl.text('£' + (subtotal + (res.free ? 0 : (res.out_of_range ? 0 : res.cost)) + {{ $tax }}).toFixed(2));
+            },
+        });
+    });
+    @endif
 
     // ── VAT tooltip toggle ──
     const vatBtn     = document.getElementById('vatInfoBtn');

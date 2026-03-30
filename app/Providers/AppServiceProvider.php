@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Services\PricingService;
+use App\Services\ShippingService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -14,6 +15,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(PricingService::class, function ($app) {
             return new PricingService();
+        });
+
+        $this->app->singleton(ShippingService::class, function ($app) {
+            return new ShippingService();
         });
     }
 

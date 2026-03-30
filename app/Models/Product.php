@@ -22,6 +22,7 @@ class Product extends Model
         'brand_id',
         'price',
         'mrp',
+        'cost',
         'price_per_kg',
         'stock',
         'is_weight_based',
@@ -39,6 +40,7 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'mrp' => 'decimal:2',
+        'cost' => 'decimal:2',
         'price_per_kg' => 'decimal:2',
         'min_weight' => 'decimal:3',
         'max_weight' => 'decimal:3',
