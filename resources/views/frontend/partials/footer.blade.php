@@ -158,6 +158,12 @@
     </svg>
 </div>
 
+<div class="whatsapp">
+    <a href="https://wa.me/+447939699530?text=Hi%20!%20I%20visited%20your%20grocery%20store%20and%20I'm%20interested%20in%20your%20products.%20Can%20you%20help%20me%20with%20availability,%20offers,%20and%20delivery%20details%3F" target="_blank">
+        <img src="frontend/assets/images/icons/whatsapp-logo1.png" class="whatsapp-logo" alt="">
+    </a>
+</div>
+
 {{-- Footer Mobile CSS + Accordion JS --}}
 <style>
 /* ── Mobile quick-contact buttons ── */
@@ -305,6 +311,17 @@
     .rts-footer-area-two {
         padding: 0;
     }
+}
+
+.whatsapp {
+  position: fixed;
+  bottom: 15px;
+  left: 22px;
+  z-index: 999;
+}
+
+.whatsapp-logo {
+  max-width: 60px;
 }
 </style>
 

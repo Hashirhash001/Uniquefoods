@@ -12,7 +12,7 @@
         .email-wrapper { max-width: 620px; margin: 32px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
 
         /* Header */
-        .email-header { background: #0f508d; padding: 28px 32px; text-align: center; }
+        .email-header { background: #0f508d; padding: 8px 12px; text-align: center; }
         .email-header img { height: 48px; }
         .email-header h1 { color: white; font-size: 22px; margin-top: 16px; font-weight: 700; letter-spacing: -0.3px; }
         .email-header p { color: rgba(255,255,255,0.82); font-size: 14px; margin-top: 6px; }
@@ -131,7 +131,9 @@
 
     {{-- ── HEADER ── --}}
     <div class="email-header">
-        <img src="{{ config('app.url') }}/admin/assets/images/logo/unique food logo3.png" alt="Unique Foods">
+        <img src="{{ url('/admin/assets/images/logo/unique-food-logo3.png') }}"
+            alt="Unique Foods"
+            style="max-height:50px; max-width:200px;">
         <h1>Order Confirmed!</h1>
         <p>Thank you for shopping with Unique Foods</p>
     </div>
@@ -252,7 +254,7 @@
                 @php
                     $taxGroups = [];
                     foreach ($order->items as $item) {
-                        $rate     = (float) ($item->product->tax_rate ?? 20);
+                        $rate     = (float) ($item->product->tax_rate ?? 0);
                         $lineTax  = round($item->subtotal * ($rate / 100), 2);
                         if ($lineTax <= 0) continue;
                         if (!isset($taxGroups[$rate])) {

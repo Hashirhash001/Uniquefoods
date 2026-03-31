@@ -42,4 +42,24 @@ class Order extends Model
         $random = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 4));
         return $prefix . $timestamp . $random;
     }
+
+    // Relationship
+    public function activities()
+    {
+        return $this->hasMany(\App\Models\OrderActivity::class)->latest();
+    }
+
+    // Auto-log creation
+    protected static function booted(): void
+    {
+        static::created(function (Order $order) {
+            $order->activities()->create([
+                'user_id'     => auth()->id(),
+                'type'        => 'order_placed',
+                'title'       => 'Order Placed',
+                'description' => "Order {$order->order_number} was created.",
+                'meta'        => ['order_number' => $order->order_number],
+            ]);
+        });
+    }
 }

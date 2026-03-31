@@ -380,7 +380,7 @@ class CheckoutController extends Controller
                         'image'           => $item->product->image_url,
                         'stock'           => $item->product->stock,
                         'is_weight_based' => (bool) $item->product->is_weight_based,
-                        'tax_rate'        => (float) ($item->product->tax_rate ?? 20),
+                        'tax_rate'        => (float) ($item->product->tax_rate ?? 0),
                     ];
                 })
                 ->filter()
@@ -389,11 +389,11 @@ class CheckoutController extends Controller
         }
 
         // ── Guest cart from session ──
-        // Session cart items won't have tax_rate, default to 20
+        // Session cart items won't have tax_rate, default to 0
         return collect(session()->get('cart', []))
             ->map(function ($item) {
                 return array_merge($item, [
-                    'tax_rate' => (float) ($item['tax_rate'] ?? 20),
+                    'tax_rate' => (float) ($item['tax_rate'] ?? 0),
                 ]);
             })
             ->toArray();
@@ -419,7 +419,7 @@ class CheckoutController extends Controller
                 ? (float)$item['price'] * (float)$item['weight']
                 : (float)$item['price'] * (int)$item['quantity'];
 
-            $rate = (float)($item['tax_rate'] ?? 20); // fallback 20% if missing
+            $rate = (float)($item['tax_rate'] ?? 0); // fallback 0% if missing
             $tax += $lineSubtotal * ($rate / 100);
         }
 

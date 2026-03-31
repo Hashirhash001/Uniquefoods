@@ -30,7 +30,7 @@ class HomeController extends Controller
 
         $featuredCategories = Cache::remember('featured_categories', 3600, function () {
             return Category::where('is_active', 1)
-                ->whereNotNull('image')
+                ->where('is_featured', true)
                 ->orderBy('sort_order')
                 ->limit(10)
                 ->get();

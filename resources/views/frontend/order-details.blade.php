@@ -739,7 +739,7 @@
                 </div>
 
                 <div class="summary-row">
-                    <span>VAT (20%):</span>
+                    <span>VAT:</span>
                     <span>£{{ number_format($order->tax, 2) }}</span>
                 </div>
 

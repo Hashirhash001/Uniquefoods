@@ -18,11 +18,13 @@ class Category extends Model
         'image',
         'parent_id',
         'is_active',
+        'is_featured',
         'sort_order',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_featured' => 'boolean',
     ];
 
     protected $appends = ['image_url'];
@@ -103,5 +105,9 @@ class Category extends Model
         });
     }
 
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
 
 }

@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -70,7 +71,8 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255|unique:categories,name',
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:100',
-            'is_active' => 'nullable|in:0,1'
+            'is_active' => 'nullable|in:0,1',
+            'is_featured' => 'nullable|in:0,1',
         ]);
 
         // Handle image upload
@@ -85,8 +87,11 @@ class CategoryController extends Controller
 
         // Ensure is_active is set
         $data['is_active'] = $request->input('is_active', '1') == '1' ? 1 : 0;
+        $data['is_featured'] = $request->input('is_featured', '0') == '1' ? 1 : 0;
 
         Category::create($data);
+
+        $this->clearCategoryCache();
 
         return response()->json([
             'success' => true,
@@ -104,7 +109,8 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:100',
             'remove_image' => 'nullable|boolean',
-            'is_active' => 'nullable|in:0,1'
+            'is_active' => 'nullable|in:0,1',
+            'is_featured' => 'nullable|in:0,1',
         ]);
 
         // Prevent category from being its own parent
@@ -148,8 +154,11 @@ class CategoryController extends Controller
 
         // Ensure is_active is set
         $data['is_active'] = $request->input('is_active', '1') == '1' ? 1 : 0;
+        $data['is_featured'] = $request->input('is_featured', '0') == '1' ? 1 : 0;
 
         $category->update($data);
+
+        $this->clearCategoryCache();
 
         return response()->json([
             'success' => true,
@@ -165,6 +174,8 @@ class CategoryController extends Controller
         $category->update([
             'is_active' => !$category->is_active
         ]);
+
+        $this->clearCategoryCache();
 
         return response()->json([
             'success' => true,
@@ -211,6 +222,7 @@ class CategoryController extends Controller
 
         $category->children()->delete();
         $category->delete();
+        $this->clearCategoryCache();
 
         return response()->json([
             'success' => true,
@@ -261,5 +273,12 @@ class CategoryController extends Controller
         }
 
         return $slug;
+    }
+
+    private function clearCategoryCache(): void
+    {
+        Cache::forget('header_categories');
+        Cache::forget('featured_categories');
+        Cache::forget('shop_categories');
     }
 }

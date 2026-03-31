@@ -1278,6 +1278,17 @@
                         </div>
                         <small class="form-text">Enable to make this category visible</small>
                     </div>
+
+                    <div class="mb-0">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_featured"
+                                id="categoryFeatured" value="1">
+                            <label class="form-check-label" for="categoryFeatured">
+                                Featured on Homepage
+                            </label>
+                        </div>
+                        <small class="form-text">Show this category in the homepage featured section</small>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -1389,6 +1400,7 @@
         jQuery('#categoryId').val('');
         jQuery('#modalTitleText').text('Create New Category');
         jQuery('#categoryStatus').prop('checked', true);
+        jQuery('#categoryFeatured').prop('checked', false);
         jQuery('#imagePreview').attr('src', '');
         jQuery('#imagePreviewContainer').hide();
         jQuery('#imageUploadBox').show();
@@ -1401,6 +1413,7 @@
         jQuery('#categoryId').val(category.id);
         jQuery('#categoryName').val(category.name);
         jQuery('#categoryStatus').prop('checked', category.is_active == 1);
+        jQuery('#categoryFeatured').prop('checked', category.is_featured == 1);
         jQuery('#parentCategory').val(category.parent_id || '');
         jQuery('#modalTitleText').text('Edit Category');
         jQuery('#modalIcon').removeClass('fa-folder-plus').addClass('fa-edit');
@@ -1519,6 +1532,8 @@
             const formData = new FormData(this);
             formData.delete('is_active');
             formData.append('is_active', $('#categoryStatus').is(':checked') ? '1' : '0');
+            formData.delete('is_featured');
+            formData.append('is_featured', $('#categoryFeatured').is(':checked') ? '1' : '0');
 
             const isEdit  = $('#formMethod').val() === 'PUT';
             const url     = isEdit

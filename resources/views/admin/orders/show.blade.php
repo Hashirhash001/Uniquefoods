@@ -37,7 +37,7 @@
     .ob:hover { transform: translateY(-1px); opacity: 0.88; }
     .ob-ghost  { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
     .ob-ghost:hover { background: #e5e7eb; opacity: 1; transform: none; color: #374151; }
-    .ob-pdf    { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .ob-pdf { background: #fff1f2; color: #be123c; border: 1px solid #fda4af; }
     .ob-pdf:hover { background: #fecaca; opacity: 1; transform: none; }
     .ob-del    { background: #fee2e2; color: #991b1b; }
     .ob-blue   { background: #08437b; color: white; }
@@ -147,6 +147,17 @@
         .od-card-body { padding: 14px; }
         .prod-cell { flex-wrap: wrap; }
     }
+
+    .sb-delivery-pending    { background: #fef3c7; color: #92400e; }
+    .sb-delivery-processing { background: #dbeafe; color: #1e40af; }
+    .sb-delivery-shipped    { background: #ede9fe; color: #5b21b6; }
+    .sb-delivery-delivered  { background: #d1fae5; color: #065f46; }
+    .sb-delivery-cancelled  { background: #fee2e2; color: #991b1b; }
+
+    .sb-payment-pending     { background: #fef3c7; color: #92400e; }
+    .sb-payment-paid        { background: #d1fae5; color: #065f46; }
+    .sb-payment-failed      { background: #fee2e2; color: #991b1b; }
+    .sb-payment-refunded    { background: #f3e8ff; color: #6d28d9; }
 </style>
 @endpush
 
@@ -171,11 +182,19 @@
                     <i class="fas fa-user"></i>
                     {{ $order->customer_name }}
                 </div>
-                <span class="sb sb-{{ $order->status }} sb-lg">{{ ucfirst($order->status) }}</span>
-                <span class="sb sb-{{ $order->payment_status }} sb-lg">
-                    <i class="fas fa-credit-card" style="font-size:10px;"></i>
-                    {{ ucfirst($order->payment_status) }}
-                </span>
+                <div class="od-meta-item">
+                    <i class="fas fa-truck"></i>
+                    <span class="sb sb-lg sb-delivery-{{ $order->status }}">
+                        Delivery: {{ ucfirst($order->status) }}
+                    </span>
+                </div>
+
+                <div class="od-meta-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span class="sb sb-lg sb-payment-{{ $order->payment_status }}">
+                        Payment: {{ ucfirst($order->payment_status) }}
+                    </span>
+                </div>
             </div>
         </div>
         <div class="od-actions">
@@ -364,7 +383,7 @@
                         <div style="margin-bottom:14px;">
                             <label class="od-label">Order Status</label>
                             <select name="status" class="od-select" required>
-                                @foreach(['pending','processing','shipped','delivered','completed','cancelled'] as $s)
+                                @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
                                     <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>
                                         {{ ucfirst($s) }}
                                     </option>
@@ -444,58 +463,61 @@
             <div class="od-card">
                 <div class="od-card-head">
                     <h2><i class="fas fa-stream"></i> Order Activity</h2>
+                    <span style="font-size:12px;color:#9ca3af;">{{ $order->activities->count() }} event(s)</span>
                 </div>
                 <div class="od-card-body">
-                    <div class="timeline">
-
-                        <div class="tl-item">
-                            <div class="tl-dot d-blue"></div>
-                            <div class="tl-box">
-                                <div class="tl-title">Order Placed</div>
-                                <div class="tl-time">{{ $order->created_at->format('d M Y, h:i A') }}</div>
-                            </div>
-                        </div>
-
-                        @if($order->payment_status === 'paid' && $order->paid_at)
-                        <div class="tl-item">
-                            <div class="tl-dot d-green"></div>
-                            <div class="tl-box">
-                                <div class="tl-title">Payment Confirmed</div>
-                                <div class="tl-time">{{ $order->paid_at->format('d M Y, h:i A') }}</div>
-                            </div>
-                        </div>
-                        @endif
-
-                        @if(in_array($order->status, ['processing','shipped','delivered','completed','cancelled']))
-                        <div class="tl-item">
-                            <div class="tl-dot
-                                {{ $order->status === 'cancelled' ? 'd-red' :
-                                   ($order->status === 'processing' ? 'd-amber' : 'd-green') }}">
-                            </div>
-                            <div class="tl-box">
-                                <div class="tl-title">
-                                    @php
-                                        $statusLabels = [
-                                            'processing' => 'Order Processing',
-                                            'shipped'    => 'Order Shipped',
-                                            'delivered'  => 'Order Delivered',
-                                            'completed'  => 'Order Completed',
-                                            'cancelled'  => 'Order Cancelled',
-                                        ];
-                                    @endphp
-                                    {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
-                                </div>
-                                <div class="tl-time">{{ $order->updated_at->format('d M Y, h:i A') }}</div>
-                                @if($order->admin_notes)
-                                    <div style="font-size:12px;color:#6b7280;margin-top:5px;font-style:italic;">
-                                        "{{ $order->admin_notes }}"
+                    @if($order->activities->isEmpty())
+                        <p style="color:#9ca3af;font-size:13px;text-align:center;padding:20px 0;">
+                            No activity recorded yet.
+                        </p>
+                    @else
+                        <div class="timeline">
+                            @foreach($order->activities as $activity)
+                            <div class="tl-item">
+                                <div class="tl-dot {{ $activity->dotClass() }}"></div>
+                                <div class="tl-box">
+                                    <div class="tl-title">{{ $activity->title }}</div>
+                                    <div class="tl-time">
+                                        {{ $activity->created_at->format('d M Y, h:i A') }}
+                                        @if($activity->user)
+                                            &middot; <span style="color:#6b7280;">by {{ $activity->user->name }}</span>
+                                        @endif
                                     </div>
-                                @endif
-                            </div>
-                        </div>
-                        @endif
+                                    @if($activity->description)
+                                        <div style="font-size:12px;color:#6b7280;margin-top:5px;font-style:italic;">
+                                            {{ $activity->description }}
+                                        </div>
+                                    @endif
 
-                    </div>
+                                    {{-- Show old → new status badge transition --}}
+                                    @if($activity->type === 'status_changed' && isset($activity->meta['old_status']))
+                                        <div style="margin-top:7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                                            <span class="sb sb-{{ $activity->meta['old_status'] }}" style="font-size:11px;">
+                                                {{ ucfirst($activity->meta['old_status']) }}
+                                            </span>
+                                            <i class="fas fa-arrow-right" style="color:#9ca3af;font-size:10px;"></i>
+                                            <span class="sb sb-{{ $activity->meta['new_status'] }}" style="font-size:11px;">
+                                                {{ ucfirst($activity->meta['new_status']) }}
+                                            </span>
+                                        </div>
+                                    @endif
+
+                                    @if($activity->type === 'payment_updated' && isset($activity->meta['old_payment_status']))
+                                        <div style="margin-top:7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                                            <span class="sb sb-{{ $activity->meta['old_payment_status'] }}" style="font-size:11px;">
+                                                {{ ucfirst($activity->meta['old_payment_status']) }}
+                                            </span>
+                                            <i class="fas fa-arrow-right" style="color:#9ca3af;font-size:10px;"></i>
+                                            <span class="sb sb-{{ $activity->meta['new_payment_status'] }}" style="font-size:11px;">
+                                                {{ ucfirst($activity->meta['new_payment_status']) }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
 

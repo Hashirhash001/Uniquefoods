@@ -851,7 +851,7 @@
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar_left" id="sidebar">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-            <img src="{{ asset('admin/assets/images/logo/unique food logo3.png') }}" alt="">
+            <img src="{{ asset('admin/assets/images/logo/unique-food-logo3.png') }}" alt="">
             {{-- <span class="sidebar-logo-text">Unique Foods</span> --}}
         </a>
 

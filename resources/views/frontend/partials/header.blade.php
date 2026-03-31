@@ -37,7 +37,7 @@
                 <div class="unique-logo-section">
                     <a href="{{ route('home') }}">
                         <div class="unique-logo-info">
-                            <img src="{{ asset('admin/assets/images/logo/unique food logo3.png') }}" alt="" style="max-width: 100px;">
+                            <img src="{{ asset('admin/assets/images/logo/unique-food-logo3.png') }}" alt="" style="max-width: 100px;">
                         </div>
                     </a>
                 </div>

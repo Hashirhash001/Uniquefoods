@@ -24,30 +24,33 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Shared categories loader (reusable)
-        $getCategories = function () {
-            return Cache::remember('header_categories', 3600, function () {
+        // ── Header: featured parent categories only ──────────────────────────
+        View::composer('frontend.partials.header', function ($view) {
+            $view->with('categories', Cache::remember('header_categories', 3600, function () {
                 return Category::with('activeChildren')
                     ->where('is_active', 1)
+                    ->where('is_featured', true)      // ← featured only for nav
                     ->whereNull('parent_id')
+                    ->orderBy('sort_order')
                     ->orderBy('name')
-                    ->take(10)
                     ->get();
-            });
-        };
-
-        // Share with header
-        View::composer('frontend.partials.header', function ($view) use ($getCategories) {
-            $view->with('categories', $getCategories());
+            }));
         });
 
-        // Share with shop page too
-        View::composer('frontend.shop', function ($view) use ($getCategories) {
-            $brands = Cache::remember('active_brands', 3600, function () {
+        // ── Shop page: ALL active parent categories ──────────────────────────
+        View::composer('frontend.shop', function ($view) {
+            $view->with('categories', Cache::remember('shop_categories', 3600, function () {
+                return Category::with('activeChildren')
+                    ->where('is_active', 1)
+                    ->whereNull('parent_id')          // ← no is_featured filter
+                    ->orderBy('sort_order')
+                    ->orderBy('name')
+                    ->get();
+            }));
+
+            $view->with('brands', Cache::remember('active_brands', 3600, function () {
                 return \App\Models\Brand::where('is_active', 1)->orderBy('name')->get();
-            });
-            $view->with('categories', $getCategories());
-            $view->with('brands', $brands);
+            }));
         });
     }
 

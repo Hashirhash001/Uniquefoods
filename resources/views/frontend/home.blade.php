@@ -100,6 +100,7 @@
     </div>
 </div>
 
+@if($featuredCategories->count() > 0)
 {{-- Featured Categories Section - UPDATED WITH SHOP FILTERS --}}
 <div class="rts-category-area rts-section-gapTop">
     <div class="container-2">
@@ -183,7 +184,9 @@
         </div>
     </div>
 </div>
+@endif
 
+@if($products->count() > 0)
 {{-- Featured Products Section - UPDATED WITH SHOP STYLE --}}
 <div class="rts-section-gap rts-featured-products">
     <div class="container-2">
@@ -214,6 +217,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Popular Products Section with Category Tabs - UPDATED WITH SHOP STYLE --}}
 @if(isset($popularProducts) && $popularProducts->count() > 0)
