@@ -84,7 +84,7 @@
                 </td>
                 <td data-label="Actions">
                     <div class="action-btns">
-                        <a href="{{ route('admin.products.edit', $product) }}"
+                        <a href="{{ route('admin.products.edit', $product) }}?page={{ request('page', 1) }}"
                            class="btn-icon"
                            title="Edit">
                             <i class="fas fa-edit"></i>

@@ -1028,20 +1028,43 @@
                 </p>
             </div>
 
-            <div class="uf-form-group">
-                <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">
-                    Password <span style="color:#ef4444;">*</span>
-                </label>
-                <div class="uf-pw-wrap">
-                    <input type="password" class="uf-form-input" id="ufDeletePw"
-                           placeholder="Enter your current password"
-                           onkeypress="if(event.key==='Enter') ufExecuteDelete()">
-                    <button type="button" class="uf-pw-eye" onclick="ufTogglePw('ufDeletePw', this)">
-                        <i class="fa-regular fa-eye"></i>
-                    </button>
+            {{-- ✅ Updated Step 3 — email for Google users, password for regular users --}}
+            @if(Auth::user()->isSocialUser())
+                <h3 style="font-size:19px;font-weight:800;color:#1e293b;margin-bottom:8px;">Confirm Your Identity</h3>
+                <p style="font-size:14px;color:#64748b;line-height:1.6;margin:0;">
+                    Type your email address to confirm permanent deletion.
+                </p>
+
+                <div class="uf-form-group" style="margin-top:20px;">
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">
+                        Your Email <span style="color:#ef4444">*</span>
+                    </label>
+                    <input type="email" class="uf-form-input" id="ufDeleteConfirmEmail"
+                        placeholder="{{ Auth::user()->email }}"
+                        onkeypress="if(event.key==='Enter') ufExecuteDelete()">
+                    <div class="uf-field-error" id="ufErrconfirmemail"></div>
                 </div>
-                <div class="uf-field-error" id="ufErr_delete_password"></div>
-            </div>
+            @else
+                <h3 style="font-size:19px;font-weight:800;color:#1e293b;margin-bottom:8px;">Confirm Your Identity</h3>
+                <p style="font-size:14px;color:#64748b;line-height:1.6;margin:0;">
+                    Enter your password to permanently delete your account.
+                </p>
+
+                <div class="uf-form-group" style="margin-top:20px;">
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">
+                        Password <span style="color:#ef4444">*</span>
+                    </label>
+                    <div class="uf-pw-wrap">
+                        <input type="password" class="uf-form-input" id="ufDeletePw"
+                            placeholder="Enter your current password"
+                            onkeypress="if(event.key==='Enter') ufExecuteDelete()">
+                        <button type="button" class="uf-pw-eye" onclick="ufTogglePw('ufDeletePw', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="uf-field-error" id="ufErrdeletepassword"></div>
+                </div>
+            @endif
 
             <div style="display:flex;gap:10px;margin-top:20px;">
                 <button type="button" class="uf-btn-keep" style="flex:1;" onclick="ufCloseDeleteModal()">
@@ -1100,6 +1123,7 @@
             new_email:             'ufNewEmail',
             otp:                   'ufEmailOtp',
             delete_password:       'ufDeletePw',
+            confirm_email: 'ufDeleteConfirmEmail',
         };
         Object.entries(errors).forEach(([field, messages]) => {
             const inputId = fieldMap[field];
@@ -1445,14 +1469,29 @@
 
     window.ufExecuteDelete = function () {
         ufClearErrors();
-        const btn      = document.getElementById('ufBtnConfirmDelete');
-        const password = document.getElementById('ufDeletePw')?.value?.trim() || '';
+        const btn = document.getElementById('ufBtnConfirmDelete');
+        const isSocial = {{ Auth::user()->isSocialUser() ? 'true' : 'false' }};
 
-        if (!password) {
-            const errEl = document.getElementById('ufErr_delete_password');
-            if (errEl) { errEl.textContent = 'Please enter your password.'; errEl.classList.add('show'); }
-            document.getElementById('ufDeletePw')?.classList.add('has-error');
-            return; // stop before hitting server
+        let payload = {};
+
+        if (isSocial) {
+            const confirmEmail = document.getElementById('ufDeleteConfirmEmail')?.value?.trim();
+            if (!confirmEmail) {
+                const errEl = document.getElementById('ufErrconfirmemail');
+                if (errEl) { errEl.textContent = 'Please enter your email address.'; errEl.classList.add('show'); }
+                document.getElementById('ufDeleteConfirmEmail')?.classList.add('has-error');
+                return;
+            }
+            payload = { confirm_email: confirmEmail };
+        } else {
+            const password = document.getElementById('ufDeletePw')?.value?.trim();
+            if (!password) {
+                const errEl = document.getElementById('ufErrdeletepassword');
+                if (errEl) { errEl.textContent = 'Please enter your password.'; errEl.classList.add('show'); }
+                document.getElementById('ufDeletePw')?.classList.add('has-error');
+                return;
+            }
+            payload = { password };
         }
 
         btn.disabled = true;
@@ -1460,12 +1499,8 @@
 
         fetch('{{ route("account.profile.delete") }}', {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',  // ← critical
-                'X-CSRF-TOKEN': CSRF,
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ password }),
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify(payload),
         })
         .then(r => r.json())
         .then(data => {
@@ -1483,7 +1518,7 @@
         .catch(() => {
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete Forever';
-            ufShowToast('Request failed.', 'error');
+            ufShowToast('Request failed. Try again.', 'error');
         });
     };
 

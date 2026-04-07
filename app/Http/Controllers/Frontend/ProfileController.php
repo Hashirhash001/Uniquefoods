@@ -203,8 +203,26 @@ class ProfileController extends Controller
         $user     = $this->authUser();
         $isSocial = $user->isSocialUser();
 
-        if (!$isSocial) {
-            // Explicitly read from JSON body — safe for DELETE requests
+        if ($isSocial) {
+            // ✅ Google users confirm by typing their email instead of password
+            $confirmEmail = $request->input('confirm_email') ?? $request->json('confirm_email');
+
+            if (empty($confirmEmail)) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['confirm_email' => ['Please enter your email address to confirm deletion.']],
+                ], 422);
+            }
+
+            if (strtolower($confirmEmail) !== strtolower($user->email)) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['confirm_email' => ['Email address does not match. Account not deleted.']],
+                ], 422);
+            }
+
+        } else {
+            // Password users confirm with password
             $password = $request->input('password') ?? $request->json('password');
 
             if (empty($password)) {
@@ -222,17 +240,13 @@ class ProfileController extends Controller
             }
         }
 
-        // Store id before logout
-        $userId = $user->id;
-
-        // Delete related data BEFORE logout (session still valid)
+        // Delete related data
         $user->orders()->delete();
         $user->addresses()->delete();
         $user->wishlistItems()->delete();
         $user->cartItems()->delete();
         $user->delete();
 
-        // Logout AFTER deletion
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

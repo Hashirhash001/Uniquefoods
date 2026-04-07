@@ -291,4 +291,20 @@ class ProductController extends Controller
         } while (Product::where('sku', $sku)->exists());
         return $sku;
     }
+
+    // Quick search for admin order editing
+    public function search(Request $request)
+    {
+        $q = $request->get('q', '');
+        $products = Product::where('is_active', 1)
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%$q%")
+                    ->orWhere('sku',  'like', "%$q%");
+            })
+            ->select('id', 'name', 'sku', 'price', 'stock')
+            ->limit(10)
+            ->get();
+
+        return response()->json($products);
+    }
 }

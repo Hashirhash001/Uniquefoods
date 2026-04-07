@@ -104,6 +104,133 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
+    public function edit(Order $order)
+    {
+        $order->load('user', 'items.product.primaryImage');
+        return view('admin.orders.edit', compact('order'));
+    }
+
+    public function update(Request $request, Order $order)
+    {
+        $request->validate([
+            'customer_name'     => 'required|string|max:255',
+            'customer_email'    => 'required|email|max:255',
+            'customer_phone'    => 'nullable|string|max:30',
+            'shipping_address'  => 'required|string|max:500',
+            'shipping_city'     => 'nullable|string|max:100',
+            'shipping_postcode' => 'nullable|string|max:20',
+            'shipping_country'  => 'nullable|string|max:100',
+            'shipping_cost'     => 'nullable|numeric|min:0',
+            'tax'               => 'nullable|numeric|min:0',
+            'discount'          => 'nullable|numeric|min:0',
+            'customer_notes'    => 'nullable|string|max:1000',
+            'items'             => 'required|array|min:1',
+            'items.*.product_id'=> 'required|exists:products,id',
+            'items.*.quantity'  => 'required|integer|min:1',
+            'items.*.price'     => 'required|numeric|min:0',
+            'items.*.weight'    => 'nullable|numeric|min:0',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $existingItems  = $order->items()->get()->keyBy('product_id');
+            $submittedItems = collect($request->items)->keyBy('product_id');
+
+            // 1. Remove items that were deleted
+            foreach ($existingItems as $productId => $item) {
+                if (!$submittedItems->has($productId)) {
+                    // Restore stock for removed item
+                    if ($item->product && !$item->product->is_weight_based) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                    $item->delete();
+                }
+            }
+
+            // 2. Update existing / add new items
+            foreach ($submittedItems as $productId => $itemData) {
+                $product = \App\Models\Product::find($productId);
+
+                if ($existingItems->has($productId)) {
+                    // Update existing
+                    $existing = $existingItems[$productId];
+                    $qtyDiff  = $existing->quantity - $itemData['quantity'];
+
+                    if ($qtyDiff !== 0 && $product && !$product->is_weight_based) {
+                        $product->increment('stock', $qtyDiff); // +diff restores, -diff deducts
+                    }
+
+                    $existing->update([
+                        'quantity' => $itemData['quantity'],
+                        'price'    => $itemData['price'],
+                        'weight'   => $itemData['weight'] ?? null,
+                        'subtotal' => $itemData['quantity'] * $itemData['price'],
+                    ]);
+                } else {
+                    // New item added
+                    if ($product && !$product->is_weight_based) {
+                        $product->decrement('stock', $itemData['quantity']);
+                    }
+
+                    $order->items()->create([
+                        'product_id'   => $productId,
+                        'product_name' => $product->name,
+                        'quantity'     => $itemData['quantity'],
+                        'price'        => $itemData['price'],
+                        'weight'       => $itemData['weight'] ?? null,
+                        'subtotal'     => $itemData['quantity'] * $itemData['price'],
+                    ]);
+                }
+            }
+
+            // 3. Recalculate totals
+            $order->refresh();
+            $subtotal     = $order->items->sum(fn($i) => $i->quantity * $i->price);
+            $shippingCost = $request->shipping_cost ?? $order->shipping_cost;
+            $tax          = $request->tax           ?? $order->tax;
+            $discount     = $request->discount      ?? $order->discount;
+            $total        = $subtotal + $shippingCost + $tax - $discount;
+
+            $order->update([
+                'customer_name'     => $request->customer_name,
+                'customer_email'    => $request->customer_email,
+                'customer_phone'    => $request->customer_phone,
+                'shipping_address'  => $request->shipping_address,
+                'shipping_city'     => $request->shipping_city,
+                'shipping_postcode' => $request->shipping_postcode,
+                'shipping_country'  => $request->shipping_country,
+                'shipping_cost'     => $shippingCost,
+                'tax'               => $tax,
+                'discount'          => $discount,
+                'subtotal'          => $subtotal,
+                'total'             => $total,
+                'customer_notes'    => $request->customer_notes,
+            ]);
+
+            // 4. Activity log
+            $order->activities()->create([
+                'user_id'     => auth()->id(),
+                'type'        => 'order_edited',
+                'title'       => 'Order Edited by Admin',
+                'description' => 'Order items and/or details were manually updated.',
+                'meta'        => [],
+            ]);
+
+            DB::commit();
+
+            // 5. Send mail with updated invoice
+            $order->refresh()->load('items.product');
+            Mail::to($order->customer_email)->queue(new \App\Mail\OrderUpdated($order));
+
+            return response()->json(['success' => true, 'message' => 'Order updated and customer notified.']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Stream PDF invoice in browser (no print page)
      */

@@ -184,6 +184,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
         // Products
+        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
         Route::resource('products', ProductController::class);
 
         // Categories
@@ -235,6 +236,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::prefix('orders')->name('orders.')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->name('index');
             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+            Route::get('/{order}/edit', [OrderController::class, 'edit'])->name('edit');
+            Route::put('/{order}',      [OrderController::class, 'update'])->name('update');
             Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('update-status');
             Route::put('/{order}/payment-status', [OrderController::class, 'updatePaymentStatus'])->name('update-payment-status');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->name('destroy');

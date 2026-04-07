@@ -417,7 +417,7 @@
 
                 {{-- ── FOOTER ── --}}
                 <div class="form-footer">
-                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('admin.products.index') }}?page={{ request('page', 1) }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left"></i> Cancel
                     </a>
                     <button type="submit" class="btn btn-primary">
@@ -435,7 +435,8 @@
 @push('scripts')
 <script>
 const PRODUCT_UPDATE_URL = "{{ route('admin.products.update', $product->id) }}";
-const PRODUCTS_INDEX_URL = "{{ route('admin.products.index') }}";
+const RETURNPAGE = "{{ request('page', 1) }}";
+const PRODUCTS_INDEX_URL = "{{ route('admin.products.index') }}" + "?page=" + RETURNPAGE;
 
 /* ── GROUP CARD TOGGLE ── */
 function toggleGroupCard(checkbox) {

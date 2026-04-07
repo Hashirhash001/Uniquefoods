@@ -198,7 +198,9 @@
             </div>
         </div>
         <div class="od-actions">
-            {{-- Opens PDF in new tab --}}
+            <a href="{{ route('admin.orders.edit', $order) }}" class="ob ob-blue">
+                <i class="fas fa-edit"></i> Edit Order
+            </a>
             <a href="{{ route('admin.orders.invoice', $order) }}"
                class="ob ob-pdf" target="_blank">
                 <i class="fas fa-file-pdf"></i> Invoice PDF

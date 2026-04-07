@@ -44,7 +44,7 @@
     /* ── Mode Cards ── */
     .mode-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
     }
     .mode-card {
@@ -274,7 +274,6 @@
                 'free'                   => 'Free Delivery',
                 'free_above_threshold'   => 'Free Above Threshold',
                 'distance_based'         => 'Distance Based',
-                'threshold_and_distance' => 'Threshold + Distance',
             ])->get($currentMode, 'Free Delivery') }}</span>
         </span>
     </div>
@@ -308,16 +307,6 @@
                 <span class="mode-icon">📍</span>
                 <div class="mode-title">Distance Based</div>
                 <div class="mode-desc">Charge by miles from store. Free above a threshold amount.</div>
-            </label>
-
-            <label class="mode-card {{ $currentMode === 'threshold_and_distance' ? 'selected' : '' }}"
-                   id="modeCard_threshold_and_distance" onclick="selectMode('threshold_and_distance')">
-                <input type="radio" name="mode" value="threshold_and_distance"
-                    {{ $currentMode === 'threshold_and_distance' ? 'checked' : '' }}>
-                <div class="mode-check"></div>
-                <span class="mode-icon">📍🛒</span>
-                <div class="mode-title">Threshold + Distance</div>
-                <div class="mode-desc">Free above threshold. Below it, charge by distance from store.</div>
             </label>
 
         </div>
@@ -497,111 +486,6 @@
             </div>
         </div>
 
-        {{-- ── Panel: Threshold + Distance ── --}}
-        <div class="settings-panel {{ $currentMode === 'threshold_and_distance' ? 'active' : '' }}"
-             id="panel_threshold_and_distance">
-            <div class="row g-4 align-items-stretch">
-
-                <div class="col-md-4">
-                    <label class="form-label">Free Delivery Above</label>
-                    <div class="input-group">
-                        <span class="input-group-text">£</span>
-                        <input type="number" id="td_threshold"
-                               step="0.01" min="0" class="form-control"
-                               value="{{ $settings->get('free_threshold')?->value ?? '50' }}"
-                               placeholder="50.00">
-                    </div>
-                    <small class="form-text">Orders at or above this get free delivery.</small>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Store Postcode</label>
-                    <input type="text" id="td_store_postcode" class="form-control"
-                           value="{{ $settings->get('store_postcode')?->value ?? '' }}"
-                           placeholder="e.g. SW1A 1AA" style="text-transform:uppercase">
-                    <small class="form-text">Origin for distance calculations.</small>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Max Delivery Radius</label>
-                    <div class="input-group">
-                        <input type="number" id="td_maxmiles"
-                               step="1" min="1" class="form-control"
-                               value="{{ $settings->get('max_delivery_miles')?->value ?? '10' }}"
-                               placeholder="10">
-                        <span class="input-group-text suffix">miles</span>
-                    </div>
-                    <small class="form-text">Orders beyond this radius are rejected.</small>
-                </div>
-
-                <div class="col-12"><div class="section-divider">Below Threshold Pricing</div></div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Base Charge</label>
-                    <div class="input-group">
-                        <span class="input-group-text">£</span>
-                        <input type="number" id="td_base"
-                               step="0.01" min="0" class="form-control"
-                               value="{{ $settings->get('base_rate')?->value ?? '2.99' }}"
-                               placeholder="2.99">
-                    </div>
-                    <small class="form-text">Fixed starting charge for orders below the threshold.</small>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Rate Per Mile</label>
-                    <div class="input-group">
-                        <span class="input-group-text">£</span>
-                        <input type="number" id="td_ppm"
-                               step="0.01" min="0" class="form-control"
-                               value="{{ $settings->get('rate_per_mile')?->value ?? '0.50' }}"
-                               placeholder="0.50">
-                    </div>
-                    <small class="form-text">Added per mile on top of base charge.</small>
-                </div>
-
-                <div class="col-md-4 d-flex">
-                    <div class="preview-box w-100">
-                        <h6>Example Estimates</h6>
-                        <div class="preview-row">
-                            <span class="label">Below threshold — 1 mi</span>
-                            <span class="value charged" id="td_1mi">—</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="label">Below threshold — 3 mi</span>
-                            <span class="value charged" id="td_3mi">—</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="label">Below threshold — 5 mi</span>
-                            <span class="value charged" id="td_5mi">—</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="label">Order £<span id="td_freeLabel">50</span>+</span>
-                            <span class="value free">FREE</span>
-                        </div>
-                        <div class="preview-row">
-                            <span class="label">Beyond radius</span>
-                            <span class="value rejected">Rejected</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <div class="info-alert">
-                        <i class="fas fa-info-circle"></i>
-                        <div>
-                            Orders at or above <strong>£<span id="td_alertThreshold">50</span></strong>
-                            get free delivery. Below that, customers are charged
-                            <strong>£<span id="td_alertBase">2.99</span> base +
-                            £<span id="td_alertPpm">0.50</span>/mile</strong>
-                            based on their postcode distance from the store.
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
     </div>
 </div>
 
@@ -624,7 +508,6 @@ const modeLabels = {
     free:                   'Free Delivery',
     free_above_threshold:   'Free Above Threshold',
     distance_based:         'Distance Based',
-    threshold_and_distance: 'Threshold + Distance',
 };
 
 // ── Mode Selection ──────────────────────────────────────────────────
@@ -731,13 +614,6 @@ function populateHiddenFields() {
             rate_per_mile:      document.getElementById('db_ppm')?.value        || '0.50',
             max_delivery_miles: document.getElementById('db_maxmiles')?.value   || '10',
             store_postcode:     document.getElementById('db_store_postcode')?.value.replace(/\s+/g,'').toUpperCase() || '',
-        },
-        threshold_and_distance: {
-            free_threshold:     document.getElementById('td_threshold')?.value  || '50',
-            base_rate:          document.getElementById('td_base')?.value       || '2.99',
-            rate_per_mile:      document.getElementById('td_ppm')?.value        || '0.50',
-            max_delivery_miles: document.getElementById('td_maxmiles')?.value   || '10',
-            store_postcode:     document.getElementById('td_store_postcode')?.value.replace(/\s+/g,'').toUpperCase() || '',
         },
     };
 

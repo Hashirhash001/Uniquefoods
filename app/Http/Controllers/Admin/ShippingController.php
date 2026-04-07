@@ -17,7 +17,7 @@ class ShippingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'mode'               => 'required|in:free,free_above_threshold,distance_based,threshold_and_distance',
+            'mode'               => 'required|in:free,free_above_threshold,distance_based',
             'free_threshold'     => 'nullable|numeric|min:0',
             'base_rate'          => 'nullable|numeric|min:0',
             'rate_per_mile'      => 'nullable|numeric|min:0',
