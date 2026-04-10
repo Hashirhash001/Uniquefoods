@@ -51,7 +51,7 @@
         gap: 0.5rem;
         transition: all 0.2s;
         border: none;
-        box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3);
+        /* box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3); */
     }
 
     .rts-btn.btn-primary:hover {
@@ -467,6 +467,77 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Matches the pattern used for toggle-status and delete-group above it
+    $(document).on('click', '.duplicate-group', function () {
+        const groupId   = $(this).data('id');
+        const groupName = $(this).data('name');
+
+        Swal.fire({
+            title: 'Duplicate Group',
+            html: `
+                <p style="font-size:14px;color:#6b7280;margin-bottom:12px;">
+                    This will create a new group copying all
+                    <strong>assigned products</strong>, <strong>product prices</strong>,
+                    <strong>discounts</strong>, and <strong>offers</strong>
+                    from <strong>${groupName}</strong>.
+                    Members are <u>not</u> copied.
+                </p>
+                <input id="dupeName" class="swal2-input" placeholder="New group name"
+                    value="Copy of ${groupName}" style="font-size:14px;">
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#08437b',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '<i class="fas fa-copy"></i> Duplicate',
+            cancelButtonText: 'Cancel',
+            preConfirm: () => {
+                const name = document.getElementById('dupeName').value.trim();
+                if (!name) {
+                    Swal.showValidationMessage('Please enter a name for the new group.');
+                    return false;
+                }
+                return name;
+            },
+        }).then(result => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Duplicating...',
+                html: 'Copying pricing rules and discounts...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
+
+            $.ajax({
+                url: `/admin/customer-groups/${groupId}/duplicate`,
+                method: 'POST',
+                data: { name: result.value, _token: $('meta[name="csrf-token"]').attr('content') },
+                success: res => {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Duplicated!',
+                            html: `<strong>${res.new_group_name}</strong> created with all pricing rules copied.`,
+                            confirmButtonColor: '#08437b',
+                            timer: 2500,
+                            showConfirmButton: false,
+                        }).then(() => loadGroups());
+                    }
+                },
+                error: xhr => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Failed to duplicate group.',
+                        confirmButtonColor: '#08437b',
+                    });
+                },
+            });
+        });
+    });
+
 });
 </script>
 @endpush

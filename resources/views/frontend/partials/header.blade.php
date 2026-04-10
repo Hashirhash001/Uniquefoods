@@ -222,7 +222,7 @@
                                         @if($cat->image)
                                             <img src="{{ $cat->image_url }}" alt="{{ $cat->name }}" class="unique-cat-img">
                                         @else
-                                            <i class="fa-regular fa-box unique-cat-icon"></i>
+                                            {{-- <i class="fa-regular fa-box unique-cat-icon"></i> --}}
                                         @endif
                                         <span class="unique-cat-name">{{ $cat->name }}</span>
                                         @if($hasChildren)
@@ -288,7 +288,7 @@
     <div class="unique-mobile-header">
         <div class="unique-mobile-top">
             <a href="{{ route('home') }}" class="unique-mobile-logo">
-                <img src="{{ asset('admin/assets/images/logo/unique food logo3.png') }}" alt="Unique Foods" style="height: 65px; width: auto;">
+                <img src="{{ asset('admin/assets/images/logo/unique-food-logo3.png') }}" alt="Unique Foods" style="height: 65px; width: auto;">
             </a>
             <div class="unique-mobile-actions">
                 <button class="unique-mobile-search-btn" id="uniqueMobileSearch">

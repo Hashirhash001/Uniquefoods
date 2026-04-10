@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\CustomerGroup;
-use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use App\Models\CustomerGroup;
+use App\Models\GroupDiscount;
+use App\Models\GroupProductOffer;
+use App\Models\ProductGroupPrice;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class CustomerGroupController extends Controller
 {
@@ -200,6 +204,96 @@ class CustomerGroupController extends Controller
         return view('admin.customer-groups.overview', compact(
             'customerGroup', 'products', 'categories', 'offers'
         ));
+    }
+
+    // ✅ Fixed — initialise before the closure, Intelephense knows the type
+    public function duplicate(Request $request, CustomerGroup $customerGroup)
+    {
+        $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('customer_groups', 'name')->whereNull('deleted_at'),
+            ],
+        ]);
+
+        /** @var CustomerGroup $newGroup */
+        $newGroup = null;
+
+        DB::transaction(function () use ($request, $customerGroup, &$newGroup) {
+
+            $newGroup = CustomerGroup::create([
+                'name'        => $request->name,
+                'slug'        => $this->uniqueSlug(Str::slug($request->name)),
+                'description' => $customerGroup->description,
+                'is_active'   => $customerGroup->is_active,
+            ]);
+
+            // Copy pivot products (customer_group_product table)
+            $productIds = $customerGroup->products()->pluck('products.id')->toArray();
+            if (!empty($productIds)) {
+                $newGroup->products()->sync($productIds);
+            }
+
+            // Copy product-specific prices
+            $customerGroup->productGroupPrices()->each(function ($price) use ($newGroup) {
+                ProductGroupPrice::create([
+                    'customer_group_id' => $newGroup->id,
+                    'product_id'        => $price->product_id,
+                    'price'             => $price->price,
+                ]);
+            });
+
+            // Copy group discounts
+            $customerGroup->groupDiscounts()->each(function ($discount) use ($newGroup) {
+                GroupDiscount::create([
+                    'customer_group_id' => $newGroup->id,
+                    'type'              => $discount->type,
+                    'value'             => $discount->value,
+                    'min_order_amount'  => $discount->min_order_amount,
+                    'is_active'         => $discount->is_active,
+                ]);
+            });
+
+            // Copy product offers
+            $customerGroup->groupProductOffers()->each(function ($offer) use ($newGroup) {
+                GroupProductOffer::create([
+                    'customer_group_id' => $newGroup->id,
+                    'offer_type'        => $offer->offer_type,
+                    'product_id'        => $offer->product_id,
+                    'category_id'       => $offer->category_id,
+                    'brand_id'          => $offer->brand_id,
+                    'offer_price'       => $offer->offer_price,
+                    'discount_type'     => $offer->discount_type,
+                    'discount_value'    => $offer->discount_value,
+                    'starts_at'         => now(),
+                    'ends_at'           => $offer->ends_at,
+                ]);
+            });
+        });
+
+        return response()->json([
+            'success'        => true,
+            'message'        => 'Group duplicated successfully.',
+            'new_group_name' => $newGroup->name,
+        ]);
+    }
+
+    private function uniqueSlug(string $slug): string
+    {
+        $original = $slug;
+        $counter  = 1;
+
+        while (
+            CustomerGroup::withTrashed()
+                ->where('slug', $slug)
+                ->exists()
+        ) {
+            $slug = $original . '-' . $counter++;
+        }
+
+        return $slug;
     }
 
 }

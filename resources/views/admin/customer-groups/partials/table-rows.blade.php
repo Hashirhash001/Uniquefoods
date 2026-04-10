@@ -45,6 +45,10 @@
                         <i class="fas fa-edit"></i>
                     </a>
 
+                    <button class="btn-icon duplicate-group" data-id="{{ $group->id }}" data-name="{{ $group->name }}" title="Duplicate Group">
+                        <i class="fas fa-copy"></i>
+                    </button>
+
                     <a href="{{ route('admin.customer-groups.product-prices', ['customerGroup' => $group->id]) }}"
                        class="btn-icon btn-success" title="Product Prices">
                         <i class="fas fa-tags"></i>

@@ -29,12 +29,17 @@ class HomeController extends Controller
         });
 
         $featuredCategories = Cache::remember('featured_categories', 3600, function () {
-            return Category::where('is_active', 1)
+            return Category::with(['activeChildren' => function ($query) {
+                    $query->where('is_featured', true);  // ← only featured subcategories
+                }])
+                ->where('is_active', 1)
                 ->where('is_featured', true)
                 ->orderBy('sort_order')
                 ->limit(10)
                 ->get();
         });
+
+        $featuredSubCategories = $featuredCategories->flatMap(fn($cat) => $cat->activeChildren);
 
         $products = Product::with(['category', 'brand', 'primaryImage', 'images', 'reviews'])
             ->where('is_active', 1)
@@ -87,6 +92,7 @@ class HomeController extends Controller
         return view('frontend.home', compact(
             'banners',
             'featuredCategories',
+            'featuredSubCategories',
             'products',
             'popularProducts',
             'popularCategories'

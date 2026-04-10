@@ -383,7 +383,7 @@
     .btn-primary {
         background: linear-gradient(135deg, #08437b 0%, #0f508d 100%);
         color: white;
-        box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3);
+        /* box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3); */
     }
 
     .btn-primary:hover {

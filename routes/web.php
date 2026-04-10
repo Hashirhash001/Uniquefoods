@@ -219,6 +219,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('product-offers', [GroupPricingController::class, 'storeProductOffer'])->name('product-offers.store');
 
             Route::get('overview', [CustomerGroupController::class, 'overview'])->name('overview');
+
+            Route::post('duplicate', [CustomerGroupController::class, 'duplicate'])
+                ->name('duplicate');
         });
 
         Route::delete('group-discounts/{discount}', [GroupPricingController::class, 'destroyGroupDiscount'])

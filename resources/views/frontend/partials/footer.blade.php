@@ -158,9 +158,10 @@
     </svg>
 </div>
 
-<div class="whatsapp">
+<div class="whatsapp-2">
     <a href="https://wa.me/+447939699530?text=Hi%20!%20I%20visited%20your%20grocery%20store%20and%20I'm%20interested%20in%20your%20products.%20Can%20you%20help%20me%20with%20availability,%20offers,%20and%20delivery%20details%3F" target="_blank">
-        <img src="frontend/assets/images/icons/whatsapp-logo1.png" class="whatsapp-logo" alt="">
+        <div class="share-option-icon whatsapp"><i class="fa-brands fa-whatsapp"></i></div>
+        {{-- <span class="share-option-label">WhatsApp</span> --}}
     </a>
 </div>
 
@@ -313,7 +314,7 @@
     }
 }
 
-.whatsapp {
+.whatsapp-2 {
   position: fixed;
   bottom: 15px;
   left: 22px;
@@ -322,6 +323,35 @@
 
 .whatsapp-logo {
   max-width: 60px;
+}
+
+.share-option-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    flex-shrink: 0;
+}
+
+.share-option:hover .share-option-icon {
+    transform: scale(1.1) rotate(-4deg);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+}
+
+.share-option-icon.whatsapp {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+}
+
+@media (max-width: 991px) {
+    .whatsapp-2 {
+        display: none;
+    }
 }
 </style>
 

@@ -226,7 +226,8 @@
     .single-category-one {
         background: #ffffff;
         border-radius: 14px;
-        padding: 20px 16px;
+        min-width: 0;
+        padding: 16px 10px;
         text-align: center;
         border: 1px solid #e5e7eb;
         height: 100%;
@@ -249,8 +250,11 @@
     }
 
     .single-category-one img {
-        width: 80px;
-        height: 80px;
+        width: 150px;
+        height: 100px;
+        min-width: 150px;       /* ← prevents shrink from parent constraint */
+        min-height: 100px;
+        max-width: none;        /* ← overrides the global img { max-width: 100% } */
         object-fit: contain;
         margin: 0 auto 14px;
         display: block;
@@ -678,6 +682,11 @@
         .banner-button-prev {
             left: 20px;
         }
+
+        .single-category-one img {
+            min-width: 120px;
+            min-height: 80px;
+        }
     }
 
     @media (max-width: 767px) {
@@ -961,5 +970,35 @@
 
         .container {
             padding: 0 !important;
+        }
+    }
+
+    #categoryPagination {
+        display: none; /* hidden on desktop by default */
+    }
+
+    @media (max-width: 839px) {
+        #categoryPagination {
+            display: block;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            margin-top: 14px;
+            margin-bottom: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Swiper injects this span inside the pagination div */
+        #categoryPagination .swiper-pagination-progressbar-fill {
+            background: #08437b;
+            border-radius: 999px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            transform-origin: left top;
+            transition: transform 0.25s ease;
         }
     }

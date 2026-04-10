@@ -100,7 +100,7 @@
     </div>
 </div>
 
-@if($featuredCategories->count() > 0)
+@if($featuredSubCategories->count() > 0)
 {{-- Featured Categories Section - UPDATED WITH SHOP FILTERS --}}
 <div class="rts-category-area rts-section-gapTop">
     <div class="container-2">
@@ -108,7 +108,7 @@
             <div class="col-lg-12">
                 <div class="title-area-between">
                     <h2 class="title-left mb--0">Featured Categories</h2>
-                    @if($featuredCategories->count() > 7)
+                    @if($featuredSubCategories->count() > 7)
                         <div class="next-prev-swiper-wrapper">
                             <div class="swiper-button-prev category-button-prev"><i class="fa-regular fa-chevron-left"></i></div>
                             <div class="swiper-button-next category-button-next"><i class="fa-regular fa-chevron-right"></i></div>
@@ -135,6 +135,10 @@
                                                 "nextEl": ".category-button-next",
                                                 "prevEl": ".category-button-prev"
                                             },
+                                            "pagination": {
+                                                "el": "#categoryPagination",
+                                                "type": "progressbar"
+                                            },
                                             "breakpoints": {
                                                 "0": { "slidesPerView": 2, "spaceBetween": 12 },
                                                 "320": { "slidesPerView": 2, "spaceBetween": 12 },
@@ -145,7 +149,7 @@
                                             }
                                         }' style="padding: 5px;">
                                             <div class="swiper-wrapper">
-                                                @forelse($featuredCategories as $category)
+                                                @forelse($featuredSubCategories as $category)
                                                     <div class="swiper-slide">
                                                         <div class="single-category-one">
                                                             {{-- ✅ Updated to use shop with category filter --}}
@@ -175,6 +179,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- Pagination bar — placed OUTSIDE the swiper div, right below it --}}
+                                    <div class="category-pagination" id="categoryPagination"></div>
                                 </div>
                             </div>
                         </div>
