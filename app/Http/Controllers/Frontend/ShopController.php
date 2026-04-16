@@ -55,20 +55,22 @@ class ShopController extends Controller
         return view('frontend.shop', compact('categories', 'brands'));
     }
 
+    // ================================================
+    // FILTER (shop page AJAX)
+    // ================================================
     public function filter(Request $request, PricingService $pricingService)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-
-        // Preload groups to avoid N+1
         if ($user) {
             $user->loadMissing('groups');
         }
 
         $query = Product::with(['category', 'brand', 'images', 'reviews'])
             ->where('is_active', 1)
-            ->visibleTo($user);  // ← GROUP FILTER
+            ->visibleTo($user);
 
+        // ── Price ──
         if ($request->filled('min_price')) {
             $query->where('price', '>=', $request->min_price);
         }
@@ -76,6 +78,7 @@ class ShopController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
+        // ── Categories (include children) ──
         if ($request->filled('categories') && is_array($request->categories)) {
             $allCategoryIds = [];
             foreach ($request->categories as $catId) {
@@ -89,20 +92,151 @@ class ShopController extends Controller
             $query->whereIn('category_id', array_unique($allCategoryIds));
         }
 
+        // ── Brands ──
         if ($request->filled('brands') && is_array($request->brands)) {
             $query->whereIn('brand_id', $request->brands);
         }
 
-        switch ($request->get('sort', 'latest')) {
-            case 'price_low':  $query->orderBy('price', 'asc');  break;
-            case 'price_high': $query->orderBy('price', 'desc'); break;
-            case 'name_asc':   $query->orderBy('name', 'asc');   break;
-            case 'name_desc':  $query->orderBy('name', 'desc');  break;
-            default:           $query->latest();
+        // ── Search ──
+        if ($request->filled('q')) {
+            $q = trim($request->get('q'));
+            $ql = strtolower($q);
+
+            // Split into meaningful words (2+ chars)
+            $words = array_values(array_filter(
+                explode(' ', preg_replace('/\s+/', ' ', $q)),
+                fn($w) => strlen(trim($w)) >= 2
+            ));
+
+            // Compound: "water proof" → "waterproof"
+            $compound = count($words) > 1 ? implode('', $words) : null;
+
+            $query->where(function ($sub) use ($q, $words, $compound) {
+                // Full phrase in name or SKU
+                $sub->where('name', 'LIKE', "%{$q}%")
+                    ->orWhere('sku',  'LIKE', "%{$q}%");
+
+                // Multi-word: ALL words must appear in name (AND logic)
+                // Catches "HARROGATE- SPRING WATER" when searching "spring water"
+                if (count($words) > 1) {
+                    $sub->orWhere(function ($and) use ($words) {
+                        foreach ($words as $word) {
+                            $and->where('name', 'LIKE', "%{$word}%");
+                        }
+                    });
+                }
+
+                // Compound word: "water proof" → also try "waterproof"
+                if ($compound) {
+                    $sub->orWhere('name', 'LIKE', "%{$compound}%");
+                }
+
+                // Category / brand full-phrase match
+                $sub->orWhereHas('brand',    fn($b) => $b->where('name', 'LIKE', "%{$q}%"))
+                    ->orWhereHas('category', fn($c) => $c->where('name', 'LIKE', "%{$q}%"));
+
+                // Description — only for phrases 5+ chars to avoid noise
+                if (strlen($q) >= 5) {
+                    $sub->orWhere('description', 'LIKE', "%{$q}%");
+                }
+            });
+
+            // ── Require name relevance: at least one word must be in name
+            //    or category/brand name — blocks description-only matches
+            //    like Volvic Water matching "oil"
+            $query->where(function ($must) use ($q, $words, $compound) {
+                $must->where('name', 'LIKE', "%{$q}%");
+
+                if (count($words) > 1) {
+                    $must->orWhere(function ($and) use ($words) {
+                        foreach ($words as $word) {
+                            $and->where('name', 'LIKE', "%{$word}%");
+                        }
+                    });
+                }
+
+                if ($compound) {
+                    $must->orWhere('name', 'LIKE', "%{$compound}%");
+                }
+
+                $must->orWhereHas('category', fn($c) => $c->where('name', 'LIKE', "%{$q}%"))
+                     ->orWhereHas('brand',    fn($b) => $b->where('name', 'LIKE', "%{$q}%"));
+            });
+
+            // ── Word-boundary guard for short single-word queries ──
+            // Prevents "foil","oily","boiled","toilet" matching when searching "oil"
+            if (count($words) === 1 && strlen($q) <= 5) {
+                $pattern = '(^|[[:space:][:punct:]])' . preg_quote($ql, '/') . '([[:space:][:punct:]]|$)';
+                $query->where(function ($wb) use ($pattern, $q) {
+                    $wb->whereRaw('LOWER(name) REGEXP ?', [$pattern])
+                    ->orWhereHas('category', fn($c) =>
+                            $c->whereRaw('LOWER(name) REGEXP ?', [$pattern])
+                    )
+                    ->orWhereHas('brand', fn($b) =>
+                            $b->whereRaw('LOWER(name) REGEXP ?', [$pattern])
+                    );
+                });
+            }
+        }
+
+        // ── Sort ──
+        $sort = $request->get('sort', 'latest');
+
+        if ($request->filled('q') && $sort === 'latest') {
+            $q  = trim($request->get('q'));
+            $ql = strtolower($q);
+
+            $words    = array_values(array_filter(
+                explode(' ', preg_replace('/\s+/', ' ', $q)),
+                fn($w) => strlen(trim($w)) >= 2
+            ));
+            $compound = count($words) > 1 ? implode('', $words) : $ql;
+
+            // Build dynamic Tier 4 (all words present) condition
+            $tier4Conditions = implode(' AND ', array_fill(0, max(count($words), 1), 'LOWER(name) LIKE ?'));
+            $tier4Bindings   = array_map(fn($w) => '%' . strtolower($w) . '%', $words ?: [$ql]);
+
+            $query->orderByRaw("
+                CASE
+                    WHEN LOWER(name) = ?                    THEN 0
+                    WHEN LOWER(name) LIKE ?                 THEN 1
+                    WHEN LOWER(name) LIKE ?                 THEN 2
+                    WHEN LOWER(name) LIKE ?
+                     AND (LOWER(name) LIKE ?
+                       OR LOWER(name) LIKE ?
+                       OR LOWER(name) LIKE ?)               THEN 3
+                    WHEN {$tier4Conditions}                 THEN 4
+                    WHEN LOWER(name) LIKE ?                 THEN 5
+                    ELSE 6
+                END ASC,
+                name ASC
+            ", array_merge(
+                [
+                    $ql,                           // Tier 0: exact
+                    $ql . '%',                     // Tier 1: starts with
+                    '%' . $compound . '%',         // Tier 2: compound word
+                    '%' . $ql . '%',               // Tier 3: contains (base)
+                    '% ' . $ql . '%',              // Tier 3: after space
+                    '%-' . $ql . '%',              // Tier 3: after hyphen
+                    $ql . ' %',                    // Tier 3: at word start
+                ],
+                $tier4Bindings,                    // Tier 4: all words in name
+                ['%' . $ql . '%']                  // Tier 5: contains anywhere
+            ));
+
+        } else {
+            switch ($sort) {
+                case 'price_low':  $query->orderBy('price', 'asc');  break;
+                case 'price_high': $query->orderBy('price', 'desc'); break;
+                case 'name_asc':   $query->orderBy('name', 'asc');   break;
+                case 'name_desc':  $query->orderBy('name', 'desc');  break;
+                default:           $query->latest();
+            }
         }
 
         $products = $query->paginate(24);
 
+        // ── Wishlist IDs ──
         $wishlistedIds = [];
         if ($user) {
             $wishlist = \App\Models\Wishlist::where('user_id', $user->id)->first();
@@ -233,9 +367,12 @@ class ShopController extends Controller
         return view('frontend.show', compact('product', 'relatedProducts', 'offers', 'hasPurchased', 'hasReviewed'));
     }
 
+    // ================================================
+    // SEARCH (header dropdown AJAX)
+    // ================================================
     public function search(Request $request, PricingService $pricingService)
     {
-        $q = $request->get('q', '');
+        $q = trim($request->get('q', ''));
 
         if (strlen($q) < 2) {
             return response()->json(['success' => true, 'products' => [], 'categories' => [], 'total' => 0]);
@@ -247,14 +384,82 @@ class ShopController extends Controller
             $user->loadMissing('groups');
         }
 
-        $products = Product::with(['category', 'brand', 'primaryImage'])
+        $ql       = strtolower($q);
+        $words    = array_values(array_filter(
+            explode(' ', preg_replace('/\s+/', ' ', $q)),
+            fn($w) => strlen(trim($w)) >= 2
+        ));
+        $compound = count($words) > 1 ? implode('', $words) : null;
+
+        $tier4Conditions = implode(' AND ', array_fill(0, max(count($words), 1), 'LOWER(name) LIKE ?'));
+        $tier4Bindings   = array_map(fn($w) => '%' . strtolower($w) . '%', $words ?: [$ql]);
+
+        $productQuery = Product::with(['category', 'primaryImage'])
             ->where('is_active', 1)
-            ->visibleTo($user)   // ← GROUP FILTER
-            ->where(function ($query) use ($q) {
-                $query->where('name', 'LIKE', "%{$q}%")
-                      ->orWhere('description', 'LIKE', "%{$q}%")
-                      ->orWhere('sku', 'LIKE', "%{$q}%");
-            })
+            ->visibleTo($user)
+            ->where(function ($sub) use ($q, $words, $compound) {
+                $sub->where('name', 'LIKE', "%{$q}%")
+                    ->orWhere('sku',  'LIKE', "%{$q}%");
+
+                if (count($words) > 1) {
+                    $sub->orWhere(function ($and) use ($words) {
+                        foreach ($words as $word) {
+                            $and->where('name', 'LIKE', "%{$word}%");
+                        }
+                    });
+                }
+
+                if ($compound) {
+                    $sub->orWhere('name', 'LIKE', "%{$compound}%");
+                }
+
+                if (strlen($q) >= 5) {
+                    $sub->orWhere('description', 'LIKE', "%{$q}%");
+                }
+            });
+
+        // ── Word-boundary guard for short single-word queries ──
+        if (count($words) === 1 && strlen($q) <= 5) {
+            $pattern = '(^|[[:space:][:punct:]])' . preg_quote($ql, '/') . '([[:space:][:punct:]]|$)';
+            $productQuery->where(function ($wb) use ($pattern) {
+                $wb->whereRaw('LOWER(name) REGEXP ?', [$pattern])
+                ->orWhereHas('category', fn($c) =>
+                        $c->whereRaw('LOWER(name) REGEXP ?', [$pattern])
+                )
+                ->orWhereHas('brand', fn($b) =>
+                        $b->whereRaw('LOWER(name) REGEXP ?', [$pattern])
+                );
+            });
+        }
+
+        $products = $productQuery
+            ->orderByRaw("
+                CASE
+                    WHEN LOWER(name) = ?                    THEN 0
+                    WHEN LOWER(name) LIKE ?                 THEN 1
+                    WHEN LOWER(name) LIKE ?                 THEN 2
+                    WHEN LOWER(name) LIKE ?
+                    AND (LOWER(name) LIKE ?
+                    OR LOWER(name) LIKE ?
+                    OR LOWER(name) LIKE ?)               THEN 3
+                    WHEN {$tier4Conditions}                 THEN 4
+                    WHEN LOWER(name) LIKE ?                 THEN 5
+                    ELSE 6
+                END ASC,
+                name ASC
+            ", array_merge(
+                [
+                    $ql,
+                    $ql . '%',
+                    '%' . ($compound ?? $ql) . '%',
+                    '%' . $ql . '%',
+                    '% ' . $ql . '%',
+                    '%-' . $ql . '%',
+                    $ql . ' %',
+                ],
+                $tier4Bindings,
+                ['%' . $ql . '%']
+            ))
             ->limit(8)
             ->get()
             ->map(function ($product) use ($pricingService, $user) {
@@ -270,9 +475,17 @@ class ShopController extends Controller
                 ];
             });
 
+        // ── Categories ──
         $categories = Category::where('is_active', 1)
             ->where('name', 'LIKE', "%{$q}%")
-            ->limit(5)
+            ->orderByRaw("
+                CASE
+                    WHEN LOWER(name) = ?    THEN 0
+                    WHEN LOWER(name) LIKE ? THEN 1
+                    ELSE 2
+                END ASC
+            ", [$ql, $ql . '%'])
+            ->limit(3)
             ->get()
             ->map(fn($cat) => [
                 'id'    => $cat->id,

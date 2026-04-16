@@ -566,6 +566,10 @@ $(document).ready(function() {
     });
 
     function performSearch(query) {
+        // Show loading state immediately
+        searchResults.html('<div class="search-empty"><i class="fa-regular fa-spinner fa-spin"></i><p>Searching...</p></div>');
+        searchDropdown.addClass('show');
+
         $.ajax({
             url: '{{ route("shop.search") }}',
             type: 'GET',
@@ -582,35 +586,54 @@ $(document).ready(function() {
 
     function displaySearchResults(data, query) {
         let html = '';
+
         if (data.products.length === 0 && data.categories.length === 0) {
-            html = `<div class="search-empty"><i class="fa-regular fa-magnifying-glass"></i><p>No results found for "${query}"</p></div>`;
+            html = `<div class="search-empty">
+                        <i class="fa-regular fa-magnifying-glass"></i>
+                        <p>No results for "<strong>${query}</strong>"</p>
+                        <small>Try different keywords</small>
+                    </div>`;
         } else {
-            if (data.categories.length > 0) {
-                html += '<div class="search-section-title">Categories</div>';
-                data.categories.forEach(cat => {
-                    html += `<a href="{{ route('shop') }}?categories[]=${cat.id}" class="search-item">
-                        <div class="search-item-category"><i class="fa-regular fa-folder"></i></div>
-                        <div class="search-item-info"><div class="search-item-name">${cat.name}</div></div>
-                        <i class="fa-regular fa-arrow-right"></i></a>`;
-                });
-            }
+            // ── PRODUCTS FIRST ──
             if (data.products.length > 0) {
-                html += '<div class="search-section-title" style="margin-top:16px;">Products</div>';
+                html += '<div class="search-section-title">Products</div>';
                 data.products.forEach(product => {
                     const stockText = product.stock > 0
-                        ? `<div class="search-item-stock">In Stock</div>`
-                        : `<div class="search-item-stock out">Out of Stock</div>`;
-                    html += `<a href="/product/${product.slug}" class="search-item">
-                        <img src="${product.image_url}" alt="${product.name}" class="search-item-image">
-                        <div class="search-item-info">
-                            <div class="search-item-name">${product.name}</div>
-                            <div class="search-item-meta">${product.category || 'General'}</div>
-                            ${stockText}
-                        </div>
-                        <div class="search-item-price">£${product.price}</div></a>`;
+                        ? `<span class="search-item-stock">In Stock</span>`
+                        : `<span class="search-item-stock out">Out of Stock</span>`;
+                    html += `
+                        <a href="/product/${product.slug}" class="search-item">
+                            <img src="${product.image_url}" alt="${product.name}" class="search-item-image"
+                                onerror="this.src='/frontend/assets/images/products/product-placeholder.svg'">
+                            <div class="search-item-info">
+                                <div class="search-item-name">${product.name}</div>
+                                <div class="search-item-meta">${product.category || 'General'}</div>
+                                ${stockText}
+                            </div>
+                            <div class="search-item-price">£${product.price}</div>
+                        </a>`;
                 });
-            };
+            }
+
+            // ── CATEGORIES BELOW ──
+            if (data.categories.length > 0) {
+                html += '<div class="search-section-title" style="margin-top:12px;">Categories</div>';
+                data.categories.forEach(cat => {
+                    html += `
+                        <a href="{{ route('shop') }}?categories[]=${cat.id}" class="search-item">
+                            <div class="search-item-category"><i class="fa-regular fa-folder"></i></div>
+                            <div class="search-item-info"><div class="search-item-name">${cat.name}</div></div>
+                            <i class="fa-regular fa-arrow-right"></i>
+                        </a>`;
+                });
+            }
+
+            html += `<a href="{{ route('shop') }}?q=${encodeURIComponent(query)}" class="search-view-all">
+                        View all results for "<strong>${query}</strong>"
+                        <i class="fa-regular fa-arrow-right"></i>
+                    </a>`;
         }
+
         searchResults.html(html);
         searchDropdown.addClass('show');
     }
@@ -670,28 +693,52 @@ $(document).ready(function() {
 
     function displayMobileSearchResults(data, query) {
         let html = '';
+
         if (data.products.length === 0 && data.categories.length === 0) {
-            html = `<div class="search-empty"><i class="fa-regular fa-magnifying-glass"></i><p>No results found</p></div>`;
+            html = `<div class="search-empty">
+                        <i class="fa-regular fa-magnifying-glass"></i>
+                        <p>No results for "<strong>${query}</strong>"</p>
+                        <small>Try different keywords</small>
+                    </div>`;
         } else {
-            if (data.categories.length > 0) {
-                html += '<div class="search-section-title">Categories</div>';
-                data.categories.forEach(cat => {
-                    html += `<a href="{{ route('shop') }}?categories[]=${cat.id}" class="search-item">
-                        <div class="search-item-category"><i class="fa-regular fa-folder"></i></div>
-                        <div class="search-item-info"><div class="search-item-name">${cat.name}</div></div></a>`;
-                });
-            }
             if (data.products.length > 0) {
-                html += '<div class="search-section-title" style="margin-top:16px;">Products</div>';
+                html += '<div class="search-section-title">Products</div>';
                 data.products.forEach(product => {
-                    html += `<a href="/product/${product.slug}" class="search-item">
-                        <img src="${product.image_url}" alt="${product.name}" class="search-item-image">
-                        <div class="search-item-info"><div class="search-item-name">${product.name}</div></div>
-                        <div class="search-item-price">£${product.price}</div></a>`;
+                    const stockText = product.stock > 0
+                        ? `<span class="search-item-stock">In Stock</span>`
+                        : `<span class="search-item-stock out">Out of Stock</span>`;
+                    html += `
+                        <a href="/product/${product.slug}" class="search-item">
+                            <img src="${product.image_url}" alt="${product.name}" class="search-item-image"
+                                onerror="this.src='/frontend/assets/images/products/product-placeholder.svg'">
+                            <div class="search-item-info">
+                                <div class="search-item-name">${product.name}</div>
+                                <div class="search-item-meta">${product.category || 'General'}</div>
+                                ${stockText}
+                            </div>
+                            <div class="search-item-price">£${product.price}</div>
+                        </a>`;
                 });
             }
-            html += `<a href="{{ route('shop') }}?q=${encodeURIComponent(query)}" class="search-view-all">View All</a>`;
+
+            if (data.categories.length > 0) {
+                html += '<div class="search-section-title" style="margin-top:12px;">Categories</div>';
+                data.categories.forEach(cat => {
+                    html += `
+                        <a href="{{ route('shop') }}?categories[]=${cat.id}" class="search-item">
+                            <div class="search-item-category"><i class="fa-regular fa-folder"></i></div>
+                            <div class="search-item-info"><div class="search-item-name">${cat.name}</div></div>
+                            <i class="fa-regular fa-arrow-right"></i>
+                        </a>`;
+                });
+            }
+
+            html += `<a href="{{ route('shop') }}?q=${encodeURIComponent(query)}" class="search-view-all">
+                        View all results for "<strong>${query}</strong>"
+                        <i class="fa-regular fa-arrow-right"></i>
+                    </a>`;
         }
+
         mobileSearchResults.html(html);
         mobileSearchDropdown.addClass('show');
     }

@@ -721,13 +721,16 @@ $(document).ready(function() {
             $('#shopProductsContainer').append(skeletonCard.repeat(4));
         }
 
+        var urlQ = new URLSearchParams(window.location.search).get('q') || '';
+
         var data = {
             page:       currentPage,
             min_price:  activeFilters.minPrice,
             max_price:  activeFilters.maxPrice,
             categories: activeFilters.categories,
             brands:     activeFilters.brands,
-            sort:       currentSort || 'latest'
+            sort:       currentSort || 'latest',
+            q: urlQ
         };
 
         $.ajax({
@@ -926,6 +929,28 @@ $(document).ready(function() {
     // Initial load
     updateActiveFilters();
     loadProducts(true);
+
+    // ── Search query banner ──
+    var urlQ = new URLSearchParams(window.location.search).get('q') || '';
+    if (urlQ) {
+        // Inject a search heading above the product grid
+        $('#shopProductsContainer').before(`
+            <div id="shopSearchHeading" style="
+                width:100%; padding: 12px 0 4px;
+                font-size: 15px; color: #6b7280;
+                border-bottom: 1px solid #e5e7eb;
+                margin-bottom: 16px;
+            ">
+                Showing results for <strong style="color:#111827">"${urlQ}"</strong>
+                <a href="{{ route('shop') }}" style="
+                    float:right; font-size:13px; color:#08437b;
+                    text-decoration:none; font-weight:600;
+                ">
+                    <i class="fa-regular fa-xmark"></i> Clear search
+                </a>
+            </div>
+        `);
+    }
 });
 </script>
 @endpush

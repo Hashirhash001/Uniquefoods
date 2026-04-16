@@ -1,9 +1,8 @@
 /**
  * ================================================
- * CART & WISHLIST - OPTIMIZED VERSION
- * - Prevents duplicate AJAX calls
- * - Skips cart AJAX if server already provided data
- * - All existing functionality preserved
+ * CART & WISHLIST - OPTIMIZED v2
+ * Fixes: duplicate toast / double AJAX on product detail page
+ * Optimizes: debounce qty, request deduplication, batch DOM sync
  * ================================================
  */
 
@@ -12,16 +11,21 @@
 
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-    // ── Fetch guards (prevent duplicate simultaneous calls) ──
+    // ── Fetch guards ──
     let _cartLoading = false;
     let _wishlistCountLoading = false;
     let _wishlistItemsLoading = false;
 
+    // ── Global flag: prevent any second handler from firing ──
+    // Set to true for the duration of a cart AJAX call
+    let _addToCartLocked = false;
+
     // ================================================
-    // TOAST NOTIFICATION SYSTEM
+    // TOAST
     // ================================================
     const Toast = {
         container: null,
+        _dedupeMap: {},   // ← NEW: prevent same message twice within 800ms
 
         init() {
             if (!this.container) {
@@ -33,31 +37,24 @@
         show(message, type = 'success', title = null, duration = 3000) {
             this.init();
 
-            const icons = {
-                success: 'fa-circle-check',
-                error: 'fa-circle-xmark',
-                warning: 'fa-triangle-exclamation'
-            };
+            // ── Deduplicate identical toasts ──
+            const key = type + '|' + message;
+            if (this._dedupeMap[key]) return;
+            this._dedupeMap[key] = true;
+            setTimeout(() => delete this._dedupeMap[key], 800);
 
-            const titles = {
-                success: title || 'Success!',
-                error: title || 'Error!',
-                warning: title || 'Warning!'
-            };
+            const icons  = { success: 'fa-circle-check', error: 'fa-circle-xmark', warning: 'fa-triangle-exclamation' };
+            const titles = { success: title || 'Success!', error: title || 'Error!', warning: title || 'Warning!' };
 
             const toast = $(`
                 <div class="toast-notification toast-${type}">
-                    <div class="toast-icon">
-                        <i class="fa-solid ${icons[type]}"></i>
-                    </div>
+                    <div class="toast-icon"><i class="fa-solid ${icons[type]}"></i></div>
                     <div class="toast-content">
                         <p class="toast-title">${titles[type]}</p>
                         <p class="toast-message">${message}</p>
                     </div>
-                    <button class="toast-close">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                    <div class="toast-progress" style="width: 100%"></div>
+                    <button class="toast-close"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="toast-progress" style="width:100%"></div>
                 </div>
             `);
 
@@ -73,7 +70,6 @@
             }, 50);
 
             const dismissTimeout = setTimeout(() => this.dismiss(toast), duration);
-
             toast.find('.toast-close').on('click', () => {
                 clearTimeout(dismissTimeout);
                 clearInterval(interval);
@@ -86,9 +82,9 @@
             setTimeout(() => toast.remove(), 400);
         },
 
-        success(message, title) { this.show(message, 'success', title); },
-        error(message, title)   { this.show(message, 'error', title); },
-        warning(message, title) { this.show(message, 'warning', title); }
+        success(msg, title) { this.show(msg, 'success', title); },
+        error(msg, title)   { this.show(msg, 'error', title); },
+        warning(msg, title) { this.show(msg, 'warning', title); }
     };
 
     window.Toast = Toast;
@@ -100,15 +96,18 @@
         isProcessing: false,
         cartItems: {},
         processingProducts: new Set(),
+        _qtyDebounceTimers: {},   // ← NEW: debounce rapid +/- taps
 
         add(productId, quantity = 1, weight = null) {
-            if (this.isProcessing || this.processingProducts.has(productId)) return;
+            // ── Primary duplicate-call guard ──
+            if (_addToCartLocked) return;
+            if (this.processingProducts.has(productId)) return;
 
             const button = $(`.add-to-cart-btn[data-product-id="${productId}"]`);
             if (button.hasClass('btn-loading')) return;
 
+            _addToCartLocked = true;
             button.addClass('btn-loading').prop('disabled', true);
-            this.isProcessing = true;
             this.processingProducts.add(productId);
 
             $.ajax({
@@ -126,13 +125,14 @@
                         Toast.error(response.message || 'Failed to add to cart');
                         button.removeClass('btn-loading').prop('disabled', false);
                     }
-                    this.isProcessing = false;
-                    this.processingProducts.delete(productId);
                 },
                 error: (xhr) => {
                     Toast.error(xhr.responseJSON?.message || 'Error adding to cart');
                     button.removeClass('btn-loading').prop('disabled', false);
-                    this.isProcessing = false;
+                },
+                complete: () => {
+                    // Always release locks in complete so they release even on network failure
+                    _addToCartLocked = false;
                     this.processingProducts.delete(productId);
                 }
             });
@@ -164,53 +164,50 @@
         },
 
         updateQuantity(productId, action) {
-            if (this.isProcessing || this.processingProducts.has(productId)) return;
-
-            this.isProcessing = true;
-            this.processingProducts.add(productId);
+            if (this.processingProducts.has(productId)) return;
 
             const qtyDisplay = $(`.cart-quantity-controls[data-product-id="${productId}"] .cart-qty-value`);
-            const currentQty = parseInt(qtyDisplay.text());
+            const currentQty = parseInt(qtyDisplay.text()) || 0;
             const newQty = action === 'plus' ? currentQty + 1 : currentQty - 1;
 
-            if (newQty < 0) {
-                this.isProcessing = false;
-                this.processingProducts.delete(productId);
-                return;
-            }
+            if (newQty < 0) return;
 
-            if (newQty >= 0) {
-                qtyDisplay.text(newQty).addClass('updating');
-                setTimeout(() => qtyDisplay.removeClass('updating'), 300);
-            }
+            // Optimistic UI immediately
+            qtyDisplay.text(newQty).addClass('updating');
+            setTimeout(() => qtyDisplay.removeClass('updating'), 300);
 
-            $.ajax({
-                url: '/cart/update',
-                method: 'POST',
-                data: { product_id: productId, action, _token: csrfToken },
-                success: (response) => {
-                    if (response.success) {
-                        this.updateUI(response.cart);
-                        if (newQty === 0) {
-                            this.showAddToCartButton(productId);
-                            delete this.cartItems[productId];
+            // ── Debounce: wait 350ms before sending AJAX ──
+            clearTimeout(this._qtyDebounceTimers[productId]);
+            this._qtyDebounceTimers[productId] = setTimeout(() => {
+                this.processingProducts.add(productId);
+
+                $.ajax({
+                    url: '/cart/update',
+                    method: 'POST',
+                    data: { product_id: productId, action, _token: csrfToken },
+                    success: (response) => {
+                        if (response.success) {
+                            this.updateUI(response.cart);
+                            if (newQty === 0) {
+                                this.showAddToCartButton(productId);
+                                delete this.cartItems[productId];
+                            } else {
+                                this.cartItems[productId] = newQty;
+                            }
                         } else {
-                            this.cartItems[productId] = newQty;
+                            qtyDisplay.text(currentQty);
+                            Toast.error('Failed to update quantity');
                         }
-                    } else {
+                    },
+                    error: () => {
                         qtyDisplay.text(currentQty);
-                        Toast.error('Failed to update quantity');
+                        Toast.error('Error updating cart');
+                    },
+                    complete: () => {
+                        this.processingProducts.delete(productId);
                     }
-                    this.isProcessing = false;
-                    this.processingProducts.delete(productId);
-                },
-                error: () => {
-                    qtyDisplay.text(currentQty);
-                    Toast.error('Error updating cart');
-                    this.isProcessing = false;
-                    this.processingProducts.delete(productId);
-                }
-            });
+                });
+            }, 350);
         },
 
         showAddToCartButton(productId) {
@@ -226,9 +223,7 @@
         },
 
         remove(productId) {
-            if (this.isProcessing || this.processingProducts.has(productId)) return;
-
-            this.isProcessing = true;
+            if (this.processingProducts.has(productId)) return;
             this.processingProducts.add(productId);
 
             $.ajax({
@@ -244,91 +239,84 @@
                     } else {
                         Toast.error(response.message || 'Failed to remove from cart');
                     }
-                    this.isProcessing = false;
-                    this.processingProducts.delete(productId);
                 },
                 error: (xhr) => {
                     Toast.error(xhr.responseJSON?.message || 'Error removing from cart');
-                    this.isProcessing = false;
+                },
+                complete: () => {
                     this.processingProducts.delete(productId);
                 }
             });
         },
 
         updateUI(cartData) {
-            if (!cartData) {
-                this.loadCart();
-                return;
-            }
+            if (!cartData) { this.loadCart(); return; }
 
             const itemCount = cartData.items?.length || 0;
-            const total     = cartData.total || 0;
+            const total     = cartData.total    || 0;
             const subtotal  = cartData.subtotal || 0;
 
-            const countBadges = $('#cartCount, #mobileCartCount, #headerCartCount, .cart-count-badge');
-            countBadges.text(itemCount).addClass('badge-pulse');
-            setTimeout(() => countBadges.removeClass('badge-pulse'), 400);
+            // ── Batch DOM writes ──
+            requestAnimationFrame(() => {
+                const countBadges = $('#cartCount, #mobileCartCount, #headerCartCount, .cart-count-badge');
+                countBadges.text(itemCount).addClass('badge-pulse');
+                setTimeout(() => countBadges.removeClass('badge-pulse'), 400);
 
-            $('#cartTotal, #headerCartTotal, .cart-total-amount').text(total.toFixed(2));
-            $('#cartSubtotal, .cart-subtotal-amount').text(subtotal.toFixed(2));
-            $('#cartItemCount, .cart-item-count').text(itemCount);
+                $('#cartTotal, #headerCartTotal, .cart-total-amount').text(total.toFixed(2));
+                $('#cartSubtotal, .cart-subtotal-amount').text(subtotal.toFixed(2));
+                $('#cartItemCount, .cart-item-count').text(itemCount);
 
-            if (itemCount === 0) {
-                $('#emptyCartState').show();
-                $('#cartItemsContainer, #cartFooter').hide();
-            } else {
-                $('#emptyCartState').hide();
-                $('#cartItemsContainer, #cartFooter').show();
-                this.renderCartItems(cartData.items);
-            }
+                if (itemCount === 0) {
+                    $('#emptyCartState').show();
+                    $('#cartItemsContainer, #cartFooter').hide();
+                } else {
+                    $('#emptyCartState').hide();
+                    $('#cartItemsContainer, #cartFooter').show();
+                    this.renderCartItems(cartData.items);
+                }
+            });
 
+            // Build new cartItems map
             const newCartItems = {};
             if (cartData.items) {
                 cartData.items.forEach(item => { newCartItems[item.id] = item.quantity; });
             }
             this.cartItems = newCartItems;
-
             this.syncAllProductCards();
         },
 
         syncAllProductCards() {
-            $('.cart-quantity-controls').each((index, element) => {
-                const productId = $(element).data('product-id');
-                if (!this.cartItems[productId]) {
-                    this.showAddToCartButton(productId);
-                }
+            // Remove controls for items no longer in cart
+            $('.cart-quantity-controls').each((i, el) => {
+                const pid = $(el).data('product-id');
+                if (!this.cartItems[pid]) this.showAddToCartButton(pid);
             });
 
-            Object.keys(this.cartItems).forEach(productId => {
-                const qty = this.cartItems[productId];
-                if (qty > 0) {
-                    this.showQuantityControls(productId, qty);
-                } else {
-                    this.showAddToCartButton(productId);
-                }
+            // Show controls for items in cart
+            Object.entries(this.cartItems).forEach(([pid, qty]) => {
+                if (qty > 0) this.showQuantityControls(pid, qty);
+                else         this.showAddToCartButton(pid);
             });
         },
 
         renderCartItems(items) {
             const container = $('#cartItemsContainer');
             if (!container.length) return;
-            container.empty();
 
-            items.forEach(item => {
+            // Build all HTML at once, single DOM write
+            const html = items.map(item => {
                 const isWeightBased = item.weight && parseFloat(item.weight) > 0;
                 const weightFormatted = isWeightBased
                     ? (parseFloat(item.weight) % 1 === 0
-                        ? parseFloat(item.weight).toFixed(0)
+                        ? parseInt(item.weight)
                         : parseFloat(item.weight))
                     : null;
 
                 const quantityDisplay = isWeightBased
-                    ? `<span class="unique-cart-item-weight">
-                            <i class="fa-regular fa-weight-scale"></i> ${weightFormatted}kg
-                       </span>`
+                    ? `<span class="unique-cart-item-weight"><i class="fa-regular fa-weight-scale"></i> ${weightFormatted}kg</span>`
                     : `<span class="unique-cart-item-quantity">Qty: ${item.quantity}</span>`;
 
-                container.append(`
+                return `
                     <div class="unique-cart-item" data-product-id="${item.id}">
                         <img src="${item.image}" alt="${item.name}" class="unique-cart-item-image"
                             onerror="this.src='/frontend/assets/images/products/product-placeholder.svg'">
@@ -342,63 +330,51 @@
                         <button class="unique-cart-item-remove cart-remove-btn" data-product-id="${item.id}" type="button">
                             <i class="fa-solid fa-trash"></i>
                         </button>
-                    </div>
-                `);
-            });
+                    </div>`;
+            }).join('');
+
+            container.html(html);  // single DOM write instead of .append() per item
         },
 
         loadCart() {
-            if (_cartLoading) return; // ✅ prevent duplicate
+            if (_cartLoading) return;
             _cartLoading = true;
 
             $.ajax({
                 url: '/cart/get',
                 method: 'GET',
                 success: (response) => {
-                    _cartLoading = false;
-                    if (response.success) {
-                        this.updateUI(response.cart);
-                    }
+                    if (response.success) this.updateUI(response.cart);
                 },
                 error: (xhr) => {
-                    _cartLoading = false;
-                    console.error('Error loading cart:', xhr.responseText);
-                    $('#cartCount, #mobileCartCount, #headerCartCount').text('0');
-                    $('#cartTotal, #headerCartTotal').text('0.00');
-                }
+                    console.error('Cart load error:', xhr.responseText);
+                    $('#cartCount, #mobileCartCount').text('0');
+                    $('#cartTotal').text('0.00');
+                },
+                complete: () => { _cartLoading = false; }
             });
         }
     };
 
     window.Cart = Cart;
-    window.updateCartUI = () => {
-        _cartLoading = false; // reset guard so fresh data loads
-        Cart.loadCart();
-    };
+    window.updateCartUI = () => { _cartLoading = false; Cart.loadCart(); };
 
     // ================================================
     // WISHLIST
     // ================================================
     const Wishlist = {
-        isProcessing: false,
         processingProducts: new Set(),
 
         toggle(productId, button) {
-            if (this.isProcessing || this.processingProducts.has(productId)) return;
+            if (this.processingProducts.has(productId)) return;
 
-            const icon    = button.find('i');
+            const icon = button.find('i');
             const wasActive = button.hasClass('active');
 
-            // Optimistic UI update
-            if (wasActive) {
-                button.removeClass('active');
-                icon.removeClass('fa-solid').addClass('fa-regular');
-            } else {
-                button.addClass('active');
-                icon.removeClass('fa-regular').addClass('fa-solid');
-            }
+            // Optimistic UI
+            button.toggleClass('active', !wasActive);
+            icon.toggleClass('fa-solid', !wasActive).toggleClass('fa-regular', wasActive);
 
-            this.isProcessing = true;
             this.processingProducts.add(productId);
 
             $.ajax({
@@ -410,94 +386,67 @@
                         Toast.success(response.message || 'Wishlist updated');
                         this.updateCount(response.count);
                     } else {
-                        // Revert optimistic update
-                        if (wasActive) {
-                            button.addClass('active');
-                            icon.removeClass('fa-regular').addClass('fa-solid');
-                        } else {
-                            button.removeClass('active');
-                            icon.removeClass('fa-solid').addClass('fa-regular');
-                        }
+                        // Revert
+                        button.toggleClass('active', wasActive);
+                        icon.toggleClass('fa-solid', wasActive).toggleClass('fa-regular', !wasActive);
                         Toast.error(response.message || 'Failed to update wishlist');
                     }
-                    this.isProcessing = false;
-                    this.processingProducts.delete(productId);
                 },
                 error: () => {
-                    // Revert optimistic update
-                    if (wasActive) {
-                        button.addClass('active');
-                        icon.removeClass('fa-regular').addClass('fa-solid');
-                    } else {
-                        button.removeClass('active');
-                        icon.removeClass('fa-solid').addClass('fa-regular');
-                    }
+                    button.toggleClass('active', wasActive);
+                    icon.toggleClass('fa-solid', wasActive).toggleClass('fa-regular', !wasActive);
                     Toast.error('Error updating wishlist');
-                    this.isProcessing = false;
-                    this.processingProducts.delete(productId);
-                }
+                },
+                complete: () => { this.processingProducts.delete(productId); }
             });
         },
 
         updateCount(count) {
-            const countBadges = $('#wishlistCount, #mobileWishlistCount, #headerWishlistCount, .wishlist-count-badge');
-            countBadges.text(count).addClass('badge-pulse');
-            setTimeout(() => countBadges.removeClass('badge-pulse'), 400);
+            const badges = $('#wishlistCount, #mobileWishlistCount, #headerWishlistCount, .wishlist-count-badge');
+            badges.text(count).addClass('badge-pulse');
+            setTimeout(() => badges.removeClass('badge-pulse'), 400);
         },
 
         loadCount() {
-            if (_wishlistCountLoading) return; // ✅ prevent duplicate
+            if (_wishlistCountLoading) return;
             _wishlistCountLoading = true;
 
             $.ajax({
                 url: '/wishlist/count',
                 method: 'GET',
-                success: (response) => {
-                    _wishlistCountLoading = false;
-                    if (response.success) {
-                        this.updateCount(response.count);
-                    }
-                },
-                error: (xhr) => {
-                    _wishlistCountLoading = false;
-                    console.error('Error loading wishlist count:', xhr.responseText);
-                    $('#wishlistCount, #mobileWishlistCount, #headerWishlistCount').text('0');
-                }
+                success: (r) => { if (r.success) this.updateCount(r.count); },
+                error: () => { $('#wishlistCount, #mobileWishlistCount').text('0'); },
+                complete: () => { _wishlistCountLoading = false; }
             });
         },
 
         loadItems() {
-            if (_wishlistItemsLoading) return; // ✅ prevent duplicate
+            if (_wishlistItemsLoading) return;
             _wishlistItemsLoading = true;
 
             $.ajax({
                 url: '/wishlist/get',
                 method: 'GET',
-                success: (response) => {
-                    _wishlistItemsLoading = false;
-                    if (response.success && response.items) {
-                        response.items.forEach(product => {
-                            const buttons = $(`.wishlist-toggle-btn[data-product-id="${product.id}"]`);
-                            buttons.addClass('active');
-                            buttons.find('i').removeClass('fa-regular').addClass('fa-solid');
+                success: (r) => {
+                    if (r.success && r.items) {
+                        // Build a Set for O(1) lookup
+                        const ids = new Set(r.items.map(p => String(p.id)));
+                        $(`.wishlist-toggle-btn[data-product-id]`).each((i, el) => {
+                            const pid = String($(el).data('product-id'));
+                            if (ids.has(pid)) {
+                                $(el).addClass('active').find('i').removeClass('fa-regular').addClass('fa-solid');
+                            }
                         });
                     }
                 },
-                error: (xhr) => {
-                    _wishlistItemsLoading = false;
-                    console.error('Error loading wishlist items:', xhr.responseText);
-                }
+                error: () => {},
+                complete: () => { _wishlistItemsLoading = false; }
             });
         }
     };
 
     window.Wishlist = Wishlist;
-
-    window.updateWishlistCount = function(count) {
-        Wishlist.updateCount(count);
-    };
-
-    // Reset guards before re-fetching so fresh data always loads after user actions
+    window.updateWishlistCount = (count) => Wishlist.updateCount(count);
     window.updateWishlistUI = () => {
         _wishlistCountLoading = false;
         _wishlistItemsLoading = false;
@@ -510,11 +459,10 @@
     };
 
     // ================================================
-    // DOCUMENT READY — INITIALISATION
+    // INIT
     // ================================================
     $(document).ready(function() {
 
-        // ✅ Skip cart AJAX if the page already has server-rendered cart data
         if (typeof serverCart !== 'undefined' && serverCart !== null) {
             Cart.updateUI(serverCart);
         } else {
@@ -524,66 +472,55 @@
         Wishlist.loadCount();
         Wishlist.loadItems();
 
-        // Clean up any stale handlers before re-binding
-        $(document).off('click', '.add-to-cart-btn, .product-add-to-cart');
-        $(document).off('click', '.wishlist-toggle-btn, .shop-wishlist-btn');
-        $(document).off('click', '.cart-remove-btn');
-        $(document).off('click', '.cart-qty-plus');
-        $(document).off('click', '.cart-qty-minus');
+        // Clean up stale handlers
+        $(document).off('click.cw', '.add-to-cart-btn, .product-add-to-cart');
+        $(document).off('click.cw', '.wishlist-toggle-btn, .shop-wishlist-btn');
+        $(document).off('click.cw', '.cart-remove-btn');
+        $(document).off('click.cw', '.cart-qty-plus');
+        $(document).off('click.cw', '.cart-qty-minus');
 
         // ── Add to Cart ──
-        $(document).on('click', '.add-to-cart-btn, .product-add-to-cart', function(e) {
+        // Uses stopImmediatePropagation to prevent the inline blade handler
+        // from also firing on the product detail page
+        $(document).on('click.cw', '.add-to-cart-btn, .product-add-to-cart', function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            if ($(this).hasClass('btn-loading') || $(this).hasClass('disabled')) return false;
+            e.stopImmediatePropagation();   // ← KEY FIX: kills any other handler on same element
+            if ($(this).hasClass('btn-loading') || $(this).prop('disabled')) return;
             const productId = $(this).data('product-id') || $(this).data('id');
             if (productId) Cart.add(productId);
-            return false;
         });
 
-        // ── Quantity Increase ──
-        $(document).on('click', '.cart-qty-plus', function(e) {
+        // ── Quantity + ──
+        $(document).on('click.cw', '.cart-qty-plus', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            const productId = $(this).data('product-id');
-            if (productId && !Cart.processingProducts.has(productId)) {
-                Cart.updateQuantity(productId, 'plus');
-            }
-            return false;
+            const pid = $(this).data('product-id');
+            if (pid) Cart.updateQuantity(pid, 'plus');
         });
 
-        // ── Quantity Decrease ──
-        $(document).on('click', '.cart-qty-minus', function(e) {
+        // ── Quantity - ──
+        $(document).on('click.cw', '.cart-qty-minus', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            const productId = $(this).data('product-id');
-            if (productId && !Cart.processingProducts.has(productId)) {
-                Cart.updateQuantity(productId, 'minus');
-            }
-            return false;
+            const pid = $(this).data('product-id');
+            if (pid) Cart.updateQuantity(pid, 'minus');
         });
 
-        // ── Wishlist Toggle ──
-        $(document).on('click', '.wishlist-toggle-btn, .shop-wishlist-btn', function(e) {
+        // ── Wishlist ──
+        $(document).on('click.cw', '.wishlist-toggle-btn, .shop-wishlist-btn', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            if ($(this).hasClass('wishlist-page-btn')) return false; // wishlist page handles its own
-            const productId = $(this).data('product-id') || $(this).data('id');
-            if (productId && !Wishlist.processingProducts.has(productId)) {
-                Wishlist.toggle(productId, $(this));
-            }
-            return false;
+            if ($(this).hasClass('wishlist-page-btn')) return;
+            const pid = $(this).data('product-id') || $(this).data('id');
+            if (pid && !Wishlist.processingProducts.has(pid)) Wishlist.toggle(pid, $(this));
         });
 
-        // ── Cart Remove (sidebar/mini-cart) ──
-        $(document).on('click', '.cart-remove-btn', function(e) {
+        // ── Cart Remove ──
+        $(document).on('click.cw', '.cart-remove-btn', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            const productId = $(this).data('product-id');
-            if (productId && !Cart.processingProducts.has(productId)) {
-                Cart.remove(productId);
-            }
-            return false;
+            const pid = $(this).data('product-id');
+            if (pid) Cart.remove(pid);
         });
 
     });
