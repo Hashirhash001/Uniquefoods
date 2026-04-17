@@ -385,7 +385,7 @@
                         <div class="col-md-3">
                             <label class="form-label">Cost Price <span class="form-text d-inline">(optional)</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">₹</span>
+                                <span class="input-group-text">£</span>
                                 <input type="number" step="0.01" name="cost" class="form-control" placeholder="0.00">
                             </div>
                             <small class="form-text">Your purchase/cost price</small>

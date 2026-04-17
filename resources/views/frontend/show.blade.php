@@ -608,13 +608,6 @@
         </div>
 
         <div class="row g-4 mt--10">
-            @php
-                $relatedProducts = App\Models\Product::where('category_id', $product->category_id)
-                    ->where('id', '!=', $product->id)
-                    ->where('is_active', 1)
-                    ->limit(4)
-                    ->get();
-            @endphp
 
             @foreach($relatedProducts as $related)
                 <div class="col-lg-2 col-md-4 col-sm-6 col-6">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\CustomerGroup;
@@ -9,9 +10,9 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
@@ -21,11 +22,28 @@ class ProductController extends Controller
         $query = Product::with('primaryImage', 'category', 'brand');
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('sku', 'like', "%$search%")
-                  ->orWhere('barcode', 'like', "%$search%");
+            $search = trim($request->search);
+
+            // Split into words — tolerates extra spaces in stored names
+            $words = array_values(array_filter(
+                explode(' ', preg_replace('/\s+/', ' ', $search)),
+                fn($w) => strlen(trim($w)) >= 2
+            ));
+
+            $query->where(function ($q) use ($search, $words) {
+                // Full phrase match (works if spaces match exactly)
+                $q->where('name',    'LIKE', "%{$search}%")
+                ->orWhere('sku',    'LIKE', "%{$search}%")
+                ->orWhere('barcode','LIKE', "%{$search}%");
+
+                // All-words AND match — tolerates double spaces, hyphens, etc.
+                if (count($words) > 1) {
+                    $q->orWhere(function ($and) use ($words) {
+                        foreach ($words as $word) {
+                            $and->where('name', 'LIKE', "%{$word}%");
+                        }
+                    });
+                }
             });
         }
 
@@ -35,11 +53,24 @@ class ProductController extends Controller
         if ($request->filled('brand_id')) $query->where('brand_id', $request->brand_id);
         if ($request->filled('status')) $query->where('is_active', $request->status);
 
+        // ── Stock Status ──
         if ($request->filled('stock_status')) {
-            if ($request->stock_status === 'instock')     $query->where('stock', '>', 0);
-            elseif ($request->stock_status === 'outofstock') $query->where('stock', '<=', 0);
-            elseif ($request->stock_status === 'lowstock')   $query->where('stock', '>', 0)->where('stock', '<=', 10);
+            switch ($request->stock_status) {
+                case 'in_stock':        // ← match HTML value
+                    $query->where('stock', '>', 10);
+                    break;
+                case 'low_stock':       // ← match HTML value
+                    $query->where('stock', '>=', 1)
+                        ->where('stock', '<=', 10);
+                    break;
+                case 'out_of_stock':    // ← match HTML value
+                    $query->where('stock', '<=', 0);
+                    break;
+            }
         }
+
+        // Temporary debug — remove after confirming
+        Log::info('Stock filter received: ' . $request->stock_status);
 
         if ($request->filled('group_id')) {
             $query->whereHas('customerGroups', function ($q) use ($request) {

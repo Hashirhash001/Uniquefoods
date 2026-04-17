@@ -302,10 +302,9 @@ class ShopController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user) {
-            $user->loadMissing('groups');
+            $user->loadMissing('groups'); // ← must be loaded BEFORE visibleTo
         }
 
-        // Product must be active AND visible to user's group
         $product = Product::with(['category', 'brand', 'images', 'reviews.user'])
             ->where('slug', $slug)
             ->where('is_active', 1)
@@ -325,8 +324,8 @@ class ShopController extends Controller
                 ->whereIn('customer_group_id', $groupIds)
                 ->where(function ($q) use ($product) {
                     $q->where(fn($q) => $q->where('offer_type', 'product')->where('product_id', $product->id))
-                      ->orWhere(fn($q) => $q->where('offer_type', 'category')->where('category_id', $product->category_id))
-                      ->orWhere(fn($q) => $q->where('offer_type', 'brand')->where('brand_id', $product->brand_id));
+                    ->orWhere(fn($q) => $q->where('offer_type', 'category')->where('category_id', $product->category_id))
+                    ->orWhere(fn($q) => $q->where('offer_type', 'brand')->where('brand_id', $product->brand_id));
                 })
                 ->active()
                 ->get();
@@ -344,12 +343,13 @@ class ShopController extends Controller
                 ->exists();
         }
 
-        // Related products also scoped to user's group
+        // ── Related products — strictly scoped, unassigned products never leak ──
         $relatedProducts = Product::with(['category', 'brand', 'primaryImage', 'reviews'])
             ->where('is_active', 1)
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->visibleTo($user)
+            ->whereHas('customerGroups')  // ← hard block: MUST belong to at least one group
+            ->visibleTo($user)            // ← then filter to user's specific group(s)
             ->limit(8)
             ->get()
             ->transform(function ($p) use ($pricingService, $user) {

@@ -64,11 +64,6 @@
                                 <span class="label">Subtotal</span>
                                 <span class="value">£<span id="pageSummarySubtotal">0.00</span></span>
                             </div>
-                            <hr class="summary-divider">
-                            <div class="summary-row total-row">
-                                <span class="label">Total Amount</span>
-                                <span class="value total-value">£<span id="pageSummaryTotal">0.00</span></span>
-                            </div>
                         </div>
 
                         <div class="summary-actions">
@@ -226,7 +221,7 @@ $(document).ready(function () {
             +                 '<i class="fa-solid fa-circle"></i> ' + stockText
             +             '</span>'
             +         '</div>'
-            +         '<div class="item-price-mobile">' + priceLabel + '</div>'
+            +         '<div class="item-price-mobile" data-subtotal="£' + subtotal + '">' + priceLabel + '</div>'
             +     '</div>'
             +     quantityBlock
             +     '<div class="item-price">'

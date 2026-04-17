@@ -702,36 +702,36 @@ $(document).on('click', '#paginationContainer .pagination a', function(e) {
         $('html, body').animate({ scrollTop: $('.table-card').offset().top - 20 }, 300);
     }
 });
+const loadingOverlay = $('#loadingOverlay');
 
 function loadProducts(page = 1) {
-    $('#loadingOverlay').addClass('active');
-
+    loadingOverlay.addClass('active');
     $.ajax({
-        url: "{{ route('admin.products.index') }}",
+        url: '{{ route("admin.products.index") }}',
         data: {
             page:         page,
             search:       $('#search').val(),
-            category_id:  $('#category_id').val(),
-            brand_id:     $('#brand_id').val(),
-            group_id:     $('#group_id').val(),      // ← NEW
+            category_id:  $('#category_id').val(),    // ← fixed
+            brand_id:     $('#brand_id').val(),        // ← fixed
+            group_id:     $('#group_id').val(),        // ← fixed
             status:       $('#status').val(),
-            stock_status: $('#stock_status').val(),
-            min_price:    $('#min_price').val(),
-            max_price:    $('#max_price').val(),
+            stock_status: $('#stock_status').val(),    // ← fixed
+            min_price:    $('#min_price').val(),       // ← fixed
+            max_price:    $('#max_price').val(),       // ← fixed
             sort_by:      currentSortBy,
-            sort_order:   currentSortOrder
+            sort_order:   currentSortOrder,
         },
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function(response) {
             $('#productsTableContainer').html(response.html);
             $('#paginationContainer').html(response.pagination);
             $('#productCount').text(response.total);
-            $('#loadingOverlay').removeClass('active');
+            loadingOverlay.removeClass('active');
             updateSortIndicators();
             updateActiveFiltersCount();
         },
         error: function() {
-            $('#loadingOverlay').removeClass('active');
+            loadingOverlay.removeClass('active');
             Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load products', confirmButtonColor: '#08437b' });
         }
     });

@@ -215,22 +215,27 @@ class Product extends Model
 
     /**
      * Scope products visible to a given user (or guest).
-     * Guests see the 'home-delivery' group. Logged-in users see their own groups.
+     *
+     * Rules:
+     *  - Products MUST be assigned to a group to be visible to anyone
+     *  - Guests / users with no group → only see 'home-delivery' group products
+     *  - Logged-in users → only see products assigned to their group(s)
      */
     public function scopeVisibleTo($query, ?\App\Models\User $user)
     {
         if ($user && $user->groups->isNotEmpty()) {
             $groupIds = $user->groups->pluck('id');
         } else {
-            // Guest or user with no group → default to home-delivery
             $groupIds = \App\Models\CustomerGroup::where('slug', 'home-delivery')
                 ->where('is_active', 1)
                 ->pluck('id');
         }
 
-        if ($groupIds->isNotEmpty()) {
-            $query->whereHas('customerGroups', fn($q) => $q->whereIn('customer_groups.id', $groupIds));
-        }
+        // Hard rule: product MUST be assigned to at least one group
+        // AND that group must be one the user belongs to
+        $query->whereHas('customerGroups', function ($g) use ($groupIds) {
+            $g->whereIn('customer_groups.id', $groupIds);
+        });
     }
 
 }
