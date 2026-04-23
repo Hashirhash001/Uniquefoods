@@ -221,6 +221,9 @@ class CheckoutController extends Controller
                     ? $item['price'] * floatval($item['weight'])
                     : $item['price'] * $item['quantity'];
 
+                $vatRate   = (float) ($item['tax_rate'] ?? 0);
+                $vatAmount = round($itemSubtotal * ($vatRate / 100), 2);
+
                 $orderItems[] = [
                     'order_id'     => $order->id,
                     'product_id'   => $item['id'],
@@ -228,6 +231,8 @@ class CheckoutController extends Controller
                     'price'        => $item['price'],
                     'quantity'     => $isWeightBased ? null : $item['quantity'],
                     'weight'       => $isWeightBased ? floatval($item['weight']) : null,
+                    'vat_rate'     => $vatRate,
+                    'vat_amount'   => $vatAmount,
                     'subtotal'     => round($itemSubtotal, 2),
                     'created_at'   => $now,
                     'updated_at'   => $now,

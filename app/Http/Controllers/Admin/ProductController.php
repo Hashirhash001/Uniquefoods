@@ -332,7 +332,7 @@ class ProductController extends Controller
                 $query->where('name', 'like', "%$q%")
                     ->orWhere('sku',  'like', "%$q%");
             })
-            ->select('id', 'name', 'sku', 'price', 'stock')
+            ->select('id', 'name', 'sku', 'price', 'stock', 'tax_rate')
             ->limit(10)
             ->get();
 

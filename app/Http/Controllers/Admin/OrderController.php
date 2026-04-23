@@ -113,22 +113,23 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $request->validate([
-            'customer_name'     => 'required|string|max:255',
-            'customer_email'    => 'required|email|max:255',
-            'customer_phone'    => 'nullable|string|max:30',
-            'shipping_address'  => 'required|string|max:500',
-            'shipping_city'     => 'nullable|string|max:100',
-            'shipping_postcode' => 'nullable|string|max:20',
-            'shipping_country'  => 'nullable|string|max:100',
-            'shipping_cost'     => 'nullable|numeric|min:0',
-            'tax'               => 'nullable|numeric|min:0',
-            'discount'          => 'nullable|numeric|min:0',
-            'customer_notes'    => 'nullable|string|max:1000',
-            'items'             => 'required|array|min:1',
-            'items.*.product_id'=> 'required|exists:products,id',
-            'items.*.quantity'  => 'required|integer|min:1',
-            'items.*.price'     => 'required|numeric|min:0',
-            'items.*.weight'    => 'nullable|numeric|min:0',
+            'customer_name'      => 'required|string|max:255',
+            'customer_email'     => 'required|email|max:255',
+            'customer_phone'     => 'nullable|string|max:30',
+            'shipping_address'   => 'required|string|max:500',
+            'shipping_city'      => 'nullable|string|max:100',
+            'shipping_postcode'  => 'nullable|string|max:20',
+            'shipping_country'   => 'nullable|string|max:100',
+            'shipping_cost'      => 'nullable|numeric|min:0',
+            'tax'                => 'nullable|numeric|min:0',
+            'discount'           => 'nullable|numeric|min:0',
+            'customer_notes'     => 'nullable|string|max:1000',
+            'items'              => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity'   => 'required|numeric|min:0.001',  // ← decimal allowed
+            'items.*.price'      => 'required|numeric|min:0',
+            'items.*.vat_rate'   => 'nullable|numeric|min:0|max:100', // ← NEW
+            'items.*.weight'     => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -140,7 +141,6 @@ class OrderController extends Controller
             // 1. Remove items that were deleted
             foreach ($existingItems as $productId => $item) {
                 if (!$submittedItems->has($productId)) {
-                    // Restore stock for removed item
                     if ($item->product && !$item->product->is_weight_based) {
                         $item->product->increment('stock', $item->quantity);
                     }
@@ -150,22 +150,27 @@ class OrderController extends Controller
 
             // 2. Update existing / add new items
             foreach ($submittedItems as $productId => $itemData) {
-                $product = \App\Models\Product::find($productId);
+                $product   = \App\Models\Product::find($productId);  // move this UP before vatRate
+                $vatRate   = (float) ($itemData['vat_rate'] ?? $product?->tax_rate ?? 0);  // ← fallback to product
+                $subtotal  = (float) $itemData['quantity'] * (float) $itemData['price'];
+                $vatAmount = round($subtotal * ($vatRate / 100), 2);
 
                 if ($existingItems->has($productId)) {
                     // Update existing
                     $existing = $existingItems[$productId];
                     $qtyDiff  = $existing->quantity - $itemData['quantity'];
 
-                    if ($qtyDiff !== 0 && $product && !$product->is_weight_based) {
-                        $product->increment('stock', $qtyDiff); // +diff restores, -diff deducts
+                    if ($qtyDiff != 0 && $product && !$product->is_weight_based) {
+                        $product->increment('stock', $qtyDiff);
                     }
 
                     $existing->update([
-                        'quantity' => $itemData['quantity'],
-                        'price'    => $itemData['price'],
-                        'weight'   => $itemData['weight'] ?? null,
-                        'subtotal' => $itemData['quantity'] * $itemData['price'],
+                        'quantity'   => $itemData['quantity'],
+                        'price'      => $itemData['price'],
+                        'vat_rate'   => $vatRate,       // ← NEW
+                        'vat_amount' => $vatAmount,     // ← NEW
+                        'weight'     => $itemData['weight'] ?? null,
+                        'subtotal'   => $subtotal,
                     ]);
                 } else {
                     // New item added
@@ -176,20 +181,23 @@ class OrderController extends Controller
                     $order->items()->create([
                         'product_id'   => $productId,
                         'product_name' => $product->name,
+                        'product_sku'  => $product->sku ?? null,
                         'quantity'     => $itemData['quantity'],
                         'price'        => $itemData['price'],
+                        'vat_rate'     => $vatRate,     // ← NEW
+                        'vat_amount'   => $vatAmount,   // ← NEW
                         'weight'       => $itemData['weight'] ?? null,
-                        'subtotal'     => $itemData['quantity'] * $itemData['price'],
+                        'subtotal'     => $subtotal,
                     ]);
                 }
             }
 
             // 3. Recalculate totals
             $order->refresh();
-            $subtotal     = $order->items->sum(fn($i) => $i->quantity * $i->price);
-            $shippingCost = $request->shipping_cost ?? $order->shipping_cost;
-            $tax          = $request->tax           ?? $order->tax;
-            $discount     = $request->discount      ?? $order->discount;
+            $subtotal     = $order->items->sum('subtotal');
+            $tax          = $order->items->sum('vat_amount');  // ← recalculate from frozen VAT amounts
+            $shippingCost = is_numeric($request->shipping_cost) ? (float)$request->shipping_cost : (float)$order->shipping_cost;
+            $discount     = is_numeric($request->discount)      ? (float)$request->discount      : (float)($order->discount ?? 0);
             $total        = $subtotal + $shippingCost + $tax - $discount;
 
             $order->update([

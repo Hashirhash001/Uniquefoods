@@ -17,6 +17,7 @@
             <tr style="background:#f3f4f6;">
                 <th style="padding:10px;text-align:left;border-bottom:1px solid #e5e7eb;">Product</th>
                 <th style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb;">Qty</th>
+                <th style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb;">VAT %</th>
                 <th style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb;">Subtotal</th>
             </tr>
         </thead>
@@ -25,6 +26,9 @@
             <tr>
                 <td style="padding:10px;border-bottom:1px solid #f3f4f6;">{{ $item->product->name ?? $item->product_name }}</td>
                 <td style="padding:10px;text-align:center;border-bottom:1px solid #f3f4f6;">{{ $item->quantity }}</td>
+                <td style="padding:10px;text-align:center;border-bottom:1px solid #f3f4f6;color:#6b7280;">
+                    {{ ($item->vat_rate ?? 0) > 0 ? number_format($item->vat_rate, 0).'%' : '—' }}
+                </td>
                 <td style="padding:10px;text-align:right;border-bottom:1px solid #f3f4f6;">£{{ number_format($item->quantity * $item->price, 2) }}</td>
             </tr>
             @endforeach
@@ -34,6 +38,12 @@
     <div style="text-align:right;font-size:14px;">
         <div style="margin-bottom:6px;color:#6b7280;">Subtotal: £{{ number_format($order->subtotal, 2) }}</div>
         <div style="margin-bottom:6px;color:#6b7280;">Shipping: £{{ number_format($order->shipping_cost, 2) }}</div>
+        @php $totalVat = $order->items->sum('vat_amount'); @endphp
+        @if($totalVat > 0)
+        <div style="margin-bottom:6px;color:#6b7280;">
+            VAT: £{{ number_format($totalVat, 2) }}
+        </div>
+        @endif
         @if($order->discount > 0)
         <div style="margin-bottom:6px;color:#059669;">Discount: -£{{ number_format($order->discount, 2) }}</div>
         @endif

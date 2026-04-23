@@ -138,6 +138,7 @@
                 <th>Product</th>
                 <th style="text-align:center;">Qty</th>
                 <th style="text-align:right;">Unit Price</th>
+                <th style="text-align:center;">VAT %</th>
                 <th style="text-align:right;">Subtotal</th>
             </tr>
         </thead>
@@ -148,42 +149,57 @@
                 <td><strong>{{ $item->product->name ?? $item->product_name ?? 'Product' }}</strong></td>
                 <td style="text-align:center;">{{ $item->quantity }}</td>
                 <td style="text-align:right;">£{{ number_format($item->price, 2) }}</td>
+                <td style="text-align:center;color:#6b7280;">
+                    {{ ($item->vat_rate ?? 0) > 0 ? number_format($item->vat_rate, 0).'%' : '0%' }}
+                </td>
                 <td style="text-align:right;font-weight:700;">£{{ number_format($item->quantity * $item->price, 2) }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
+            {{-- Subtotal row --}}
             <tr>
-                <td colspan="4" style="text-align:right;color:#6b7280;">Subtotal</td>
+                <td colspan="5" style="text-align:right;color:#6b7280;">Subtotal</td>
                 <td style="text-align:right;">£{{ number_format($order->subtotal, 2) }}</td>
             </tr>
+
+            {{-- Shipping row --}}
             @if($order->shipping_cost > 0)
             <tr>
-                <td colspan="4" style="text-align:right;color:#6b7280;">Shipping</td>
+                <td colspan="5" style="text-align:right;color:#6b7280;">Shipping</td>
                 <td style="text-align:right;">£{{ number_format($order->shipping_cost, 2) }}</td>
             </tr>
             @endif
+
+            {{-- VAT rows --}}
+            @php
+                $totalVat = $order->items->sum('vat_amount');
+            @endphp
+            @if($totalVat > 0)
+            <tr>
+                <td colspan="5" style="text-align:right;color:#6b7280;">VAT</td>
+                <td style="text-align:right;">£{{ number_format($totalVat, 2) }}</td>
+            </tr>
+            @endif
+
+            {{-- Discount row --}}
             @if($order->discount > 0)
             <tr>
-                <td colspan="4" style="text-align:right;color:#059669;">Discount</td>
-                <td style="text-align:right;color:#059669;">-£{{ number_format($order->discount, 2) }}</td>
+                <td colspan="5" style="text-align:right;color:#059669;">Discount</td>
+                <td style="text-align:right;color:#059669;">−£{{ number_format($order->discount, 2) }}</td>
             </tr>
             @endif
-            @if($order->tax > 0)
-            <tr>
-                <td colspan="4" style="text-align:right;color:#6b7280;">Tax</td>
-                <td style="text-align:right;">£{{ number_format($order->tax, 2) }}</td>
-            </tr>
-            @endif
+
+            {{-- Total row --}}
             <tr class="total-row">
-                <td colspan="4" style="text-align:right;">TOTAL</td>
+                <td colspan="5" style="text-align:right;">TOTAL</td>
                 <td style="text-align:right;color:#08437b;">£{{ number_format($order->total, 2) }}</td>
             </tr>
         </tfoot>
     </table>
 
     {{-- Bank Details --}}
-    <div class="bank-box">
+    <div class="bank-box" style="page-break-inside: avoid;">
         <h4>&#x1F3E6; Bank Transfer Details</h4>
         <div class="bank-grid">
 

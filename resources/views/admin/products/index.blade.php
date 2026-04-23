@@ -747,7 +747,7 @@ function updateActiveFiltersCount() {
     if ($('#search').val())       count++;
     if ($('#category_id').val())  count++;
     if ($('#brand_id').val())     count++;
-    if ($('#group_id').val())     count++;   // ← NEW
+    if ($('#group_id').val())     count++;
     if ($('#status').val())       count++;
     if ($('#stock_status').val()) count++;
     if ($('#min_price').val())    count++;

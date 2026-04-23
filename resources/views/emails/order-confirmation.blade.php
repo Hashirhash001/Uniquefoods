@@ -204,6 +204,7 @@
                         <th>Product</th>
                         <th>Qty / Weight</th>
                         <th>Unit Price</th>
+                        <th>VAT</th>
                         <th>Total</th>
                     </tr>
                 </thead>
@@ -224,6 +225,9 @@
                         </td>
                         <td>{{ $isWeight ? $weightFmt . ' kg' : '× ' . $item->quantity }}</td>
                         <td>£{{ number_format($item->price, 2) }}{{ $isWeight ? '/kg' : '' }}</td>
+                        <td style="color:#6b7280;">
+                            {{ ($item->vat_rate ?? 0) > 0 ? number_format($item->vat_rate, 0).'%' : '—' }}
+                        </td>
                         <td class="item-price">£{{ number_format($item->subtotal, 2) }}</td>
                     </tr>
                     @endforeach
@@ -254,8 +258,8 @@
                 @php
                     $taxGroups = [];
                     foreach ($order->items as $item) {
-                        $rate     = (float) ($item->product->tax_rate ?? 0);
-                        $lineTax  = round($item->subtotal * ($rate / 100), 2);
+                        $rate    = (float) ($item->vat_rate ?? 0);
+                        $lineTax = (float) ($item->vat_amount ?? 0);
                         if ($lineTax <= 0) continue;
                         if (!isset($taxGroups[$rate])) {
                             $taxGroups[$rate] = ['amount' => 0, 'names' => []];

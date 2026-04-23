@@ -230,6 +230,7 @@
                                 <tr>
                                     <th>Product</th>
                                     <th>Unit Price</th>
+                                    <th>VAT %</th>
                                     <th>Qty</th>
                                     @if($order->items->whereNotNull('weight')->count() > 0)
                                         <th>Weight</th>
@@ -260,6 +261,15 @@
                                         </div>
                                     </td>
                                     <td style="white-space:nowrap;">£{{ number_format($item->price, 2) }}</td>
+                                    <td style="white-space:nowrap;">
+                                        @if(($item->vat_rate ?? 0) > 0)
+                                            <span style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:700;">
+                                                {{ number_format($item->vat_rate, 0) }}%
+                                            </span>
+                                        @else
+                                            <span style="color:#9ca3af;font-size:12px;">—</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $item->quantity }}</td>
                                     @if($order->items->whereNotNull('weight')->count() > 0)
                                         <td>{{ $item->weight ? number_format($item->weight, 3).' kg' : '—' }}</td>
@@ -285,11 +295,30 @@
                                 {{ $order->shipping_cost > 0 ? '£'.number_format($order->shipping_cost,2) : 'Free' }}
                             </span>
                         </div>
-                        @if($order->tax > 0)
-                        <div class="sum-row">
-                            <span class="sum-label">Tax</span>
-                            <span class="sum-val">£{{ number_format($order->tax, 2) }}</span>
-                        </div>
+                        @php
+                            $totalVat = $order->items->sum('vat_amount');
+                            $vatGroups = $order->items
+                                ->where('vat_rate', '>', 0)
+                                ->groupBy(fn($i) => number_format($i->vat_rate, 2));
+                        @endphp
+                        @if($totalVat > 0)
+                            @if($vatGroups->count() === 1)
+                                <div class="sum-row">
+                                    <span class="sum-label">VAT ({{ number_format($vatGroups->keys()->first(), 0) }}%)</span>
+                                    <span class="sum-val">£{{ number_format($totalVat, 2) }}</span>
+                                </div>
+                            @else
+                                @foreach($vatGroups as $rate => $items)
+                                <div class="sum-row">
+                                    <span class="sum-label">VAT ({{ number_format((float)$rate, 0) }}%)</span>
+                                    <span class="sum-val">£{{ number_format($items->sum('vat_amount'), 2) }}</span>
+                                </div>
+                                @endforeach
+                                <div class="sum-row">
+                                    <span class="sum-label" style="font-weight:600;">Total VAT</span>
+                                    <span class="sum-val">£{{ number_format($totalVat, 2) }}</span>
+                                </div>
+                            @endif
                         @endif
                         @if($order->discount > 0)
                         <div class="sum-row">

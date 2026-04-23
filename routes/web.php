@@ -176,7 +176,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware('guest')
         ->name('login.submit');
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['admin.auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
             ->name('dashboard.stats');
