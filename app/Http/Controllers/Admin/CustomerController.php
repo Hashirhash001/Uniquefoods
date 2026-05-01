@@ -76,7 +76,7 @@ class CustomerController extends Controller
     {
         $request->validate([
             'name'                  => 'required|string|max:255',
-            'email'                 => ['required', 'email', Rule::unique('users')->whereNull('deleted_at')],
+            'email' => ['required', 'email', Rule::unique('users')->withoutTrashed()],
             'mobile'                => 'nullable|string|max:20',
             'password'              => 'required|string|min:6|confirmed',
             'groups'                => 'nullable|array',
@@ -119,7 +119,7 @@ class CustomerController extends Controller
     {
         $request->validate([
             'name'     => 'required|string|max:255',
-            'email'    => ['required', 'email', Rule::unique('users')->ignore($user->id)->whereNull('deleted_at')],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)->withoutTrashed()],
             'mobile'   => 'nullable|string|max:20',
             'password' => 'nullable|string|min:6',
             'groups'   => 'nullable|array',

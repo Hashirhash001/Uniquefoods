@@ -151,7 +151,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <input type="number" step="0.001" min="0.001"
+                                    <input type="number" step="0.001" min="0"
                                            class="qty-input item-qty"
                                            value="{{ $item->quantity }}">
                                 </td>
@@ -182,10 +182,10 @@
                                value="{{ $order->shipping_cost }}">
                     </div>
                     <div class="sum-row">
-                        <span class="sum-label">Tax (£)</span>
+                        <span class="sum-label">VAT (£)</span>
                         <input type="number" step="0.01" min="0" id="taxInput"
                                class="oe-input" style="width:96px;text-align:right;padding:5px 8px;"
-                               value="{{ $order->tax }}">
+                               value="{{ $order->tax }}" readonly>
                     </div>
                     <div class="sum-row">
                         <span class="sum-label">Discount (£)</span>
@@ -286,17 +286,22 @@ const SEARCH_URL = "{{ route('admin.products.search') }}";
 // ── LIVE RECALC ──────────────────────────────────────────────────────────────
 function recalc() {
     let subtotal = 0;
+    let totalVat = 0;
     document.querySelectorAll('#itemsBody tr').forEach(row => {
         const qty = parseFloat(row.querySelector('.item-qty').value)       || 0;
         const prc = parseFloat(row.querySelector('.item-price').value)     || 0;
+        const vat = parseFloat(row.querySelector('.item-vat-rate').value)  || 0;
         const sub = qty * prc;
         subtotal += sub;
+        totalVat += sub * (vat / 100);
         row.querySelector('.item-subtotal').textContent = '£' + sub.toFixed(2);
     });
+    // Auto-update the tax input from item VATs
+    document.getElementById('taxInput').value = totalVat.toFixed(2);
+
     const shipping = parseFloat(document.getElementById('shippingInput').value) || 0;
-    const tax      = parseFloat(document.getElementById('taxInput').value)      || 0;
     const discount = parseFloat(document.getElementById('discountInput').value) || 0;
-    const total    = subtotal + shipping + tax - discount;
+    const total    = subtotal + shipping + totalVat - discount;
     document.getElementById('sumSubtotal').textContent = '£' + subtotal.toFixed(2);
     document.getElementById('sumTotal').textContent    = '£' + total.toFixed(2);
     document.getElementById('itemCount').textContent   = document.querySelectorAll('#itemsBody tr').length + ' items';
@@ -399,7 +404,7 @@ function addRow(productId, name, sku, price, vatRate = 0) {
                 <span>%</span>
             </div>
         </td>
-        <td><input type="number" step="0.001" min="0.001" class="qty-input item-qty" value="1"></td>
+        <td><input type="number" step="0.001" min="0" class="qty-input item-qty" value="1"></td>
         <td class="item-subtotal" style="font-weight:700;white-space:nowrap;">£${parseFloat(price).toFixed(2)}</td>
         <td><button type="button" class="rm-btn" title="Remove item"><i class="fas fa-times"></i></button></td>
     `;

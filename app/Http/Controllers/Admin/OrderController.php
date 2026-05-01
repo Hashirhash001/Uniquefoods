@@ -126,9 +126,9 @@ class OrderController extends Controller
             'customer_notes'     => 'nullable|string|max:1000',
             'items'              => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity'   => 'required|numeric|min:0.001',  // ← decimal allowed
+            'items.*.quantity'   => 'required|numeric|min:0',
             'items.*.price'      => 'required|numeric|min:0',
-            'items.*.vat_rate'   => 'nullable|numeric|min:0|max:100', // ← NEW
+            'items.*.vat_rate'   => 'nullable|numeric|min:0|max:100',
             'items.*.weight'     => 'nullable|numeric|min:0',
         ]);
 

@@ -2,15 +2,26 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Auth\Middleware\Authenticate;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class AdminAuthenticate extends Authenticate
+class AdminAuthenticate
 {
-    protected function redirectTo($request): ?string
+    public function handle(Request $request, Closure $next): mixed
     {
-        if (!$request->expectsJson()) {
-            return route('admin.login');  // ← redirect to admin login, not /login
+        if (!Auth::check()) {
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Unauthenticated.'], 401)
+                : redirect()->route('admin.login');
         }
-        return null;
+
+        if (!Auth::user()->is_admin) {
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Forbidden.'], 403)
+                : redirect('/');
+        }
+
+        return $next($request);
     }
 }
