@@ -349,25 +349,15 @@ class ProductController extends Controller
 
     public function exportCsv(Request $request)
     {
-        $products = $this->buildExportQuery($request)->get();
-
+        $query = $this->buildExportQuery($request);
         $filename = 'products_' . now()->format('Y-m-d_His') . '.csv';
 
-        $headers = [
-            'Content-Type'        => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-            'Pragma'              => 'no-cache',
-            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires'             => '0',
-        ];
+        return response()->streamDownload(function () use ($query) {
+            if (ob_get_level()) ob_end_clean();
 
-        $callback = function () use ($products) {
             $handle = fopen('php://output', 'w');
-
-            // BOM for Excel UTF-8 compatibility
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            // Header row
             fputcsv($handle, [
                 'ID', 'Name', 'SKU', 'Barcode', 'Category', 'Brand',
                 'Price (£)', 'MRP (£)', 'Cost (£)', 'Stock', 'Unit',
@@ -375,7 +365,7 @@ class ProductController extends Controller
                 'Tax Rate (%)', 'Status', 'Featured', 'Popular', 'Created At',
             ]);
 
-            foreach ($products as $product) {
+            foreach ($query->cursor() as $product) {
                 fputcsv($handle, [
                     $product->id,
                     $product->name,
@@ -401,9 +391,13 @@ class ProductController extends Controller
             }
 
             fclose($handle);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        }, $filename, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Encoding'    => 'none',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ]);
     }
 
     public function exportPdf(Request $request)
