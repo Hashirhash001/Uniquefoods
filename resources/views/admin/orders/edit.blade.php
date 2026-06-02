@@ -64,6 +64,24 @@
         .oe-footer { flex-direction: column-reverse; }
         .oe-footer .ob { width: 100%; justify-content: center; }
     }
+
+    .sr-item.disabled {
+        background: #f9fafb;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+    .sr-item.disabled:hover {
+        background: #f9fafb;
+    }
+    .sr-stock {
+        font-size: 11px;
+        margin-top: 2px;
+        color: #9ca3af;
+    }
+    .sr-stock.out {
+        color: #dc2626;
+        font-weight: 600;
+    }
 </style>
 @endpush
 
@@ -139,8 +157,23 @@
                                 </td>
                                 <td>
                                     <input type="number" step="0.01" min="0"
-                                           class="price-input item-price"
-                                           value="{{ $item->price }}">
+                                        class="price-input item-price"
+                                        value="{{ $item->price }}">
+                                    @if(isset($customerPriceMap[$item->product_id]))
+                                        @php
+                                            $currentPrice = $customerPriceMap[$item->product_id];
+                                            $frozen       = number_format($item->price, 2, '.', '');
+                                            $priceChanged = (float)$currentPrice !== (float)$frozen;
+                                        @endphp
+                                        <div style="font-size:11px;margin-top:4px;color:#9ca3af;">
+                                            Customer price: <strong style="color:#08437b;">£{{ $currentPrice }}</strong>
+                                            @if($priceChanged)
+                                                <span style="color:#d97706;font-weight:600;display:block;">
+                                                    ⚠ Changed since order
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="vat-wrap">
@@ -281,7 +314,8 @@
 <script>
 const UPDATE_URL = "{{ route('admin.orders.update', $order) }}";
 const SHOW_URL   = "{{ route('admin.orders.show', $order) }}";
-const SEARCH_URL = "{{ route('admin.products.search') }}";
+const SEARCH_URL      = "{{ route('admin.products.search') }}?for_order=1";
+const PRICE_URL_BASE  = "{{ url('admin/orders/' . $order->id . '/product-price') }}";
 
 // ── LIVE RECALC ──────────────────────────────────────────────────────────────
 function recalc() {
@@ -335,7 +369,7 @@ searchInput.addEventListener('input', function () {
     const q = this.value.trim();
     if (q.length < 2) { searchResults.style.display = 'none'; return; }
     searchTimer = setTimeout(() => {
-        fetch(`${SEARCH_URL}?q=${encodeURIComponent(q)}`, {
+        fetch(`${SEARCH_URL}&q=${encodeURIComponent(q)}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
         .then(r => r.json())
@@ -346,15 +380,19 @@ searchInput.addEventListener('input', function () {
                 return;
             }
             searchResults.innerHTML = products.map(p => `
-                <div class="sr-item"
-                     data-id="${p.id}"
-                     data-name="${p.name}"
-                     data-price="${p.price}"
-                     data-sku="${p.sku ?? ''}"
-                     data-vat="${p.tax_rate ?? 0}">
+                <div class="sr-item ${p.can_add_to_order ? '' : 'disabled'}"
+                    data-id="${p.id}"
+                    data-name="${p.name}"
+                    data-price="${p.price}"
+                    data-sku="${p.sku ?? ''}"
+                    data-vat="${p.tax_rate ?? 0}"
+                    data-can-add="${p.can_add_to_order ? 1 : 0}">
                     <div class="sr-item-left">
                         <span class="sr-item-name">${p.name}</span>
                         ${p.sku ? `<span class="sr-item-sku">SKU: ${p.sku}</span>` : ''}
+                        <span class="sr-stock ${p.is_out_of_stock ? 'out' : ''}">
+                            ${p.is_out_of_stock ? 'Out of stock — cannot be added' : `Stock: ${p.stock}`}
+                        </span>
                     </div>
                     <span class="sr-item-price">£${parseFloat(p.price).toFixed(2)}</span>
                 </div>
@@ -368,9 +406,35 @@ searchInput.addEventListener('input', function () {
 searchResults.addEventListener('click', e => {
     const item = e.target.closest('.sr-item');
     if (!item) return;
-    addRow(item.dataset.id, item.dataset.name, item.dataset.sku, item.dataset.price, item.dataset.vat || 0);
+
+    if (item.dataset.canAdd !== '1') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Out of stock',
+            text: `"${item.dataset.name}" cannot be added because it is out of stock.`,
+            confirmButtonColor: '#08437b'
+        });
+        return;
+    }
+
+    const productId = item.dataset.id;
     searchInput.value = '';
     searchResults.style.display = 'none';
+
+    // Fetch the customer-specific price before adding the row
+    fetch(`${PRICE_URL_BASE}/${productId}`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const price   = data.success ? data.customer_price : item.dataset.price;
+        const vatRate = data.success ? data.tax_rate        : (item.dataset.vat || 0);
+        addRow(productId, item.dataset.name, item.dataset.sku, price, vatRate);
+    })
+    .catch(() => {
+        // Fallback to search result price if fetch fails
+        addRow(productId, item.dataset.name, item.dataset.sku, item.dataset.price, item.dataset.vat || 0);
+    });
 });
 
 document.addEventListener('click', e => {

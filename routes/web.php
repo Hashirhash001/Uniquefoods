@@ -31,12 +31,14 @@ use Illuminate\Support\Facades\Route;
 // ============================================
 // PUBLIC ROUTES
 // ============================================
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
-Route::get('/shop', [ShopController::class, 'index'])->name('shop');
-Route::get('/product/{slug}', [ShopController::class, 'show'])->name('product.show');
-Route::get('/shop/filter', [ShopController::class, 'filter'])->name('shop.filter');
-Route::get('/category/{slug}', [ShopController::class, 'category'])->name('category.show');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+    Route::get('/product/{slug}', [ShopController::class, 'show'])->name('product.show');
+    Route::get('/shop/filter', [ShopController::class, 'filter'])->name('shop.filter');
+    Route::get('/category/{slug}', [ShopController::class, 'category'])->name('category.show');
+});
 
 
 // ============================================
@@ -185,6 +187,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Products
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
+        Route::get('/products/export/csv', [ProductController::class, 'exportCsv'])->name('products.export.csv');
+        Route::get('/products/export/pdf', [ProductController::class, 'exportPdf'])->name('products.export.pdf');
         Route::resource('products', ProductController::class);
 
         // Categories
@@ -247,6 +251,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/bulk-delete', [OrderController::class, 'bulkDelete'])->name('bulk-delete');
             Route::get('/export/csv', [OrderController::class, 'export'])->name('export');
             Route::get('/{order}/invoice', [OrderController::class, 'invoice'])->name('invoice');
+            Route::get('/{order}/product-price/{product}', [OrderController::class, 'getProductPrice'])->name('product-price');
         });
 
         Route::get('shipping',        [ShippingController::class, 'index'])->name('shipping.index');

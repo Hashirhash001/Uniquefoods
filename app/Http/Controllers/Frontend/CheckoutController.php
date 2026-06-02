@@ -370,6 +370,7 @@ class CheckoutController extends Controller
                     ])
                     ->with(['primaryImage:id,product_id,image_path']);
                 }])
+                ->orderBy('id', 'asc')
                 ->get()
                 ->map(function ($item) {
                     if (!$item->product || !$item->product->is_active) return null;

@@ -326,16 +326,148 @@ class ProductController extends Controller
     // Quick search for admin order editing
     public function search(Request $request)
     {
-        $q = $request->get('q', '');
-        $products = Product::where('is_active', 1)
-            ->where(function ($query) use ($q) {
-                $query->where('name', 'like', "%$q%")
-                    ->orWhere('sku',  'like', "%$q%");
+        $q = trim($request->get('q', ''));
+        $inStockOnly = $request->boolean('in_stock_only');
+
+        $products = Product::query()
+            ->where('is_active', 1)
+            ->when($inStockOnly, function ($query) {
+                $query->where('stock', '>', 0);
             })
-            ->select('id', 'name', 'sku', 'price', 'stock', 'tax_rate')
-            ->limit(10)
-            ->get();
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhere('sku', 'like', "%{$q}%");
+                });
+            })
+            ->orderBy('name')
+            ->limit(20)
+            ->get(['id', 'name', 'sku', 'price', 'tax_rate', 'stock']);
 
         return response()->json($products);
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $products = $this->buildExportQuery($request)->get();
+
+        $filename = 'products_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($products) {
+            $handle = fopen('php://output', 'w');
+
+            // BOM for Excel UTF-8 compatibility
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header row
+            fputcsv($handle, [
+                'ID', 'Name', 'SKU', 'Barcode', 'Category', 'Brand',
+                'Price (£)', 'MRP (£)', 'Cost (£)', 'Stock', 'Unit',
+                'Weight Based', 'Price/kg (£)', 'Min Weight', 'Max Weight',
+                'Tax Rate (%)', 'Status', 'Featured', 'Popular', 'Created At',
+            ]);
+
+            foreach ($products as $product) {
+                fputcsv($handle, [
+                    $product->id,
+                    $product->name,
+                    $product->sku,
+                    $product->barcode ?? '',
+                    $product->category->name ?? '',
+                    $product->brand->name ?? '',
+                    number_format($product->price, 2),
+                    $product->mrp ? number_format($product->mrp, 2) : '',
+                    $product->cost ? number_format($product->cost, 2) : '',
+                    $product->stock,
+                    $product->unit,
+                    $product->is_weight_based ? 'Yes' : 'No',
+                    $product->price_per_kg ? number_format($product->price_per_kg, 2) : '',
+                    $product->min_weight ?? '',
+                    $product->max_weight ?? '',
+                    $product->tax_rate ?? '',
+                    $product->is_active ? 'Active' : 'Inactive',
+                    $product->is_featured ? 'Yes' : 'No',
+                    $product->is_popular ? 'Yes' : 'No',
+                    $product->created_at->format('d/m/Y H:i'),
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $products = $this->buildExportQuery($request)->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.products.export-pdf', [
+            'products'   => $products,
+            'exportedAt' => now()->format('d/m/Y H:i'),
+            'filters'    => $this->describeFilters($request),
+        ])->setPaper('a4', 'landscape');
+
+        $filename = 'products_' . now()->format('Y-m-d_His') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    private function buildExportQuery(Request $request)
+    {
+        $query = Product::with('category', 'brand');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name',    'like', "%{$search}%")
+                ->orWhere('sku',   'like', "%{$search}%")
+                ->orWhere('barcode','like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category_id')) $query->where('category_id', $request->category_id);
+        if ($request->filled('brand_id'))    $query->where('brand_id',    $request->brand_id);
+        if ($request->filled('status'))      $query->where('is_active',   $request->status);
+        if ($request->filled('min_price'))   $query->where('price', '>=', $request->min_price);
+        if ($request->filled('max_price'))   $query->where('price', '<=', $request->max_price);
+
+        if ($request->filled('stock_status')) {
+            match ($request->stock_status) {
+                'in_stock'     => $query->where('stock', '>', 10),
+                'low_stock'    => $query->whereBetween('stock', [1, 10]),
+                'out_of_stock' => $query->where('stock', '<=', 0),
+                default        => null,
+            };
+        }
+
+        if ($request->filled('group_id')) {
+            $query->whereHas('customerGroups', fn($q) =>
+                $q->where('customer_groups.id', $request->group_id)
+            );
+        }
+
+        return $query->orderBy('name');
+    }
+
+    private function describeFilters(Request $request): string
+    {
+        $parts = [];
+        if ($request->filled('search'))       $parts[] = 'Search: "' . $request->search . '"';
+        if ($request->filled('category_id'))  $parts[] = 'Category ID: ' . $request->category_id;
+        if ($request->filled('brand_id'))     $parts[] = 'Brand ID: ' . $request->brand_id;
+        if ($request->filled('status'))       $parts[] = 'Status: ' . ($request->status ? 'Active' : 'Inactive');
+        if ($request->filled('stock_status')) $parts[] = 'Stock: ' . $request->stock_status;
+        if ($request->filled('min_price'))    $parts[] = 'Min Price: £' . $request->min_price;
+        if ($request->filled('max_price'))    $parts[] = 'Max Price: £' . $request->max_price;
+        return $parts ? implode(' | ', $parts) : 'All products';
     }
 }

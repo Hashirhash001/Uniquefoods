@@ -249,12 +249,54 @@
                                         @else
                                             {{-- Standard product: Add To Cart + Wishlist side by side --}}
                                             <div class="cart-action-row">
-                                                <button class="rts-btn btn-primary radious-sm with-icon add-to-cart-btn"
-                                                        data-product-id="{{ $product->id }}"
-                                                        {{ $product->stock === 0 ? 'disabled' : '' }}>
-                                                    <div class="btn-text">{{ $product->stock > 0 ? 'Add To Cart' : 'Out of Stock' }}</div>
-                                                    <div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>
-                                                </button>
+                                                <div class="product-cart-ui"
+                                                    data-product-id="{{ $product->id }}"
+                                                    data-stock="{{ $product->stock }}"
+                                                    data-state="default"
+                                                    data-saved-qty="0">
+
+                                                    <button type="button"
+                                                            class="rts-btn btn-primary radious-sm with-icon add-to-cart-btn"
+                                                            data-product-id="{{ $product->id }}"
+                                                            data-stock="{{ $product->stock }}"
+                                                            {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                                                        <div class="btn-text">{{ $product->stock > 0 ? 'Add To Cart' : 'Out of Stock' }}</div>
+                                                        <div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>
+                                                    </button>
+
+                                                    <div class="product-inline-editor d-none">
+                                                        <button type="button" class="cart-inline-btn cart-inline-cancel" data-product-id="{{ $product->id }}">
+                                                            <i class="fa-regular fa-xmark"></i>
+                                                        </button>
+                                                        <input type="number"
+                                                            class="cart-inline-input"
+                                                            data-product-id="{{ $product->id }}"
+                                                            value="1"
+                                                            min="1"
+                                                            max="{{ $product->stock }}"
+                                                            step="1"
+                                                            inputmode="numeric">
+                                                        <button type="button" class="cart-inline-btn cart-inline-save" data-product-id="{{ $product->id }}">
+                                                            <i class="fa-regular fa-check"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="product-cart-summary d-none">
+                                                        <div class="cart-summary-meta">
+                                                            <span class="cart-summary-label">In cart</span>
+                                                            <span class="cart-summary-value">
+                                                                <strong class="cart-summary-qty">1</strong>
+                                                                <span class="cart-summary-unit">pcs</span>
+                                                            </span>
+                                                        </div>
+                                                        <button type="button" class="cart-summary-edit" data-product-id="{{ $product->id }}">
+                                                            <i class="fa-regular fa-pen-to-square"></i>
+                                                            <span>Edit</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="cart-inline-error d-none"></div>
+                                                </div>
 
                                                 <button class="wishlist-toggle-btn wishlist-icon-btn"
                                                         data-product-id="{{ $product->id }}"
@@ -679,6 +721,7 @@
                             @endif
                             <button class="product-add-to-cart add-to-cart-btn {{ $related->stock == 0 ? 'disabled' : '' }}"
                                     data-product-id="{{ $related->id }}"
+                                    {{ $related->stock == 0 ? 'disabled' : '' }} data-stock="{{ $related->stock }}"
                                     {{ $related->stock == 0 ? 'disabled' : '' }}>
                                 <i class="fa-regular fa-cart-shopping"></i>
                                 <span>{{ $related->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}</span>
@@ -836,6 +879,159 @@ $(document).ready(function() {
         }
     }
 
+    function getProductCartUI(productId) {
+        return $(`.product-cart-ui[data-product-id="${productId}"]`);
+    }
+
+    function setCartUIState(productId, state, qty) {
+        const wrap = getProductCartUI(productId);
+        if (!wrap.length) return;
+
+        const addBtn = wrap.find('.add-to-cart-btn');
+        const editor = wrap.find('.product-inline-editor');
+        const summary = wrap.find('.product-cart-summary');
+        const input = wrap.find('.cart-inline-input');
+        const qtyText = wrap.find('.cart-summary-qty');
+        const error = wrap.find('.cart-inline-error');
+
+        wrap.attr('data-state', state);
+        error.addClass('d-none').text('');
+
+        if (qty !== undefined && qty !== null) {
+            qty = parseInt(qty, 10) || 1;
+            wrap.attr('data-saved-qty', qty);
+            input.val(qty);
+            qtyText.text(qty);
+        }
+
+        addBtn.addClass('d-none');
+        editor.addClass('d-none');
+        summary.addClass('d-none');
+
+        if (state === 'default') {
+            addBtn.removeClass('d-none');
+        } else if (state === 'editing') {
+            editor.removeClass('d-none');
+            setTimeout(() => input.trigger('focus').trigger('select'), 20);
+        } else if (state === 'saved') {
+            summary.removeClass('d-none');
+        }
+    }
+
+    function showCartInlineError(productId, message) {
+        const wrap = getProductCartUI(productId);
+        wrap.find('.cart-inline-error').text(message).removeClass('d-none');
+    }
+
+    function validateCartQty(productId) {
+        const wrap = getProductCartUI(productId);
+        const input = wrap.find('.cart-inline-input');
+        const stock = parseInt(wrap.data('stock'), 10) || 0;
+        const raw = $.trim(input.val());
+        const qty = parseInt(raw, 10);
+
+        if (!raw || isNaN(qty)) {
+            return { valid: false, message: 'Please enter quantity' };
+        }
+
+        if (qty < 1) {
+            return { valid: false, message: 'Minimum quantity is 1' };
+        }
+
+        if (qty > stock) {
+            return { valid: false, message: `Only ${stock} in stock` };
+        }
+
+        return { valid: true, qty: qty };
+    }
+
+    function openCartEditor(productId, qty) {
+        const wrap = getProductCartUI(productId);
+        if (!wrap.length) return;
+
+        qty = parseInt(qty, 10) || parseInt(wrap.attr('data-saved-qty'), 10) || 1;
+        wrap.find('.cart-inline-input').val(qty);
+        setCartUIState(productId, 'editing', qty);
+    }
+
+    function cancelCartEdit(productId) {
+        const wrap = getProductCartUI(productId);
+        const savedQty = parseInt(wrap.attr('data-saved-qty'), 10) || 0;
+
+        if (savedQty > 0) {
+            setCartUIState(productId, 'saved', savedQty);
+        } else {
+            setCartUIState(productId, 'default');
+        }
+    }
+
+    $(document).on('click', '.add-to-cart-btn', function(e) {
+        if (!$(this).closest('.product-cart-ui').length) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openCartEditor($(this).data('product-id'), 1);
+    });
+
+    $(document).on('click', '.cart-summary-edit', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const productId = $(this).data('product-id');
+        const savedQty = parseInt(getProductCartUI(productId).attr('data-saved-qty'), 10) || 1;
+        openCartEditor(productId, savedQty);
+    });
+
+    $(document).on('click', '.cart-inline-cancel', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        cancelCartEdit($(this).data('product-id'));
+    });
+
+    $(document).on('click', '.cart-inline-save', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const productId = $(this).data('product-id');
+        const validation = validateCartQty(productId);
+
+        if (!validation.valid) {
+            showCartInlineError(productId, validation.message);
+            return;
+        }
+
+        const qty = validation.qty;
+        const wrap = getProductCartUI(productId);
+        const savedQty = parseInt(wrap.attr('data-saved-qty'), 10) || 0;
+
+        if (typeof window.Cart === 'undefined') return;
+
+        const isInCart = window.Cart.cartItems && window.Cart.cartItems[String(productId)];
+
+        if (isInCart && savedQty > 0 && typeof window.Cart.setQuantity === 'function') {
+            window.Cart.setQuantity(productId, qty);
+        } else if (typeof window.Cart.add === 'function') {
+            window.Cart.add(productId, qty);
+        }
+    });
+
+    $(document).on('keydown', '.cart-inline-input', function(e) {
+        const productId = $(this).data('product-id');
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            $(`.cart-inline-save[data-product-id="${productId}"]`).trigger('click');
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelCartEdit(productId);
+        }
+    });
+
+    $(document).on('input', '.cart-inline-input', function() {
+        getProductCartUI($(this).data('product-id'))
+            .find('.cart-inline-error')
+            .addClass('d-none')
+            .text('');
+    });
+
     // Open share modal
     $('#shareProductBtn').on('click', function() {
         $('#shareModalOverlay').addClass('active');
@@ -917,47 +1113,6 @@ $(document).ready(function() {
     }
 
     document.getElementById('copyLinkBtn').onclick = copyToClipboard;
-
-    // Cart & Wishlist
-    $(document).on('click', '.add-to-cart-btn', function(e) {
-        e.preventDefault();
-
-        const btn       = $(this);
-        const productId = btn.data('product-id');
-
-        if (btn.data('pending')) return;
-
-        btn.data('pending', true)
-        .prop('disabled', true)
-        .html(`<div class="btn-text">Adding...</div><div class="arrow-icon"><i class="fa-solid fa-spinner fa-spin"></i></div>`);
-
-        $.ajax({
-            url: '{{ route("cart.add") }}',
-            method: 'POST',
-            data: { _token: '{{ csrf_token() }}', product_id: productId, quantity: 1 },
-            success: function (res) {
-                if (res.success) {
-                    btn.html(`<div class="btn-text">Added!</div><div class="arrow-icon"><i class="fa-solid fa-circle-check"></i></div>`);
-                    $(document).trigger('cart:updated', [res.cart]);
-                    Toast.success(res.message);
-                    setTimeout(() => {
-                        btn.prop('disabled', false)
-                        .data('pending', false)
-                        .html(`<div class="btn-text">Add To Cart</div><div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>`);
-                    }, 1500);
-                } else {
-                    Toast.error(res.message);
-                    btn.prop('disabled', false).data('pending', false)
-                    .html(`<div class="btn-text">Add To Cart</div><div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>`);
-                }
-            },
-            error: function (xhr) {
-                Toast.error(xhr.responseJSON?.message || 'Failed to add to cart.');
-                btn.prop('disabled', false).data('pending', false)
-                .html(`<div class="btn-text">Add To Cart</div><div class="arrow-icon"><i class="fa-regular fa-cart-shopping"></i></div>`);
-            }
-        });
-    });
 
     if (typeof window.initializeWishlistStates === 'function') {
         window.initializeWishlistStates();

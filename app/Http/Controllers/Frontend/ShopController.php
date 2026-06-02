@@ -165,7 +165,7 @@ class ShopController extends Controller
 
             // ── Word-boundary guard for short single-word queries ──
             // Prevents "foil","oily","boiled","toilet" matching when searching "oil"
-            if (count($words) === 1 && strlen($q) <= 5) {
+            if (count($words) === 1 && strlen($q) <= 2) {
                 $pattern = '(^|[[:space:][:punct:]])' . preg_quote($ql, '/') . '([[:space:][:punct:]]|$)';
                 $query->where(function ($wb) use ($pattern, $q) {
                     $wb->whereRaw('LOWER(name) REGEXP ?', [$pattern])
@@ -367,15 +367,12 @@ class ShopController extends Controller
         return view('frontend.show', compact('product', 'relatedProducts', 'offers', 'hasPurchased', 'hasReviewed'));
     }
 
-    // ================================================
-    // SEARCH (header dropdown AJAX)
-    // ================================================
     public function search(Request $request, PricingService $pricingService)
     {
         $q = trim($request->get('q', ''));
 
         if (strlen($q) < 2) {
-            return response()->json(['success' => true, 'products' => [], 'categories' => [], 'total' => 0]);
+            return response()->json(['success' => true, 'products' => [], 'categories' => [], 'brands' => [], 'total' => 0]);
         }
 
         /** @var \App\Models\User $user */
@@ -384,8 +381,8 @@ class ShopController extends Controller
             $user->loadMissing('groups');
         }
 
-        $ql       = strtolower($q);
-        $words    = array_values(array_filter(
+        $ql      = strtolower($q);
+        $words   = array_values(array_filter(
             explode(' ', preg_replace('/\s+/', ' ', $q)),
             fn($w) => strlen(trim($w)) >= 2
         ));
@@ -394,12 +391,13 @@ class ShopController extends Controller
         $tier4Conditions = implode(' AND ', array_fill(0, max(count($words), 1), 'LOWER(name) LIKE ?'));
         $tier4Bindings   = array_map(fn($w) => '%' . strtolower($w) . '%', $words ?: [$ql]);
 
+        // ── Product Query ──
         $productQuery = Product::with(['category', 'primaryImage'])
             ->where('is_active', 1)
             ->visibleTo($user)
-            ->where(function ($sub) use ($q, $words, $compound) {
+            ->where(function ($sub) use ($q, $ql, $words, $compound) {
                 $sub->where('name', 'LIKE', "%{$q}%")
-                    ->orWhere('sku',  'LIKE', "%{$q}%");
+                    ->orWhere('sku', 'LIKE', "%{$q}%");
 
                 if (count($words) > 1) {
                     $sub->orWhere(function ($and) use ($words) {
@@ -416,34 +414,31 @@ class ShopController extends Controller
                 if (strlen($q) >= 5) {
                     $sub->orWhere('description', 'LIKE', "%{$q}%");
                 }
+
+                // Brand / category name match → include their products
+                $sub->orWhereHas('brand',    fn($b) => $b->where('name', 'LIKE', "%{$q}%"))
+                    ->orWhereHas('category', fn($c) => $c->where('name', 'LIKE', "%{$q}%"));
             });
 
-        // ── Word-boundary guard for short single-word queries ──
-        if (count($words) === 1 && strlen($q) <= 5) {
+        // ── Word-boundary guard — only for queries ≤ 3 chars (e.g. "oil", "egg") ──
+        if (count($words) === 1 && strlen($q) <= 3) {
             $pattern = '(^|[[:space:][:punct:]])' . preg_quote($ql, '/') . '([[:space:][:punct:]]|$)';
             $productQuery->where(function ($wb) use ($pattern) {
                 $wb->whereRaw('LOWER(name) REGEXP ?', [$pattern])
-                ->orWhereHas('category', fn($c) =>
-                        $c->whereRaw('LOWER(name) REGEXP ?', [$pattern])
-                )
-                ->orWhereHas('brand', fn($b) =>
-                        $b->whereRaw('LOWER(name) REGEXP ?', [$pattern])
-                );
+                    ->orWhereHas('category', fn($c) => $c->whereRaw('LOWER(name) REGEXP ?', [$pattern]))
+                    ->orWhereHas('brand',    fn($b) => $b->whereRaw('LOWER(name) REGEXP ?', [$pattern]));
             });
         }
 
         $products = $productQuery
             ->orderByRaw("
                 CASE
-                    WHEN LOWER(name) = ?                    THEN 0
-                    WHEN LOWER(name) LIKE ?                 THEN 1
-                    WHEN LOWER(name) LIKE ?                 THEN 2
-                    WHEN LOWER(name) LIKE ?
-                    AND (LOWER(name) LIKE ?
-                    OR LOWER(name) LIKE ?
-                    OR LOWER(name) LIKE ?)               THEN 3
-                    WHEN {$tier4Conditions}                 THEN 4
-                    WHEN LOWER(name) LIKE ?                 THEN 5
+                    WHEN LOWER(name) = ?            THEN 0
+                    WHEN LOWER(name) LIKE ?         THEN 1
+                    WHEN LOWER(name) LIKE ?         THEN 2
+                    WHEN LOWER(name) LIKE ?         THEN 3
+                    WHEN LOWER(name) LIKE ?         THEN 4
+                    WHEN {$tier4Conditions}         THEN 5
                     ELSE 6
                 END ASC,
                 name ASC
@@ -451,17 +446,17 @@ class ShopController extends Controller
                 [
                     $ql,
                     $ql . '%',
-                    '%' . ($compound ?? $ql) . '%',
-                    '%' . $ql . '%',
                     '% ' . $ql . '%',
                     '%-' . $ql . '%',
-                    $ql . ' %',
+                    '%' . $ql . '%',
                 ],
-                $tier4Bindings,
-                ['%' . $ql . '%']
+                $tier4Bindings
             ))
-            ->limit(8)
+            ->limit(12)
             ->get()
+            ->unique('name')   // hide duplicates in dropdown
+            ->values()
+            ->take(10)
             ->map(function ($product) use ($pricingService, $user) {
                 return [
                     'id'         => $product->id,
@@ -494,11 +489,30 @@ class ShopController extends Controller
                 'image' => $cat->image_url,
             ]);
 
+        // ── Brands ──
+        $brands = \App\Models\Brand::where('is_active', 1)
+            ->where('name', 'LIKE', "%{$q}%")
+            ->orderByRaw("
+                CASE
+                    WHEN LOWER(name) = ?    THEN 0
+                    WHEN LOWER(name) LIKE ? THEN 1
+                    ELSE 2
+                END ASC
+            ", [$ql, $ql . '%'])
+            ->limit(2)
+            ->get()
+            ->map(fn($b) => [
+                'id'   => $b->id,
+                'name' => $b->name,
+                'slug' => $b->slug,
+            ]);
+
         return response()->json([
             'success'    => true,
             'products'   => $products,
             'categories' => $categories,
-            'total'      => $products->count() + $categories->count(),
+            'brands'     => $brands,
+            'total'      => $products->count() + $categories->count() + $brands->count(),
         ]);
     }
 

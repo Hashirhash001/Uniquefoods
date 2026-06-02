@@ -223,6 +223,10 @@ class Product extends Model
      */
     public function scopeVisibleTo($query, ?\App\Models\User $user)
     {
+        if (!$user) {
+            return $query->whereRaw('0 = 1');
+        }
+
         if ($user && $user->groups->isNotEmpty()) {
             $groupIds = $user->groups->pluck('id');
         } else {

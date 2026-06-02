@@ -28,7 +28,12 @@ class CartController extends Controller
     private function getCart(): array
     {
         if (!Auth::check()) {
-            return array_values(session()->get('cart', []));
+            $cart = array_values(session()->get('cart', []));
+
+            // Sort oldest-first
+            usort($cart, fn($a, $b) => ($a['added_at'] ?? 0) <=> ($b['added_at'] ?? 0));
+
+            return $cart;
         }
 
         $user = Auth::user();
@@ -42,6 +47,7 @@ class CartController extends Controller
 
         return $cart->items()
             ->with(['product.primaryImage', 'product.category', 'product.brand'])
+            ->orderBy('id', 'asc')
             ->get()
             ->filter(fn ($item) => $item->product && $item->product->is_active)
             ->map(function ($item) use ($user) {
@@ -416,6 +422,7 @@ class CartController extends Controller
                 'is_weight_based' => (bool) $product->is_weight_based,
                 'stock'           => (int) $product->stock,
                 'subtotal'        => $subtotal,
+                'added_at'        => time(),
             ];
         }
 

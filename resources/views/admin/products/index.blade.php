@@ -546,9 +546,19 @@
                 <h3 class="title">Product Management</h3>
                 <p class="page-subtitle">Manage your product inventory</p>
             </div>
-            <a href="{{ route('admin.products.create') }}" class="rts-btn btn-primary">
-                <i class="fas fa-plus"></i> Add Product
-            </a>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <button type="button" id="exportCsvBtn" class="rts-btn btn-primary"
+                        style="background:#059669;">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </button>
+                {{-- <button type="button" id="exportPdfBtn" class="rts-btn btn-primary"
+                        style="background:#dc2626;">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </button> --}}
+                <a href="{{ route('admin.products.create') }}" class="rts-btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Product
+                </a>
+            </div>
         </div>
     </div>
 
@@ -847,5 +857,29 @@ updateActiveFiltersCount();
         updateActiveFiltersCount();
     }
 })();
+
+function buildExportUrl(base) {
+    const params = new URLSearchParams();
+    if ($('#search').val())       params.set('search',       $('#search').val());
+    if ($('#category_id').val())  params.set('category_id',  $('#category_id').val());
+    if ($('#brand_id').val())     params.set('brand_id',     $('#brand_id').val());
+    if ($('#group_id').val())     params.set('group_id',     $('#group_id').val());
+    if ($('#status').val())       params.set('status',       $('#status').val());
+    if ($('#stock_status').val()) params.set('stock_status', $('#stock_status').val());
+    if ($('#min_price').val())    params.set('min_price',    $('#min_price').val());
+    if ($('#max_price').val())    params.set('max_price',    $('#max_price').val());
+    return base + (params.toString() ? '?' + params.toString() : '');
+}
+
+$('#exportCsvBtn').on('click', function () {
+    window.location.href = buildExportUrl('{{ route("admin.products.export.csv") }}');
+});
+
+$('#exportPdfBtn').on('click', function () {
+    const btn = $(this);
+    btn.html('<i class="fas fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+    window.location.href = buildExportUrl('{{ route("admin.products.export.pdf") }}');
+    setTimeout(() => btn.html('<i class="fas fa-file-pdf"></i> Export PDF').prop('disabled', false), 3000);
+});
 </script>
 @endpush

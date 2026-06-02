@@ -89,6 +89,10 @@
 
     window.Toast = Toast;
 
+    // ── Delta accumulator ──
+    const _qtyDelta    = {};   // productId → pending delta
+    const _qtySnapshot = {};   // productId → qty before rapid clicks started
+
     // ================================================
     // CART
     // ================================================
@@ -116,9 +120,16 @@
                 data: { product_id: productId, quantity, weight, _token: csrfToken },
                 success: (response) => {
                     if (response.success) {
-                        Toast.success(response.message || 'Product added to cart');
+                        if (window.innerWidth >= 768) {
+                            Toast.success(response.message || 'Product added to cart');
+                        }
                         this.updateUI(response.cart);
-                        this.showQuantityControls(productId, quantity);
+
+                        const addedItem = response.cart?.items?.find(item => String(item.id) === String(productId));
+                        const savedQty = addedItem ? parseInt(addedItem.quantity, 10) : parseInt(quantity, 10);
+
+                        this.syncProductCardState(productId, savedQty);
+
                         button.removeClass('btn-loading').addClass('added');
                         setTimeout(() => button.removeClass('added').prop('disabled', false), 1000);
                     } else {
@@ -138,87 +149,199 @@
             });
         },
 
-        showQuantityControls(productId, quantity) {
-            const button = $(`.add-to-cart-btn[data-product-id="${productId}"], .product-add-to-cart[data-product-id="${productId}"]`);
-            const existingControls = $(`.cart-quantity-controls[data-product-id="${productId}"]`);
+        showQuantityControls(productId, quantity, stock) {
+            this.syncProductCardState(productId, quantity, stock);
+        },
 
-            if (existingControls.length > 0) {
-                existingControls.find('.cart-qty-value').text(quantity);
-                return;
+        syncProductCardState(productId, qty, stock = null) {
+            const wrap = $(`.product-cart-ui[data-product-id="${productId}"]`);
+            if (!wrap.length) return;
+
+            qty = parseInt(qty, 10) || 0;
+
+            if (stock === null || stock === undefined) {
+                stock = parseInt(wrap.data('stock'), 10) || 999;
             }
 
-            const qtyControls = $(`
-                <div class="cart-quantity-controls" data-product-id="${productId}">
-                    <button class="cart-qty-btn cart-qty-minus" data-product-id="${productId}" type="button">
-                        <i class="fa-solid fa-minus"></i>
-                    </button>
-                    <span class="cart-qty-value">${quantity}</span>
-                    <button class="cart-qty-btn cart-qty-plus" data-product-id="${productId}" type="button">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
-            `);
+            wrap.attr('data-stock', stock);
 
-            button.replaceWith(qtyControls);
-            this.cartItems[productId] = quantity;
+            const addBtn  = wrap.find('.add-to-cart-btn');
+            const editor  = wrap.find('.product-inline-editor');
+            const summary = wrap.find('.product-cart-summary');
+            const qtyText = wrap.find('.cart-summary-qty');
+            const input   = wrap.find('.cart-inline-input');
+            const error   = wrap.find('.cart-inline-error');
+
+            error.addClass('d-none').text('');
+            addBtn.addClass('d-none');
+            editor.addClass('d-none');
+            summary.addClass('d-none');
+
+            if (qty > 0) {
+                wrap.attr('data-state', 'saved');
+                wrap.attr('data-saved-qty', qty);
+                qtyText.text(qty);
+                input.val(qty);
+                input.attr('max', stock);
+                summary.removeClass('d-none');
+
+                this.cartItems[productId] = { qty, stock };
+            } else {
+                wrap.attr('data-state', 'default');
+                wrap.attr('data-saved-qty', 0);
+                input.val(1);
+                input.attr('max', stock);
+                addBtn.removeClass('d-none').prop('disabled', false).removeClass('btn-loading added');
+
+                delete this.cartItems[productId];
+            }
         },
 
         updateQuantity(productId, action) {
             if (this.processingProducts.has(productId)) return;
 
-            const qtyDisplay = $(`.cart-quantity-controls[data-product-id="${productId}"] .cart-qty-value`);
-            const currentQty = parseInt(qtyDisplay.text()) || 0;
-            const newQty = action === 'plus' ? currentQty + 1 : currentQty - 1;
+            const qtyDisplay  = $(`.cart-quantity-controls[data-product-id="${productId}"] .cart-qty-value`);
+            const controls    = $(`.cart-quantity-controls[data-product-id="${productId}"]`);
+            const currentQty  = parseInt(qtyDisplay.text()) || 0;
 
-            if (newQty < 0) return;
+            // Read stock from the controls wrapper OR the product card
+            const stock = parseInt(
+                controls.data('stock') ||
+                $(`[data-product-id="${productId}"][data-stock]`).first().data('stock') ||
+                999
+            );
 
-            // Optimistic UI immediately
-            qtyDisplay.text(newQty).addClass('updating');
-            setTimeout(() => qtyDisplay.removeClass('updating'), 300);
+            // Block increment beyond stock
+            if (action === 'plus' && currentQty >= stock) {
+                Toast.warning(`Only ${stock} units available`);
+                return;
+            }
 
-            // ── Debounce: wait 350ms before sending AJAX ──
+            // Snapshot on first click of a burst
+            if (_qtyDelta[productId] === undefined) {
+                _qtyDelta[productId]    = 0;
+                _qtySnapshot[productId] = currentQty;
+            }
+
+            _qtyDelta[productId] += action === 'plus' ? 1 : -1;
+
+            const optimisticQty = Math.max(0, _qtySnapshot[productId] + _qtyDelta[productId]);
+
+            // Update display and button states immediately
+            qtyDisplay.text(optimisticQty);
+            controls.find('.cart-qty-minus').prop('disabled', false);
+            controls.find('.cart-qty-plus').prop('disabled', optimisticQty >= stock);
+
             clearTimeout(this._qtyDebounceTimers[productId]);
             this._qtyDebounceTimers[productId] = setTimeout(() => {
+                const finalQty  = optimisticQty;
+                const revertQty = _qtySnapshot[productId] || currentQty;
+
+                delete _qtyDelta[productId];
+                delete _qtySnapshot[productId];
+
                 this.processingProducts.add(productId);
 
                 $.ajax({
                     url: '/cart/update',
                     method: 'POST',
-                    data: { product_id: productId, action, _token: csrfToken },
+                    data: { product_id: productId, quantity: finalQty, _token: csrfToken },
                     success: (response) => {
                         if (response.success) {
                             this.updateUI(response.cart);
-                            if (newQty === 0) {
-                                this.showAddToCartButton(productId);
-                                delete this.cartItems[productId];
+                            if (finalQty === 0) {
+                                this.remove(productId);
+                                return;
                             } else {
-                                this.cartItems[productId] = newQty;
+                                this.cartItems[productId] = { qty: finalQty, stock: stock };
                             }
                         } else {
-                            qtyDisplay.text(currentQty);
-                            Toast.error('Failed to update quantity');
+                            qtyDisplay.text(revertQty);
+                            controls.find('.cart-qty-plus').prop('disabled', revertQty >= stock);
+                            controls.find('.cart-qty-minus').prop('disabled', false);
+                            Toast.error(response.message || 'Failed to update quantity');
                         }
                     },
                     error: () => {
-                        qtyDisplay.text(currentQty);
+                        qtyDisplay.text(revertQty);
+                        controls.find('.cart-qty-plus').prop('disabled', revertQty >= stock);
+                        controls.find('.cart-qty-minus').prop('disabled', false);
                         Toast.error('Error updating cart');
                     },
                     complete: () => {
                         this.processingProducts.delete(productId);
                     }
                 });
-            }, 350);
+            }, 400);
+        },
+
+        setQuantity(productId, quantity) {
+            quantity = parseInt(quantity, 10) || 0;
+
+            if (this.processingProducts.has(productId)) return;
+            this.processingProducts.add(productId);
+
+            const wrap = $(`.product-cart-ui[data-product-id="${productId}"]`);
+            const input = wrap.find('.cart-inline-input');
+            const saveBtn = wrap.find('.cart-inline-save');
+            const cancelBtn = wrap.find('.cart-inline-cancel');
+
+            saveBtn.prop('disabled', true).addClass('btn-loading');
+            cancelBtn.prop('disabled', true);
+            input.prop('disabled', true);
+
+            $.ajax({
+                url: '/cart/update',
+                method: 'POST',
+                data: {
+                    product_id: productId,
+                    quantity: quantity,
+                    _token: csrfToken
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.updateUI(response.cart);
+
+                        const updatedItem = response.cart?.items?.find(
+                            item => String(item.id) === String(productId)
+                        );
+                        const savedQty = updatedItem ? parseInt(updatedItem.quantity, 10) : quantity;
+
+                        if (savedQty > 0) {
+                            this.syncProductCardState(productId, savedQty);
+                        } else {
+                            this.showAddToCartButton(productId);
+                        }
+
+                        if (window.innerWidth >= 768) {
+                            Toast.success(response.message || 'Cart updated');
+                        }
+                    } else {
+                        Toast.error(response.message || 'Failed to update quantity');
+                    }
+                },
+                error: (xhr) => {
+                    Toast.error(xhr.responseJSON?.message || 'Error updating cart');
+                },
+                complete: () => {
+                    saveBtn.prop('disabled', false).removeClass('btn-loading');
+                    cancelBtn.prop('disabled', false);
+                    input.prop('disabled', false);
+                    this.processingProducts.delete(productId);
+                }
+            });
         },
 
         showAddToCartButton(productId) {
-            const qtyControls = $(`.cart-quantity-controls[data-product-id="${productId}"]`);
-            const button = $(`
-                <button class="product-add-to-cart add-to-cart-btn" data-product-id="${productId}">
-                    <i class="fa-regular fa-cart-shopping"></i>
-                    <span>Add to Cart</span>
-                </button>
-            `);
-            qtyControls.replaceWith(button);
+            const wrap = $(`.product-cart-ui[data-product-id="${productId}"]`);
+            if (wrap.length) {
+                wrap.attr('data-state', 'default');
+                wrap.attr('data-saved-qty', 0);
+                wrap.find('.add-to-cart-btn').removeClass('d-none').prop('disabled', false).removeClass('btn-loading added');
+                wrap.find('.product-inline-editor, .product-cart-summary, .cart-inline-error').addClass('d-none');
+                wrap.find('.cart-inline-input').val(1);
+            }
+
             delete this.cartItems[productId];
         },
 
@@ -232,10 +355,13 @@
                 data: { product_id: productId, _token: csrfToken },
                 success: (response) => {
                     if (response.success) {
-                        Toast.success(response.message || 'Product removed from cart');
+                        if (window.innerWidth >= 768) {
+                            Toast.success(response.message || 'Product removed from cart');
+                        }
                         this.updateUI(response.cart);
                         this.showAddToCartButton(productId);
                         delete this.cartItems[productId];
+                        this.updateUI(response.cart);
                     } else {
                         Toast.error(response.message || 'Failed to remove from cart');
                     }
@@ -279,23 +405,27 @@
             // Build new cartItems map
             const newCartItems = {};
             if (cartData.items) {
-                cartData.items.forEach(item => { newCartItems[item.id] = item.quantity; });
+                cartData.items.forEach(item => {
+                    newCartItems[item.id] = {
+                        qty:   item.quantity,
+                        stock: item.stock ?? 999   // ← store stock too
+                    };
+                });
             }
             this.cartItems = newCartItems;
             this.syncAllProductCards();
         },
 
         syncAllProductCards() {
-            // Remove controls for items no longer in cart
-            $('.cart-quantity-controls').each((i, el) => {
-                const pid = $(el).data('product-id');
-                if (!this.cartItems[pid]) this.showAddToCartButton(pid);
-            });
+            $('.product-cart-ui[data-product-id]').each((i, el) => {
+                const pid = String($(el).data('product-id'));
+                const data = this.cartItems[pid];
 
-            // Show controls for items in cart
-            Object.entries(this.cartItems).forEach(([pid, qty]) => {
-                if (qty > 0) this.showQuantityControls(pid, qty);
-                else         this.showAddToCartButton(pid);
+                if (data && parseInt(data.qty, 10) > 0) {
+                    this.syncProductCardState(pid, data.qty, data.stock);
+                } else {
+                    this.syncProductCardState(pid, 0, $(el).data('stock'));
+                }
             });
         },
 
@@ -383,7 +513,9 @@
                 data: { product_id: productId, _token: csrfToken },
                 success: (response) => {
                     if (response.success) {
-                        Toast.success(response.message || 'Wishlist updated');
+                        if (window.innerWidth >= 768) {
+                            Toast.success(response.message || 'Wishlist updated');
+                        }
                         this.updateCount(response.count);
                     } else {
                         // Revert
@@ -476,34 +608,21 @@
         $(document).off('click.cw', '.add-to-cart-btn, .product-add-to-cart');
         $(document).off('click.cw', '.wishlist-toggle-btn, .shop-wishlist-btn');
         $(document).off('click.cw', '.cart-remove-btn');
-        $(document).off('click.cw', '.cart-qty-plus');
-        $(document).off('click.cw', '.cart-qty-minus');
 
         // ── Add to Cart ──
         // Uses stopImmediatePropagation to prevent the inline blade handler
         // from also firing on the product detail page
         $(document).on('click.cw', '.add-to-cart-btn, .product-add-to-cart', function(e) {
+            if ($(this).closest('.product-cart-ui').length) {
+                return;
+            }
+
             e.preventDefault();
-            e.stopImmediatePropagation();   // ← KEY FIX: kills any other handler on same element
+            e.stopImmediatePropagation();
             if ($(this).hasClass('btn-loading') || $(this).prop('disabled')) return;
+
             const productId = $(this).data('product-id') || $(this).data('id');
             if (productId) Cart.add(productId);
-        });
-
-        // ── Quantity + ──
-        $(document).on('click.cw', '.cart-qty-plus', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const pid = $(this).data('product-id');
-            if (pid) Cart.updateQuantity(pid, 'plus');
-        });
-
-        // ── Quantity - ──
-        $(document).on('click.cw', '.cart-qty-minus', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const pid = $(this).data('product-id');
-            if (pid) Cart.updateQuantity(pid, 'minus');
         });
 
         // ── Wishlist ──

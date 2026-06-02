@@ -104,10 +104,43 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-    public function edit(Order $order)
+    public function edit(Order $order, \App\Services\PricingService $pricingService)
     {
         $order->load('user', 'items.product.primaryImage');
-        return view('admin.orders.edit', compact('order'));
+
+        $customerPriceMap = [];
+        if ($order->user) {
+            $order->user->loadMissing('groups');
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $customerPriceMap[$item->product_id] = number_format(
+                        (float) $pricingService->getCustomerPrice($item->product, $order->user),
+                        2, '.', ''
+                    );
+                }
+            }
+        }
+
+        return view('admin.orders.edit', compact('order', 'customerPriceMap'));
+    }
+
+    public function getProductPrice(Order $order, \App\Models\Product $product, \App\Services\PricingService $pricingService)
+    {
+        $user = $order->user;
+        if ($user) $user->loadMissing('groups');
+
+        $customerPrice = (float) $pricingService->getCustomerPrice($product, $user);
+        $basePrice     = (float) $product->price;
+
+        return response()->json([
+            'success'        => true,
+            'customer_price' => number_format($customerPrice, 2, '.', ''),
+            'base_price'     => number_format($basePrice, 2, '.', ''),
+            'product_name'   => $product->name,
+            'sku'            => $product->sku,
+            'stock'          => $product->stock,
+            'tax_rate'       => (float) $product->tax_rate,
+        ]);
     }
 
     public function update(Request $request, Order $order)

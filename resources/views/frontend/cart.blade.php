@@ -195,16 +195,50 @@ $(document).ready(function () {
                 + '</div>';
         } else {
             quantityBlock
-                = '<div class="item-quantity" data-subtotal="&pound;' + subtotal + '">'
-                +     '<div class="modern-quantity-control">'
-                +         '<button class="qty-btn qty-decrease" data-product-id="' + item.id + '" ' + disableDec + '>'
-                +             '<i class="fa-solid fa-minus"></i>'
+                = '<div class="item-quantity product-cart-ui"'
+                +     ' data-product-id="' + item.id + '"'
+                +     ' data-stock="' + stock + '"'
+                +     ' data-state="saved"'
+                +     ' data-saved-qty="' + qty + '">'
+
+                +     '<button type="button" class="product-add-to-cart add-to-cart-btn d-none"'
+                +         ' data-product-id="' + item.id + '"'
+                +         ' data-stock="' + stock + '">'
+                +         '<i class="fa-regular fa-cart-shopping"></i>'
+                +         '<span>Add to Cart</span>'
+                +     '</button>'
+
+                +     '<div class="product-inline-editor d-none">'
+                +         '<button type="button" class="cart-inline-btn cart-inline-cancel"'
+                +             ' data-product-id="' + item.id + '">'
+                +             '<i class="fa-regular fa-xmark"></i>'
                 +         '</button>'
-                +         '<input type="text" class="qty-value" value="' + qty + '" readonly>'
-                +         '<button class="qty-btn qty-increase" data-product-id="' + item.id + '" ' + disableInc + '>'
-                +             '<i class="fa-solid fa-plus"></i>'
+                +         '<input type="number" class="cart-inline-input"'
+                +             ' data-product-id="' + item.id + '"'
+                +             ' value="' + qty + '"'
+                +             ' min="1" max="' + stock + '" step="1" inputmode="numeric">'
+                +         '<button type="button" class="cart-inline-btn cart-inline-save"'
+                +             ' data-product-id="' + item.id + '">'
+                +             '<i class="fa-regular fa-check"></i>'
                 +         '</button>'
                 +     '</div>'
+
+                +     '<div class="product-cart-summary">'
+                +         '<div class="cart-summary-meta">'
+                +             '<span class="cart-summary-label">In cart</span>'
+                +             '<span class="cart-summary-value">'
+                +                 '<strong class="cart-summary-qty">' + qty + '</strong>'
+                +                 '<span class="cart-summary-unit"> pcs</span>'
+                +             '</span>'
+                +         '</div>'
+                +         '<button type="button" class="cart-summary-edit"'
+                +             ' data-product-id="' + item.id + '">'
+                +             '<i class="fa-regular fa-pen-to-square"></i>'
+                +             '<span>Edit</span>'
+                +         '</button>'
+                +     '</div>'
+
+                +     '<div class="cart-inline-error d-none"></div>'
                 + '</div>';
         }
 
@@ -268,56 +302,143 @@ $(document).ready(function () {
     }
 
     // =========================================================
-    //  QUANTITY DECREASE
+    //  INLINE EDITOR — helper functions
     // =========================================================
-    $(document).on('click', '.qty-decrease', function (e) {
+    function getProductCartUI(productId) {
+        return $('.product-cart-ui[data-product-id="' + productId + '"]');
+    }
+
+    function setCartUIState(productId, state, qty) {
+        var $wrap    = getProductCartUI(productId);
+        if (!$wrap.length) return;
+
+        var $addBtn  = $wrap.find('.add-to-cart-btn');
+        var $editor  = $wrap.find('.product-inline-editor');
+        var $summary = $wrap.find('.product-cart-summary');
+        var $input   = $wrap.find('.cart-inline-input');
+        var $qtyText = $wrap.find('.cart-summary-qty');
+        var $error   = $wrap.find('.cart-inline-error');
+
+        $wrap.attr('data-state', state);
+        $error.addClass('d-none').text('');
+
+        if (qty !== undefined && qty !== null) {
+            qty = parseInt(qty, 10) || 1;
+            $wrap.attr('data-saved-qty', qty);
+            $input.val(qty);
+            $qtyText.text(qty);
+        }
+
+        $addBtn.addClass('d-none');
+        $editor.addClass('d-none');
+        $summary.addClass('d-none');
+
+        if (state === 'default') {
+            $addBtn.removeClass('d-none');
+        } else if (state === 'editing') {
+            $editor.removeClass('d-none');
+            setTimeout(function () { $input.trigger('focus').trigger('select'); }, 20);
+        } else if (state === 'saved') {
+            $summary.removeClass('d-none');
+        }
+    }
+
+    function validateCartQty(productId) {
+        var $wrap  = getProductCartUI(productId);
+        var $input = $wrap.find('.cart-inline-input');
+        var stock  = parseInt($wrap.data('stock'), 10) || 0;
+        var raw    = $.trim($input.val());
+        var qty    = parseInt(raw, 10);
+
+        if (raw === '' || isNaN(qty))  return { valid: false, message: 'Please enter quantity' };
+        if (qty < 1)                   return { valid: false, message: 'Minimum quantity is 1' };
+        if (qty > stock)               return { valid: false, message: 'Only ' + stock + ' in stock' };
+        return { valid: true, qty: qty };
+    }
+
+    function showCartInlineError(productId, message) {
+        getProductCartUI(productId).find('.cart-inline-error').text(message).removeClass('d-none');
+    }
+
+    // =========================================================
+    //  INLINE EDITOR — open / cancel
+    // =========================================================
+    $(document).on('click', '.cart-summary-edit', function (e) {
         e.preventDefault();
-        var productId    = $(this).data('product-id');
-        var button       = $(this);
-        if (button.prop('disabled')) return;
-        var originalHtml = button.html();
-        button.html('<i class="btn-loader"></i>').prop('disabled', true);
+        e.stopPropagation();
+        var productId = $(this).data('product-id');
+        var savedQty  = parseInt(getProductCartUI(productId).attr('data-saved-qty'), 10) || 1;
+        setCartUIState(productId, 'editing', savedQty);
+    });
+
+    $(document).on('click', '.cart-inline-cancel', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var productId = $(this).data('product-id');
+        var savedQty  = parseInt(getProductCartUI(productId).attr('data-saved-qty'), 10) || 0;
+        setCartUIState(productId, savedQty > 0 ? 'saved' : 'default', savedQty || undefined);
+    });
+
+    $(document).on('input', '.cart-inline-input', function () {
+        getProductCartUI($(this).data('product-id'))
+            .find('.cart-inline-error').addClass('d-none').text('');
+    });
+
+    $(document).on('keydown', '.cart-inline-input', function (e) {
+        var productId = $(this).data('product-id');
+        if (e.key === 'Enter')  { e.preventDefault(); triggerCartSave(productId); }
+        if (e.key === 'Escape') { e.preventDefault(); $(document).find('.cart-inline-cancel[data-product-id="' + productId + '"]').trigger('click'); }
+    });
+
+    // =========================================================
+    //  INLINE EDITOR — save (calls /cart/update with new qty)
+    // =========================================================
+    $(document).on('click', '.cart-inline-save', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        triggerCartSave($(this).data('product-id'));
+    });
+
+    function triggerCartSave(productId) {
+        var validation = validateCartQty(productId);
+        if (!validation.valid) {
+            showCartInlineError(productId, validation.message);
+            return;
+        }
+
+        var qty     = validation.qty;
+        var $wrap   = getProductCartUI(productId);
+        var savedQty = parseInt($wrap.attr('data-saved-qty'), 10) || 0;
+
+        // If qty hasn't changed, just close the editor
+        if (qty === savedQty) {
+            setCartUIState(productId, 'saved', qty);
+            return;
+        }
+
+        var $saveBtn = $wrap.find('.cart-inline-save');
+        $saveBtn.html('<i class="fa-regular fa-spinner fa-spin"></i>').prop('disabled', true);
 
         $.ajax({
             url:  '{{ route("cart.update") }}',
             type: 'POST',
-            data: { _token: '{{ csrf_token() }}', product_id: productId, action: 'minus' },
+            data: { _token: '{{ csrf_token() }}', product_id: productId, quantity: qty },
             success: function (r) {
-                if (r.success) { syncAll(r.cart); }
-                else { button.html(originalHtml).prop('disabled', false); if (typeof Toast !== 'undefined') Toast.error(r.message); }
+                $saveBtn.html('<i class="fa-regular fa-check"></i>').prop('disabled', false);
+                if (r.success) {
+                    setCartUIState(productId, 'saved', qty);
+                    syncAll(r.cart);
+                    if (typeof Toast !== 'undefined') Toast.success('Quantity updated');
+                } else {
+                    showCartInlineError(productId, r.message || 'Update failed');
+                }
             },
             error: function () {
-                button.html(originalHtml).prop('disabled', false);
-                if (typeof Toast !== 'undefined') Toast.error('Failed to update cart.');
+                $saveBtn.html('<i class="fa-regular fa-check"></i>').prop('disabled', false);
+                showCartInlineError(productId, 'Failed to update. Try again.');
             }
         });
-    });
-
-    // =========================================================
-    //  QUANTITY INCREASE
-    // =========================================================
-    $(document).on('click', '.qty-increase', function (e) {
-        e.preventDefault();
-        var productId    = $(this).data('product-id');
-        var button       = $(this);
-        if (button.prop('disabled')) return;
-        var originalHtml = button.html();
-        button.html('<i class="btn-loader"></i>').prop('disabled', true);
-
-        $.ajax({
-            url:  '{{ route("cart.update") }}',
-            type: 'POST',
-            data: { _token: '{{ csrf_token() }}', product_id: productId, action: 'plus' },
-            success: function (r) {
-                if (r.success) { syncAll(r.cart); }
-                else { button.html(originalHtml).prop('disabled', false); if (typeof Toast !== 'undefined') Toast.error(r.message); }
-            },
-            error: function () {
-                button.html(originalHtml).prop('disabled', false);
-                if (typeof Toast !== 'undefined') Toast.error('Failed to update cart.');
-            }
-        });
-    });
+    }
 
     // =========================================================
     //  REMOVE ITEM
@@ -334,7 +455,7 @@ $(document).ready(function () {
             data: { _token: '{{ csrf_token() }}', product_id: productId },
             success: function (r) {
                 if (r.success) {
-                    if (typeof Toast !== 'undefined') Toast.success(r.message);
+                    if (typeof Toast !== 'undefined' && window.innerWidth >= 768) Toast.success(r.message);
                     var remaining = (r.cart && Array.isArray(r.cart.items)) ? r.cart.items.length : 0;
                     if (remaining === 0) {
                         cartItem.remove();
@@ -399,7 +520,7 @@ $(document).ready(function () {
                 if (typeof hideLoader === 'function') hideLoader();
                 if (r.success) {
                     syncAll(r.cart);
-                    if (typeof Toast !== 'undefined') Toast.success(r.message);
+                    if (typeof Toast !== 'undefined' && window.innerWidth >= 768) Toast.success(r.message);
                 } else {
                     if (typeof Toast !== 'undefined') Toast.error(r.message);
                 }
