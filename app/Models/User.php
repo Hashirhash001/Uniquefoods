@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\CompanyAccount;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -95,5 +96,43 @@ class User extends Authenticatable implements MustVerifyEmail
             return $this->avatar;
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=0f508d&color=fff&size=200';
+    }
+
+    public function companies()
+    {
+        return $this->belongsToMany(CompanyAccount::class, 'company_users', 'user_id', 'company_account_id')
+                    ->withPivot('role', 'is_active')
+                    ->withTimestamps();
+    }
+
+    public function activeCompany(): ?CompanyAccount
+    {
+        return $this->companies()
+                    ->wherePivot('is_active', true)
+                    ->first()
+                    ?->load('groups');
+    }
+
+    // Helper: get effective groups (own groups MERGED with company groups)
+    public function effectiveGroups()
+    {
+        // Use already-loaded relation to avoid N+1
+        $ownGroups = $this->relationLoaded('groups')
+            ? $this->groups
+            : $this->groups()->where('is_active', 1)->get();
+
+        // Guard: if company tables don't exist yet, return own groups only
+        try {
+            $company       = $this->activeCompany();
+            $companyGroups = $company ? $company->groups : collect();
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Only ignore "table doesn't exist" errors (code 1146)
+            if ($e->getCode() !== '42S02') {
+                throw $e;
+            }
+            $companyGroups = collect();
+        }
+
+        return $ownGroups->merge($companyGroups)->unique('id');
     }
 }

@@ -555,6 +555,10 @@
                         style="background:#dc2626;">
                     <i class="fas fa-file-pdf"></i> Export PDF
                 </button> --}}
+                <a href="{{ route('admin.products.import') }}" class="rts-btn btn-primary"
+                style="background:#7c3aed;">
+                    <i class="fas fa-file-import"></i> Bulk Import
+                </a>
                 <a href="{{ route('admin.products.create') }}" class="rts-btn btn-primary">
                     <i class="fas fa-plus"></i> Add Product
                 </a>

@@ -909,6 +909,11 @@
                             <i class="fas fa-plus"></i> Add Product
                         </a>
                     </li>
+                    <li class="{{ request()->routeIs('admin.products.import') ? 'active' : '' }}">
+                        <a href="{{ route('admin.products.import') }}">
+                            <i class="fas fa-file-import"></i> Bulk Import
+                        </a>
+                    </li>
                 </ul>
 
                 <!-- Popup submenu for minimized -->
@@ -921,6 +926,11 @@
                     <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
                         <a href="{{ route('admin.products.create') }}">
                             <i class="fas fa-plus"></i> Add Product
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.products.import') ? 'active' : '' }}">
+                        <a href="{{ route('admin.products.import') }}">
+                            <i class="fas fa-file-import"></i> Bulk Import
                         </a>
                     </li>
                 </ul>
@@ -995,6 +1005,14 @@
                 <a href="{{ route('admin.customers.index') }}" data-title="Customers">
                     <i class="fas fa-user-friends icon"></i>
                     <span>Customers</span>
+                </a>
+            </li>
+
+            <!-- Companies -->
+            <li class="single-menu-item {{ request()->routeIs('admin.companies.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.companies.index') }}" data-title="Companies">
+                    <i class="fas fa-building icon"></i>
+                    <span>Companies</span>
                 </a>
             </li>
 

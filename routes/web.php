@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\CustomerGroupController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -186,6 +187,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
         // Products
+        // Product Bulk Import
+        Route::get('products/import',           [ProductController::class, 'importPage'])->name('products.import');
+        Route::post('products/import',          [ProductController::class, 'importProcess'])->name('products.import.process');
+        Route::get('products/import/template',  [ProductController::class, 'importTemplate'])->name('products.import.template');
+        Route::post('products/import/{import}/rollback', [ProductController::class, 'importRollback'])->name('products.import.rollback');
+        Route::get('products/import/history',   [ProductController::class, 'importHistory'])->name('products.import.history');
+
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
         Route::get('/products/export/csv', [ProductController::class, 'exportCsv'])->name('products.export.csv');
         Route::get('/products/export/pdf', [ProductController::class, 'exportPdf'])->name('products.export.pdf');
@@ -266,6 +274,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/{user}',     [CustomerController::class, 'destroy'])->name('destroy');
             Route::put('/{user}/groups', [CustomerController::class, 'updateGroups'])->name('update-groups');
             Route::get('/{user}',        [CustomerController::class, 'show'])->name('show');
+        });
+
+        // Companies
+        Route::get('/companies/user-search', [CompanyController::class, 'userSearch'])->name('companies.user-search');
+        Route::prefix('companies')->name('companies.')->group(function () {
+            Route::get('/',                          [CompanyController::class, 'index'])->name('index');
+            Route::post('/',                         [CompanyController::class, 'store'])->name('store');
+            Route::get('/{company}',                 [CompanyController::class, 'show'])->name('show');
+            Route::put('/{company}',                 [CompanyController::class, 'update'])->name('update');
+            Route::delete('/{company}',              [CompanyController::class, 'destroy'])->name('destroy');
+            Route::post('/{company}/add-user',       [CompanyController::class, 'addUser'])->name('add-user');
+            Route::post('/{company}/remove-user',    [CompanyController::class, 'removeUser'])->name('remove-user');
         });
 
     });

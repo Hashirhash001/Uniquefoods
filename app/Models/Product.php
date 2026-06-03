@@ -227,16 +227,17 @@ class Product extends Model
             return $query->whereRaw('0 = 1');
         }
 
-        if ($user && $user->groups->isNotEmpty()) {
-            $groupIds = $user->groups->pluck('id');
+        // Use effectiveGroups which merges own + company groups
+        $groups = $user->effectiveGroups();
+
+        if ($groups->isNotEmpty()) {
+            $groupIds = $groups->pluck('id');
         } else {
             $groupIds = \App\Models\CustomerGroup::where('slug', 'home-delivery')
                 ->where('is_active', 1)
                 ->pluck('id');
         }
 
-        // Hard rule: product MUST be assigned to at least one group
-        // AND that group must be one the user belongs to
         $query->whereHas('customerGroups', function ($g) use ($groupIds) {
             $g->whereIn('customer_groups.id', $groupIds);
         });

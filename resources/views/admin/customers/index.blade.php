@@ -504,6 +504,21 @@
                     <div class="group-checks" id="editGroups">
                         {{-- Rendered by JS --}}
                     </div>
+                    <div class="cf-hint">Direct group assignments for this customer.</div>
+                </div>
+
+                <div class="cm-divider"></div>
+                <div class="cf-group">
+                    <label class="cf-label">Company Account
+                        <span style="font-weight:400;color:#9ca3af;text-transform:none;">(inherits company's groups & pricing)</span>
+                    </label>
+                    <select name="company_id" id="eCompany" class="cf-input">
+                        <option value="">— No company —</option>
+                        {{-- Populated by JS --}}
+                    </select>
+                    <div class="cf-hint" id="eCompanyHint" style="display:none;color:#f59e0b;">
+                        <i class="fas fa-info-circle"></i> This customer will inherit all groups assigned to the selected company.
+                    </div>
                 </div>
                 <div style="display:flex;gap:10px;margin-top:8px;">
                     <button type="submit" class="cb cb-blue" id="editBtn" style="flex:1;justify-content:center;">
@@ -666,6 +681,7 @@ $(function () {
             $('#eMobile').val(r.user.mobile ?? '');
             $('#editForm input[name="password"]').val('');
 
+            // Groups
             let html = '';
             $.each(r.groups, function (i, g) {
                 const chk = r.user_group_ids.includes(g.id) ? 'checked' : '';
@@ -676,6 +692,22 @@ $(function () {
                 </label>`;
             });
             $('#editGroups').html(html);
+
+            // Companies dropdown
+            let coHtml = '<option value="">— No company —</option>';
+            $.each(r.companies, function (i, c) {
+                const sel = r.user_company && r.user_company.id === c.id ? 'selected' : '';
+                coHtml += `<option value="${c.id}" ${sel}>${c.name}</option>`;
+            });
+            $('#eCompany').html(coHtml);
+
+            // Show hint if company selected
+            if (r.user_company) {
+                $('#eCompanyHint').show();
+            } else {
+                $('#eCompanyHint').hide();
+            }
+
             openModal('editModal');
         });
     });
@@ -729,6 +761,15 @@ $(function () {
                 error: xhr => Swal.fire({ icon:'error', title:'Error', text: xhr.responseJSON?.message ?? 'Failed', confirmButtonColor:'#08437b' }),
             });
         });
+    });
+
+    // Show hint when company selected
+    $(document).on('change', '#eCompany', function () {
+        if ($(this).val()) {
+            $('#eCompanyHint').show();
+        } else {
+            $('#eCompanyHint').hide();
+        }
     });
 });
 </script>

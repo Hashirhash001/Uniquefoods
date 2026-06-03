@@ -75,12 +75,13 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'                  => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->withoutTrashed()],
-            'mobile'                => 'nullable|string|max:20',
-            'password'              => 'required|string|min:6|confirmed',
-            'groups'                => 'nullable|array',
-            'groups.*'              => 'exists:customer_groups,id',
+            'name'       => 'required|string|max:255',
+            'email'      => ['required', 'email', Rule::unique('users')->withoutTrashed()],
+            'mobile'     => 'nullable|string|max:20',
+            'password'   => 'required|string|min:6|confirmed',
+            'groups'     => 'nullable|array',
+            'groups.*'   => 'exists:customer_groups,id',
+            'company_id' => 'nullable|exists:company_accounts,id',
         ]);
 
         $user = User::create([
@@ -99,19 +100,28 @@ class CustomerController extends Controller
             if ($hd) $user->groups()->attach($hd->id);
         }
 
+        if ($request->filled('company_id')) {
+            $user->companies()->sync([
+                $request->company_id => ['role' => 'member', 'is_active' => true]
+            ]);
+        }
+
         return response()->json(['success' => true, 'message' => 'Customer created successfully']);
     }
 
     public function edit(User $user)
     {
-        $user->load('groups');
-        $groups = CustomerGroup::where('is_active', 1)->orderBy('name')->get();
+        $user->load('groups', 'companies');
+        $groups    = CustomerGroup::where('is_active', 1)->orderBy('name')->get();
+        $companies = \App\Models\CompanyAccount::where('is_active', 1)->orderBy('name')->get();
 
         return response()->json([
             'success'        => true,
             'user'           => $user,
             'groups'         => $groups,
             'user_group_ids' => $user->groups->pluck('id'),
+            'companies'      => $companies,
+            'user_company'   => $user->companies->first()?->only(['id', 'name']) ?? null,
         ]);
     }
 
@@ -132,6 +142,17 @@ class CustomerController extends Controller
         $user->update($data);
         $user->groups()->sync($request->groups ?? []);
 
+        // Handle company assignment
+        if ($request->filled('company_id')) {
+            // Detach from all companies first, then attach to selected
+            $user->companies()->sync([
+                $request->company_id => ['role' => 'member', 'is_active' => true]
+            ]);
+        } elseif ($request->has('company_id')) {
+            // company_id sent but empty = remove from all companies
+            $user->companies()->detach();
+        }
+
         return response()->json(['success' => true, 'message' => 'Customer updated successfully']);
     }
 
@@ -144,6 +165,7 @@ class CustomerController extends Controller
     public function show(User $user)
     {
         $user->loadCount('orders')->loadSum('orders', 'total');
+        $user->load('companies.groups');
 
         $orders = $user->orders()->with(['items.product'])->latest()->get();
 

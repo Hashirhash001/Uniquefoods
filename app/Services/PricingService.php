@@ -21,11 +21,10 @@ class PricingService
             return $product->price;
         }
 
-        // ✅ Cache groups per user for this request
         if (!isset($this->groupCache[$customer->id])) {
-            $this->groupCache[$customer->id] = $customer->groups()
-                ->where('is_active', 1)
-                ->get();
+            // Use effectiveGroups — merges own + company groups
+            $this->groupCache[$customer->id] = $customer->effectiveGroups()
+                ->filter(fn($g) => $g->is_active);
         }
 
         $customerGroups = $this->groupCache[$customer->id];
@@ -114,7 +113,7 @@ class PricingService
             return 0;
         }
 
-        $customerGroups = $customer->groups()->where('is_active', 1)->get();
+        $customerGroups = $customer->effectiveGroups()->filter(fn($g) => $g->is_active);
 
         if ($customerGroups->isEmpty()) {
             return 0;

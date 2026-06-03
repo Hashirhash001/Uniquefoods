@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use App\Models\ProductImport;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -326,12 +328,14 @@ class ProductController extends Controller
     // Quick search for admin order editing
     public function search(Request $request)
     {
-        $q = trim($request->get('q', ''));
+        $q           = trim($request->get('q', ''));
+        $forOrder    = $request->boolean('for_order');   // admin order edit context
         $inStockOnly = $request->boolean('in_stock_only');
 
         $products = Product::query()
             ->where('is_active', 1)
-            ->when($inStockOnly, function ($query) {
+            ->when($inStockOnly && !$forOrder, function ($query) {
+                // Only enforce stock filter when NOT in admin order-edit context
                 $query->where('stock', '>', 0);
             })
             ->when($q, function ($query) use ($q) {
@@ -344,7 +348,22 @@ class ProductController extends Controller
             ->limit(20)
             ->get(['id', 'name', 'sku', 'price', 'tax_rate', 'stock']);
 
-        return response()->json($products);
+        return response()->json(
+            $products->map(function ($p) use ($forOrder) {
+                $outOfStock = $p->stock <= 0;
+                return [
+                    'id'              => $p->id,
+                    'name'            => $p->name,
+                    'sku'             => $p->sku,
+                    'price'           => $p->price,
+                    'tax_rate'        => $p->tax_rate,
+                    'stock'           => $p->stock,
+                    'is_out_of_stock' => $outOfStock,
+                    // Admins can always add; non-admin contexts block out-of-stock
+                    'can_add_to_order' => $forOrder ? true : !$outOfStock,
+                ];
+            })
+        );
     }
 
     public function exportCsv(Request $request)
@@ -463,5 +482,333 @@ class ProductController extends Controller
         if ($request->filled('min_price'))    $parts[] = 'Min Price: £' . $request->min_price;
         if ($request->filled('max_price'))    $parts[] = 'Max Price: £' . $request->max_price;
         return $parts ? implode(' | ', $parts) : 'All products';
+    }
+
+    // ── Import page ──
+    public function importPage()
+    {
+        $history = ProductImport::with('importedBy')
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        return view('admin.products.import', compact('history'));
+    }
+
+    // ── Download template ──
+    public function importTemplate()
+    {
+        $filename = 'product_import_template.csv';
+        $headers  = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma'              => 'no-cache',
+            'Expires'             => '0',
+        ];
+
+        $columns = [
+            'name', 'category', 'brand', 'price', 'mrp', 'cost',
+            'stock', 'unit', 'tax_rate', 'barcode', 'description',
+            'is_active', 'is_featured', 'is_popular',
+            'is_weight_based', 'price_per_kg', 'min_weight', 'max_weight',
+            'customer_groups',
+        ];
+
+        $example = [
+            'Organic Basmati Rice', 'Grains & Rice', 'Tilda', '3.99', '4.99', '2.50',
+            '100', 'pcs', '5', '5012345678901', 'Premium long grain basmati rice',
+            '1', '0', '0',
+            '0', '', '', '',
+            'Home Delivery,Wholesale',
+        ];
+
+        return response()->streamDownload(function () use ($columns, $example) {
+            $h = fopen('php://output', 'w');
+            fprintf($h, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($h, $columns);
+            fputcsv($h, $example);
+            fclose($h);
+        }, $filename, $headers);
+    }
+
+    // ── Process import ──
+    public function importProcess(Request $request)
+    {
+        $request->validate([
+            'csv_file'     => 'required|file|mimes:csv,txt|max:5120',
+            'on_duplicate' => 'required|in:skip,update',
+        ]);
+
+        define('IMPORT_ROW_LIMIT', 500);
+
+        $file     = $request->file('csv_file');
+        $filename = 'import_' . now()->format('YmdHis') . '_' . uniqid() . '.csv';
+        $file->storeAs('imports', $filename, 'local');
+
+        $handle = fopen($file->getRealPath(), 'r');
+
+        // Strip BOM if present (Excel adds this)
+        $bom = fread($handle, 3);
+        if ($bom !== chr(0xEF) . chr(0xBB) . chr(0xBF)) {
+            rewind($handle); // Not a BOM, rewind and read normally
+        }
+
+        // Auto-detect delimiter by reading first line
+        $firstLine = fgets($handle);
+        rewind($handle);
+
+        // Re-skip BOM if present
+        $bom = fread($handle, 3);
+        if ($bom !== chr(0xEF) . chr(0xBB) . chr(0xBF)) {
+            rewind($handle);
+        }
+
+        $delimiter = ',';
+        $tabCount   = substr_count($firstLine, "\t");
+        $commaCount = substr_count($firstLine, ',');
+        $semicolonCount = substr_count($firstLine, ';');
+
+        if ($tabCount > $commaCount && $tabCount > $semicolonCount) {
+            $delimiter = "\t";
+        } elseif ($semicolonCount > $commaCount) {
+            $delimiter = ';';
+        }
+
+        $header = fgetcsv($handle, 0, $delimiter);
+
+        // Normalise header — strip BOM from first cell, lowercase, replace spaces/dashes
+        $header = array_map(function ($h) {
+            // Remove UTF-8 BOM from individual cells (Excel quirk)
+            $h = str_replace("\xEF\xBB\xBF", '', $h);
+            return strtolower(trim(str_replace([' ', '-'], '_', $h)));
+        }, $header);
+
+        $required = ['name', 'price', 'stock', 'unit', 'category'];
+        foreach ($required as $col) {
+            if (!in_array($col, $header)) {
+                fclose($handle);
+                return response()->json([
+                    'success' => false,
+                    'message' => "Missing required column: \"{$col}\". Please use the template.",
+                ], 422);
+            }
+        }
+
+        // Count rows before processing
+        $rowCount = 0;
+        while (fgetcsv($handle, 0, $delimiter) !== false) $rowCount++;
+        rewind($handle);
+
+        // Re-skip BOM
+        $bom = fread($handle, 3);
+        if ($bom !== chr(0xEF) . chr(0xBB) . chr(0xBF)) rewind($handle);
+
+        // Re-skip header
+        fgetcsv($handle, 0, $delimiter);
+
+        if ($rowCount > 500) {
+            fclose($handle);
+            return response()->json([
+                'success' => false,
+                'message' => "Your file contains {$rowCount} rows. Maximum allowed is 500 rows per import. Please split your file and import in batches.",
+            ], 422);
+        }
+
+        $onDuplicate    = $request->on_duplicate;
+        $imported       = [];
+        $errors         = [];
+        $importedCount  = 0;
+        $skippedCount   = 0;
+        $failedCount    = 0;
+        $rowNum         = 1;
+
+        // Cache lookups
+        $categories = Category::pluck('id', 'name');
+        $brands     = Brand::pluck('id', 'name');
+        $groups     = CustomerGroup::pluck('id', 'name');
+
+        $validUnits = ['pcs','kg','g','l','ml','nos','box','pkt','rol','drm','doz','cs'];
+
+        DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+                $rowNum++;
+                if (count(array_filter($row, fn($v) => trim($v) !== '')) === 0) continue;
+
+                $data = array_combine($header, array_pad($row, count($header), ''));
+                $data = array_map('trim', $data);
+
+                // ── Validate row ──
+                $rowErrors = [];
+
+                if (empty($data['name']))  $rowErrors[] = 'Name is required';
+                if (!is_numeric($data['price'] ?? '')) $rowErrors[] = 'Price must be numeric';
+                if (!is_numeric($data['stock'] ?? '')) $rowErrors[] = 'Stock must be numeric';
+                if (!in_array($data['unit'] ?? '', $validUnits)) $rowErrors[] = 'Invalid unit (valid: ' . implode(', ', $validUnits) . ')';
+
+                // Category lookup
+                $categoryId = null;
+                if (!empty($data['category'])) {
+                    $categoryId = $categories->get($data['category']);
+                    if (!$categoryId) $rowErrors[] = "Category \"{$data['category']}\" not found";
+                } else {
+                    $rowErrors[] = 'Category is required';
+                }
+
+                if (!empty($rowErrors)) {
+                    $failedCount++;
+                    $errors[] = ['row' => $rowNum, 'name' => $data['name'] ?? '—', 'errors' => $rowErrors];
+                    continue;
+                }
+
+                // Brand
+                $brandId = !empty($data['brand']) ? ($brands->get($data['brand']) ?? null) : null;
+
+                // Check duplicate
+                $existing = Product::where('name', $data['name'])
+                    ->orWhere(function ($q) use ($data) {
+                        if (!empty($data['barcode'])) $q->where('barcode', $data['barcode']);
+                    })->first();
+
+                if ($existing) {
+                    if ($onDuplicate === 'skip') {
+                        $skippedCount++;
+                        $errors[] = ['row' => $rowNum, 'name' => $data['name'], 'errors' => ['Skipped — duplicate name/barcode']];
+                        continue;
+                    }
+                    // update
+                    $existing->update($this->buildProductData($data, $categoryId, $brandId));
+                    $product = $existing;
+                } else {
+                    $productData = $this->buildProductData($data, $categoryId, $brandId);
+                    $productData['sku'] = $this->generateUniqueSKU();
+                    $product = Product::create($productData);
+                }
+
+                // Customer groups
+                if (!empty($data['customer_groups'])) {
+                    $groupNames = array_map('trim', explode(',', $data['customer_groups']));
+                    $groupIds   = collect($groupNames)
+                        ->map(fn($n) => $groups->get($n))
+                        ->filter()
+                        ->values()
+                        ->toArray();
+                    if ($groupIds) $product->customerGroups()->sync($groupIds);
+                } else {
+                    $homeDelivery = CustomerGroup::where('slug', 'home-delivery')->pluck('id');
+                    $product->customerGroups()->sync($homeDelivery);
+                }
+
+                $imported[] = $product->id;
+                $importedCount++;
+            }
+
+            fclose($handle);
+
+            $import = ProductImport::create([
+                'filename'            => $filename,
+                'original_filename'   => $file->getClientOriginalName(),
+                'total_rows'          => $rowNum - 1,
+                'imported_rows'       => $importedCount,
+                'skipped_rows'        => $skippedCount,
+                'failed_rows'         => $failedCount,
+                'errors'              => $errors ?: null,
+                'imported_product_ids'=> $imported,
+                'status'              => 'completed',
+                'imported_by'         => Auth::id(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success'        => true,
+                'message'        => "Import complete: {$importedCount} imported, {$skippedCount} skipped, {$failedCount} failed.",
+                'import_id'      => $import->id,
+                'imported_count' => $importedCount,
+                'skipped_count'  => $skippedCount,
+                'failed_count'   => $failedCount,
+                'errors'         => $errors,
+                'can_rollback'   => $importedCount > 0,
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            fclose($handle);
+            Log::error('Product import failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Import failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // ── Rollback an import ──
+    public function importRollback(ProductImport $import)
+    {
+        if ($import->status === 'rolled_back') {
+            return response()->json(['success' => false, 'message' => 'Already rolled back.'], 422);
+        }
+
+        $ids = $import->imported_product_ids ?? [];
+
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No product IDs recorded for this import.'], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Soft-delete all imported products
+            Product::whereIn('id', $ids)->delete();
+
+            $import->update([
+                'status'         => 'rolled_back',
+                'rolled_back_at' => now(),
+                'rolled_back_by' => Auth::id(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($ids) . ' products from this import have been removed.',
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Rollback failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // ── Import history (AJAX refresh) ──
+    public function importHistory()
+    {
+        $history = ProductImport::with('importedBy', 'rolledBackBy')
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        return response()->json([
+            'html' => view('admin.products.partials.import-history', compact('history'))->render(),
+        ]);
+    }
+
+    private function buildProductData(array $data, ?int $categoryId, ?int $brandId): array
+    {
+        $isWeightBased = (int) ($data['is_weight_based'] ?? 0);
+        return [
+            'name'           => $data['name'],
+            'slug'           => Product::generateUniqueSlug($data['name']),
+            'category_id'    => $categoryId,
+            'brand_id'       => $brandId,
+            'price'          => (float) ($data['price'] ?? 0),
+            'mrp'            => !empty($data['mrp']) ? (float) $data['mrp'] : null,
+            'cost'           => !empty($data['cost']) ? (float) $data['cost'] : null,
+            'stock'          => (int) ($data['stock'] ?? 0),
+            'unit'           => $data['unit'] ?? 'pcs',
+            'tax_rate'       => !empty($data['tax_rate']) ? (float) $data['tax_rate'] : null,
+            'barcode'        => $data['barcode'] ?? null,
+            'description'    => $data['description'] ?? null,
+            'is_active'      => isset($data['is_active'])  ? (int) $data['is_active']  : 1,
+            'is_featured'    => isset($data['is_featured']) ? (int) $data['is_featured'] : 0,
+            'is_popular'     => isset($data['is_popular'])  ? (int) $data['is_popular']  : 0,
+            'is_weight_based'=> $isWeightBased,
+            'price_per_kg'   => $isWeightBased && !empty($data['price_per_kg']) ? (float) $data['price_per_kg'] : null,
+            'min_weight'     => $isWeightBased && !empty($data['min_weight'])   ? (float) $data['min_weight']   : null,
+            'max_weight'     => $isWeightBased && !empty($data['max_weight'])   ? (float) $data['max_weight']   : null,
+        ];
     }
 }
